@@ -5,7 +5,7 @@ export type ThemedTextProps = TextProps & {
   type?: 'default' | 'title' | 'defaultSemiBold' | 'banner' | 'subtitle' | 'link';
 };
 
-export function ThemedText({
+export default function ThemedText({
   style,
   type = 'default',
   ...rest
@@ -39,11 +39,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
     lineHeight: 32,
   },
   banner: {
-    fontSize:48,
+    fontSize: 32,
   },
   subtitle: {
     fontSize: 20,

@@ -1,5 +1,5 @@
-import { Text, View, Pressable } from "react-native";
-import { ThemedText } from './ThemedText';
+import { View, Pressable } from "react-native";
+import ThemedText from './ThemedText';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 
@@ -23,7 +23,7 @@ export default function Home() {
               alignItems: 'center',
               backgroundColor: '#D4DFFF',
               borderRadius: '10px',
-              height: '170px',
+              height: '130px',
               padding: '10px'
             }}
             onPress={() => router.push('/vote')}
@@ -33,12 +33,11 @@ export default function Home() {
                   type="banner">
                     Vote for the latest poll here
                 </ThemedText>
-                <AntDesign name="arrowright" size={48} color="black" />
+                <AntDesign name="arrowright" size={32} color="black" />
               </div>
           </Pressable>
         </div>
 
-        <Text>Edit app/index.tsx to edit this screen.</Text>
       </View>
   );
 }
