@@ -5,14 +5,21 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { corsHeaders } from '../_shared/cors.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
   Deno.env.get('SUPABASE_ANON_KEY') ?? ''
 );
 
-Deno.serve(async (_req: Request) => {
+Deno.serve(async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
+    console.log('Fetching active question...');
     const { data: activeQuestion, error } = await supabase
       .from('questions')
       .select(
@@ -31,25 +38,31 @@ Deno.serve(async (_req: Request) => {
       .eq('is_active', true)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
 
     if (!activeQuestion) {
+      console.log('No active question found');
       return new Response(
         JSON.stringify({ message: 'No active question found' }),
         {
           status: 404,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
     }
 
+    console.log('Successfully fetched active question:', activeQuestion);
     return new Response(JSON.stringify(activeQuestion), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
+    console.error('Function error:', error);
     return new Response(JSON.stringify({ error: error?.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
