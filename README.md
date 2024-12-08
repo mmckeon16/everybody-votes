@@ -1,11 +1,11 @@
-````markdown:README.md
-# Welcome to your Expo app 👋
+#Everybody Votes
 
-This is a monorepo containing both a React Native Expo application and Supabase Edge Functions.
+This is a mono repo containing both a React Native Expo application and Supabase Edge Functions.
 
 The project uses [Expo](https://expo.dev) for the mobile app (created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app)) and Supabase for the backend services.
 
 ## Project Structure
+
 - `/app` - React Native Expo application
 - `/supabase/functions` - Supabase Edge Functions
 
@@ -35,6 +35,7 @@ You can start developing by editing the files inside the **app** directory. This
 ## Supabase Setup
 
 1. Install Supabase CLI
+
    ```bash
    # macOS
    brew install supabase/tap/supabase
@@ -45,11 +46,13 @@ You can start developing by editing the files inside the **app** directory. This
    ```
 
 2. Login to Supabase
+
    ```bash
    supabase login
    ```
 
 3. Initialize Supabase (if not already done)
+
    ```bash
    supabase init
    ```
@@ -62,6 +65,7 @@ You can start developing by editing the files inside the **app** directory. This
 ## Environment Setup
 
 1. Copy the environment template
+
    ```bash
    cp .env.sample .env
    ```
@@ -79,11 +83,13 @@ You can start developing by editing the files inside the **app** directory. This
 To develop and deploy Edge Functions:
 
 1. Create a new function
+
    ```bash
    supabase functions new my-function
    ```
 
 2. Serve functions locally
+
    ```bash
    supabase functions serve
    ```
@@ -118,7 +124,6 @@ Join our community of developers:
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 - [Supabase on GitHub](https://github.com/supabase/supabase): View Supabase's open source platform.
-````
 
 ## Add prettier to your vscode setup
 
