@@ -47,12 +47,17 @@ I'll reorganize the requirements into MVP 0 and Version 1, and add details about
 #### 1. Polling System
 
 - **Question Schedule**
+
   - 3 country-specific questions
     - Rotate every Tuesday, Thursday, Saturday
     - Multiple choice (2-4 options)
   - 2 global questions
     - Rotate biweekly
     - Multiple choice (2-4 options)
+
+- **Voting and Predection Flow**
+  - Vote on the poll
+  - And then predict the results
 
 #### 2. Results & Analytics
 
@@ -73,6 +78,31 @@ I'll reorganize the requirements into MVP 0 and Version 1, and add details about
     - Bar charts
     - Pie charts
     - Percentage breakdowns
+- **Viewing Results**
+
+  - View results from previous polls
+  - First time viewing experience for results to create a sense of suspense
+    - No results until the poll is closed, but can see total votes so far
+    - Show how you voted at first
+    - The results are in!
+    - Show results from everyone who voted on the graph that slowly fills in
+    - have a skip button to skip through the animation
+  - Show difference in prediction and voting
+
+- **User Profile Statistics**
+  - Have general analytics / statistics
+    - Show how you voted on each question
+    - Show your prediction accuracy
+    - Show your correct prediction streak
+    - Show your voting with majority streak
+    - Show your longest correct prediction streak
+    - Show your prediction accuracy over time
+    - amount of polls you've voted on
+    - amount of polls you've predicted on
+    - amount of polls you've voted with majority
+    - amount of polls you've predicted correctly
+    - clearly indicate how many of the total polls you've voted on and predicted on vs the total polls
+      - and then also the total polls they could have voted on and predicted on -- cant vote on previous polls obviously
 
 #### 3. Notifications
 

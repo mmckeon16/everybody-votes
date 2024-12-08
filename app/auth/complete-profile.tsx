@@ -11,6 +11,14 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import ThemedText from '../components/ThemedText';
 import { Picker } from '@react-native-picker/picker';
+import { countries } from '../constants/countries';
+
+const STEPS = {
+  BASIC_INFO: 1,
+  LOCATION: 2,
+  DEMOGRAPHICS: 3,
+  SOCIOECONOMIC: 4,
+};
 
 interface ProfileData {
   age: string;
@@ -39,6 +47,29 @@ export default function CompleteProfile() {
     countryOrigin: '',
   });
 
+  const isStepValid = () => {
+    switch (currentStep) {
+      case STEPS.BASIC_INFO:
+        return profileData.age !== '' && profileData.gender !== '';
+      case STEPS.LOCATION:
+        return (
+          profileData.countryResidence !== '' &&
+          profileData.countryOrigin !== ''
+        );
+      case STEPS.DEMOGRAPHICS:
+        return (
+          profileData.raceEthnicity !== '' &&
+          profileData.politicalAffiliation !== ''
+        );
+      case STEPS.SOCIOECONOMIC:
+        return (
+          profileData.occupation !== '' && profileData.incomeBracket !== ''
+        );
+      default:
+        return false;
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const { error } = await supabase.from('demographics').insert({
@@ -62,7 +93,7 @@ export default function CompleteProfile() {
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1:
+      case STEPS.BASIC_INFO:
         return (
           <>
             <TextInput
@@ -92,7 +123,125 @@ export default function CompleteProfile() {
             </Picker>
           </>
         );
-      // Add cases for other steps...
+
+      case STEPS.LOCATION:
+        return (
+          <>
+            <Picker
+              selectedValue={profileData.countryOrigin}
+              onValueChange={(value) =>
+                setProfileData({ ...profileData, countryOrigin: value })
+              }
+              style={styles.picker}
+            >
+              <Picker.Item label="Country of Origin" value="" />
+              {countries.map((country) => (
+                <Picker.Item
+                  key={country.code}
+                  label={country.name}
+                  value={country.code}
+                />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={profileData.countryResidence}
+              onValueChange={(value) =>
+                setProfileData({ ...profileData, countryResidence: value })
+              }
+              style={styles.picker}
+            >
+              <Picker.Item label="Country of Residence" value="" />
+              {countries.map((country) => (
+                <Picker.Item
+                  key={country.code}
+                  label={country.name}
+                  value={country.code}
+                />
+              ))}
+            </Picker>
+          </>
+        );
+
+      case STEPS.DEMOGRAPHICS:
+        return (
+          <>
+            <Picker
+              selectedValue={profileData.raceEthnicity}
+              onValueChange={(value) =>
+                setProfileData({ ...profileData, raceEthnicity: value })
+              }
+              style={styles.picker}
+            >
+              <Picker.Item label="Race/Ethnicity" value="" />
+              <Picker.Item label="Asian" value="asian" />
+              <Picker.Item label="Black/African" value="black" />
+              <Picker.Item label="Hispanic/Latino" value="hispanic" />
+              <Picker.Item label="White/Caucasian" value="white" />
+              <Picker.Item label="Mixed" value="mixed" />
+              <Picker.Item label="Other" value="other" />
+              <Picker.Item
+                label="Prefer not to say"
+                value="prefer-not-to-say"
+              />
+            </Picker>
+            <Picker
+              selectedValue={profileData.politicalAffiliation}
+              onValueChange={(value) =>
+                setProfileData({ ...profileData, politicalAffiliation: value })
+              }
+              style={styles.picker}
+            >
+              <Picker.Item label="Political Affiliation" value="" />
+              <Picker.Item label="Conservative" value="conservative" />
+              <Picker.Item label="Liberal" value="liberal" />
+              <Picker.Item label="Moderate" value="moderate" />
+              <Picker.Item label="Other" value="other" />
+              <Picker.Item
+                label="Prefer not to say"
+                value="prefer-not-to-say"
+              />
+            </Picker>
+          </>
+        );
+
+      case STEPS.SOCIOECONOMIC:
+        return (
+          <>
+            <Picker
+              selectedValue={profileData.occupation}
+              onValueChange={(value) =>
+                setProfileData({ ...profileData, occupation: value })
+              }
+              style={styles.picker}
+            >
+              <Picker.Item label="Occupation" value="" />
+              <Picker.Item label="Student" value="student" />
+              <Picker.Item label="Professional" value="professional" />
+              <Picker.Item label="Service Worker" value="service" />
+              <Picker.Item label="Self-employed" value="self-employed" />
+              <Picker.Item label="Retired" value="retired" />
+              <Picker.Item label="Other" value="other" />
+            </Picker>
+            <Picker
+              selectedValue={profileData.incomeBracket}
+              onValueChange={(value) =>
+                setProfileData({ ...profileData, incomeBracket: value })
+              }
+              style={styles.picker}
+            >
+              <Picker.Item label="Income Bracket" value="" />
+              <Picker.Item label="Under $25,000" value="under-25k" />
+              <Picker.Item label="$25,000 - $49,999" value="25k-50k" />
+              <Picker.Item label="$50,000 - $74,999" value="50k-75k" />
+              <Picker.Item label="$75,000 - $99,999" value="75k-100k" />
+              <Picker.Item label="$100,000+" value="100k-plus" />
+              <Picker.Item
+                label="Prefer not to say"
+                value="prefer-not-to-say"
+              />
+            </Picker>
+          </>
+        );
     }
   };
 
@@ -104,7 +253,10 @@ export default function CompleteProfile() {
 
       <View style={styles.progressBar}>
         <View
-          style={[styles.progress, { width: `${(currentStep / 3) * 100}%` }]}
+          style={[
+            styles.progress,
+            { width: `${(currentStep / Object.keys(STEPS).length) * 100}%` },
+          ]}
         />
       </View>
 
@@ -126,15 +278,20 @@ export default function CompleteProfile() {
           </TouchableOpacity>
         )}
 
-        {currentStep < 3 ? (
+        {currentStep < Object.keys(STEPS).length ? (
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
             onPress={() => setCurrentStep(currentStep + 1)}
+            disabled={!isStepValid()}
           >
             <ThemedText type="button">Next</ThemedText>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <TouchableOpacity
+            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
+            onPress={handleSubmit}
+            disabled={!isStepValid()}
+          >
             <ThemedText type="button">Complete</ThemedText>
           </TouchableOpacity>
         )}
@@ -185,6 +342,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#ccc',
   },
   error: {
     marginBottom: 20,
