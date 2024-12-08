@@ -1,0 +1,4 @@
+# Supabase does this need to be here or should this be in	the root .gitignore?
+.branches
+.temp
+.env

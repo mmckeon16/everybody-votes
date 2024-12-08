@@ -13,7 +13,8 @@ interface QuestionFormProps {
 // QuestionForm.tsx
 import React, { useState } from 'react';
 import { View, Button } from 'react-native';
-import ThemedText from './ThemedText';
+import ThemedText from './components/ThemedText';
+import { Option } from './types';
 
 export const QuestionForm: React.FC<QuestionFormProps> = ({
   question,
@@ -34,7 +35,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         {question}
       </ThemedText>
       <View>
-        {options.map(option => (
+        {options.map((option) => (
           <Button
             key={option.id}
             title={option.text}
