@@ -1,4 +1,4 @@
-#Everybody Votes
+# Everybody Votes
 
 This is a mono repo containing both a React Native Expo application and Supabase Edge Functions.
 
