@@ -119,3 +119,12 @@ Join our community of developers:
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 - [Supabase on GitHub](https://github.com/supabase/supabase): View Supabase's open source platform.
 ````
+
+## Add prettier to your vscode setup
+
+Modify your settings.json to have the following:
+
+```
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+```

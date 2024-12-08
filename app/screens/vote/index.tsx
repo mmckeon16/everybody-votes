@@ -5,7 +5,7 @@ import {
   useGetActiveQuestionQuery,
   useSubmitVoteMutation,
 } from '../../store/api/questionsApi';
-import QuestionForm from '../../QuestionForm';
+import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
 
 export default function Vote() {
@@ -38,10 +38,8 @@ export default function Vote() {
     <View style={{ flex: 1, alignItems: 'center', padding: 15 }}>
       <Stack.Screen
         options={{
-          title: 'Current Poll',
-          headerStyle: { backgroundColor: 'black' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' },
+          title: 'Vote',
+          headerTitle: 'Everybody votes',
         }}
       />
 
@@ -50,7 +48,7 @@ export default function Vote() {
           question={activeQuestion.text}
           options={activeQuestion.options}
           onSubmit={handleSubmit}
-          disabled={isSubmitting}
+          // disabled={isSubmitting}
         />
       )}
     </View>

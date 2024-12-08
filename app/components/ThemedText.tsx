@@ -1,8 +1,13 @@
 import { Text, TextProps, StyleSheet } from 'react-native';
 
-
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'banner' | 'subtitle' | 'link';
+  type?:
+    | 'default'
+    | 'title'
+    | 'defaultSemiBold'
+    | 'banner'
+    | 'subtitle'
+    | 'link';
 };
 
 export default function ThemedText({
@@ -10,7 +15,6 @@ export default function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-
   return (
     <Text
       style={[
