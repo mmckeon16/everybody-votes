@@ -1,10 +1,9 @@
-import * as React from 'react';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { Stack, useRouter } from 'expo-router';
 import { View, Pressable } from 'react-native';
-import ThemedText from './components/ThemedText';
+import ThemedText from '../../components/ThemedText';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { useRouter } from 'expo-router';
 
-export default function App() {
+export default function Home() {
   const router = useRouter();
 
   return (
@@ -15,14 +14,6 @@ export default function App() {
         padding: '15px',
       }}
     >
-      <Stack.Screen
-        options={{
-          title: 'Everybody votes',
-          headerTitleStyle: {},
-          headerTitle: 'Everybody votes',
-        }}
-      />
-
       <div
         style={{
           width: '100%',
