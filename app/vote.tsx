@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import QuestionForm from './QuestionForm';
+import QuestionForm from './components/QuestionForm';
 import { Stack } from 'expo-router';
 
 interface Option {
@@ -9,6 +9,7 @@ interface Option {
 }
 
 export default function Vote() {
+  // TODO this is where we can call the api to get the active questions and to submit the answer for a user
   const sampleOptions: Option[] = [
     { id: 1, text: 'Paris' },
     { id: 2, text: 'London' },

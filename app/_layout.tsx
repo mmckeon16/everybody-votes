@@ -1,11 +1,10 @@
-import { Stack } from "expo-router";
-import { ThemedText } from './ThemedText';
-
+import { Stack } from 'expo-router';
+import { ThemedText } from './components/ThemedText';
 
 export default function RootLayout() {
   return (
-    <Stack >
+    <Stack>
       <ThemedText type="title">Welcome!</ThemedText>
     </Stack>
-    );
+  );
 }
