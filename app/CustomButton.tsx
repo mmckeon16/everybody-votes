@@ -9,11 +9,12 @@ import {
 
 interface CustomButtonProps extends PressableProps {
   title: string;
-  variant?: 'primary' | 'secondary' | 'danger' | 'outline';
+  variant?: 'primary' | 'secondary' | 'answer' | 'selectedAns' | 'outline' | 'submit';
   size?: 'small' | 'medium' | 'large';
   isLoading?: boolean;
   fullWidth?: boolean;
   disabled?: boolean;
+  onPress?: () => void;
 }
 
 export const CustomButton: React.FC<CustomButtonProps> = ({
@@ -38,8 +39,12 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     switch (variant) {
       case 'secondary':
         return [...baseStyle, styles.secondaryButton];
-      case 'danger':
-        return [...baseStyle, styles.dangerButton];
+      case 'answer':
+        return [...baseStyle, styles.answerButton];
+      case 'submit':
+        return [...baseStyle, styles.submitButton];
+      case 'selectedAns':
+        return [...baseStyle, styles.selectedAnsButton];
       case 'outline':
         return [...baseStyle, styles.outlineButton];
       default:
@@ -47,14 +52,24 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     }
   };
 
+  // type ButtonSize = 'small' | 'medium' | 'large';
+  type TextStyleKey = `${ButtonSize}Text`;
+
   const getTextStyle = () => {
-    const baseStyle = [styles.text, styles[`${size}Text`]];
+    const baseStyle = [
+      styles.text,
+      styles[`${size}Text` as TextStyleKey] // Type assertion here
+    ];
 
     switch (variant) {
       case 'outline':
         return [...baseStyle, styles.outlineText];
       case 'secondary':
         return [...baseStyle, styles.secondaryText];
+      case 'answer':
+          return [...baseStyle, styles.answerText];
+      case 'selectedAns':
+          return [...baseStyle, styles.selectedAnsText];
       default:
         return [...baseStyle, styles.primaryText];
     }
@@ -81,10 +96,11 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 8,
+    borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,
+    marginVertical: 10
   },
   fullWidth: {
     width: '100%',
@@ -99,8 +115,14 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: '#6C757D',
   },
-  dangerButton: {
-    backgroundColor: '#DC3545',
+  answerButton: {
+    backgroundColor: 'white',
+  },
+  selectedAnsButton: {
+    backgroundColor: '#D4DFFF',
+  },
+  submitButton:{
+    backgroundColor:'#001d73',
   },
   outlineButton: {
     backgroundColor: 'transparent',
@@ -129,6 +151,12 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     color: 'white',
+  },
+  answerText: {
+    color:"black"
+  },
+  selectedAnsText: {
+    color:"black"
   },
   outlineText: {
     color: '#007AFF',

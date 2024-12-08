@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import QuestionForm from './QuestionForm';
 import { Stack } from 'expo-router';
@@ -34,14 +34,8 @@ export default function Vote() {
     >
       <Stack.Screen
         options={{
-          title: 'My home',
-          headerStyle: { backgroundColor: 'black' },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-
-          headerTitle: 'Hi there',
+          title: 'Vote',
+          headerTitle: 'Everybody votes',
         }}
       />
       <QuestionForm

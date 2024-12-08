@@ -13,6 +13,7 @@ interface QuestionFormProps {
 // QuestionForm.tsx
 import React, { useState } from 'react';
 import { View, Button } from 'react-native';
+import { CustomButton } from './CustomButton';
 import ThemedText from './ThemedText';
 
 export const QuestionForm: React.FC<QuestionFormProps> = ({
@@ -30,24 +31,29 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
   return (
     <View>
-      <ThemedText type="title" style={{}}>
+      <ThemedText type="title" style={{ paddingBottom: '20px' }}>
         {question}
       </ThemedText>
       <View>
         {options.map(option => (
-          <Button
+          <CustomButton
             key={option.id}
             title={option.text}
-            color={selectedOption?.id === option.id ? 'white' : '#D4DFFF'}
+            variant={
+              selectedOption?.id === option.id ? 'selectedAns' : 'answer'
+            }
+            fullWidth
             onPress={() => setSelectedOption(option)}
           />
         ))}
       </View>
-
-      <Button
+      <CustomButton
         title="Submit answer"
+        variant="submit"
+        fullWidth
         onPress={handleSubmit}
         disabled={!selectedOption}
+        style={{ marginTop: '20px' }}
       />
     </View>
   );
