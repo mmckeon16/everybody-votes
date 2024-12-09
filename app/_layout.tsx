@@ -53,7 +53,7 @@ export default function RootLayout() {
         setIsColorSchemeLoaded(true);
         return;
       }
-      const colorTheme = theme === 'dark' ? 'dark' : 'light';
+      const colorTheme = theme === 'dark' ? 'light' : 'dark';
       if (colorTheme !== colorScheme) {
         setColorScheme(colorTheme);
         setAndroidNavigationBar(colorTheme);
@@ -78,9 +78,9 @@ export default function RootLayout() {
           <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
           <Stack>
             <Stack.Screen
-              name="(app)"
+              name="index"
               options={{
-                headerShown: false,
+                title: 'Everybody polls',
                 headerRight: () => <ThemeToggle />,
               }}
             />

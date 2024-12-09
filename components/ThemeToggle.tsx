@@ -16,7 +16,7 @@ export function ThemeToggle() {
         setAndroidNavigationBar(newTheme);
         AsyncStorage.setItem('theme', newTheme);
       }}
-      className='web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2'
+      className="web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2"
     >
       {({ pressed }) => (
         <View
@@ -26,9 +26,13 @@ export function ThemeToggle() {
           )}
         >
           {isDarkColorScheme ? (
-            <MoonStar className='text-foreground' size={23} strokeWidth={1.25} />
+            <MoonStar
+              className="text-foreground"
+              size={23}
+              strokeWidth={1.25}
+            />
           ) : (
-            <Sun className='text-foreground' size={24} strokeWidth={1.25} />
+            <Sun className="text-foreground" size={24} strokeWidth={1.25} />
           )}
         </View>
       )}
