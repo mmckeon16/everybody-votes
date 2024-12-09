@@ -23,6 +23,8 @@ supabase login
 
 3. **Initialize Project**
 
+**only run this when setting up the project, not if you are just cloning it**
+
 ```bash
 supabase init
 ```
@@ -107,20 +109,14 @@ Deno.serve(async (req: Request) => {
 
   try {
     // Your function logic here
-    return new Response(
-      JSON.stringify({ message: 'Success' }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ message: 'Success' }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
 ```
@@ -130,7 +126,8 @@ Deno.serve(async (req: Request) => {
 ```typescript:supabase/functions/_shared/cors.ts
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 };
 ```

@@ -12,6 +12,9 @@ export default function Vote() {
   const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
   const [submitVote, { isLoading: isSubmitting }] = useSubmitVoteMutation();
 
+  // TODO handle if activeQuestion is null
+  console.log('data: ', activeQuestion);
+
   const handleSubmit = async (selectedOption: Option) => {
     if (!activeQuestion) return;
 

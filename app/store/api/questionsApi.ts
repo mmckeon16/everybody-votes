@@ -6,6 +6,8 @@ const baseUrl =
     ? 'http://127.0.0.1:54321/functions/v1'
     : process.env.EXPO_PUBLIC_SUPABASE_URL + '/functions/v1';
 
+console.log(baseUrl);
+console.log("HEREEE")
 export const questionsApi = createApi({
   reducerPath: 'questionsApi',
   baseQuery: fetchBaseQuery({
