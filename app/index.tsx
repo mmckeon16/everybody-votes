@@ -20,7 +20,7 @@ export default function Screen() {
   console.log('activeQuestion: ', activeQuestion);
 
   return (
-    <View className="flex-1 items-center gap-5 p-6 bg-secondary/30">
+    <View className="flex-1 items-center gap-5 p-6">
       {isLoading ? (
         <SkeletonCard />
       ) : (
