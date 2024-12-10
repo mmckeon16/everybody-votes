@@ -33,15 +33,15 @@ export default function Screen() {
           <CardFooter className="flex-col gap-3 pb-0">
             <Progress
               value={getTimeRemainingPercentage(
-                activeQuestion?.startDate,
-                activeQuestion?.endDate
+                activeQuestion?.startDate ?? '',
+                activeQuestion?.endDate ?? ''
               )}
               className="h-2"
               indicatorClassName="bg-sky-600"
             />
             <View className="flex-row items-center overflow-hidden">
               <Text className="text-sm font-bold text-sky-600">
-                {getTimeUntilExpiration(activeQuestion?.endDate)}
+                {getTimeUntilExpiration(activeQuestion?.endDate ?? '')}
               </Text>
               <Text className="text-sm text-muted-foreground">
                 {' '}
