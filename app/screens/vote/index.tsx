@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Stack } from 'expo-router';
 import {
   useGetActiveQuestionQuery,
   useSubmitVoteMutation,
@@ -39,13 +38,6 @@ export default function Vote() {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', padding: 15 }}>
-      <Stack.Screen
-        options={{
-          title: 'Vote',
-          headerTitle: 'Everybody votes',
-        }}
-      />
-
       {activeQuestion && (
         <QuestionForm
           question={activeQuestion.text}
