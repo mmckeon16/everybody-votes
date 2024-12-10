@@ -1,136 +1,154 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withSpring,
+  useDerivedValue,
+} from 'react-native-reanimated';
 
-type DataItem = {
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+interface DataItem {
   label: string;
   value: number;
   color: string;
-};
+}
 
-type DonutChartProps = {
-  data: DataItem[];
-};
+interface DonutChartProps {
+  data: [DataItem, DataItem];
+  size?: number;
+  strokeWidth?: number;
+}
 
-const AnimatedPieChart = ({ data }: DonutChartProps) => {
-  const [progress, setProgress] = useState(0);
-  const [scrambledValues, setScrambledValues] = useState(data.map(item => item.value));
-  
-  if (data.length !== 2) {
-    throw new Error('AnimatedPieChart requires exactly 2 data items');
-  }
-  
-  const total = data.reduce((sum, item) => sum + item.value, 0);
-  if (Math.abs(total - 100) > 0.01) {
-    throw new Error('Values must sum to 100');
-  }
+const AnimatedDonutChart: React.FC<DonutChartProps> = ({
+  data,
+  size = 200,
+  strokeWidth = 25,
+}) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const center = size / 2;
+
+  const progress = useSharedValue(0);
 
   useEffect(() => {
-    let start: number | null = null;
-    const duration = 3500;
-    let scrambleInterval: number;
+    if (data.length !== 2) {
+      console.warn('Exactly two data items are required');
+      return;
+    }
 
-    scrambleInterval = window.setInterval(() => {
-      if (progress < 100) {
-        const random1 = Math.floor(Math.random() * 100);
-        const random2 = 100 - random1;
-        setScrambledValues([random1, random2]);
-      }
-    }, 50);
+    const sum = data[0].value + data[1].value;
+    if (Math.abs(sum - 100) > 0.1) {
+      console.warn('Values must sum to 100');
+      return;
+    }
 
-    const animate = (timestamp: number) => {
-      if (!start) start = timestamp;
-      const elapsed = timestamp - start;
-      const easeIn = (t: number) => t * t * t * t;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeIn(progress) * 100;
-      setProgress(easedProgress);
-      
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        clearInterval(scrambleInterval);
-        setScrambledValues(data.map(item => item.value));
-      }
-    };
+    progress.value = withSpring(1, {
+      damping: 20,
+      stiffness: 20,
+      mass: 1,
+      duration: 3000,
+    });
+  }, [data]);
 
-    requestAnimationFrame(animate);
-    return () => clearInterval(scrambleInterval);
-  }, []);
+  const segment1Length = useDerivedValue(() => {
+    return (data[0].value / 100) * circumference * progress.value;
+  });
 
-  const createArc = (startAngle: number, angleDiff: number, isClockwise: boolean) => {
-    const r1 = 50; // outer radius
-    const r2 = 20; // inner radius
-    const cx = 50;
-    const cy = 50;
+  const segment2Length = useDerivedValue(() => {
+    return (data[1].value / 100) * circumference * progress.value;
+  });
 
-    // Convert angles to radians and adjust for SVG coordinate system
-    const start = (startAngle - 90) * Math.PI / 180;
-    const end = (startAngle + (isClockwise ? angleDiff : -angleDiff) - 90) * Math.PI / 180;
+  const animatedProps1 = useAnimatedProps(() => ({
+    strokeDasharray: `${segment1Length.value} ${circumference}`,
+    strokeDashoffset: 0,
+    transform: [{ rotate: '-90deg' }],
+  }));
 
-    // Calculate points
-    const x1 = cx + r1 * Math.cos(start);
-    const y1 = cy + r1 * Math.sin(start);
-    const x2 = cx + r1 * Math.cos(end);
-    const y2 = cy + r1 * Math.sin(end);
-    const x3 = cx + r2 * Math.cos(end);
-    const y3 = cy + r2 * Math.sin(end);
-    const x4 = cx + r2 * Math.cos(start);
-    const y4 = cy + r2 * Math.sin(start);
-
-    const largeArc = Math.abs(angleDiff) > 180 ? 1 : 0;
-    const sweep = isClockwise ? 1 : 0;
-
-    return [
-      `M ${x1} ${y1}`,
-      `A ${r1} ${r1} 0 ${largeArc} ${sweep} ${x2} ${y2}`,
-      `L ${x3} ${y3}`,
-      `A ${r2} ${r2} 0 ${largeArc} ${1-sweep} ${x4} ${y4}`,
-      'Z'
-    ].join(' ');
-  };
-
-  const renderPieSegments = () => {
-    const angle1 = (data[0].value / 100) * 360 * (progress / 100);
-    const angle2 = (data[1].value / 100) * 360 * (progress / 100);
-
-    return (
-      <>
-        <path
-          d={createArc(0, angle1, true)}
-          fill={data[0].color}
-          className="transition-[d] duration-75 ease-out"
-        />
-        <path
-          d={createArc(0, angle2, false)}
-          fill={data[1].color}
-          className="transition-[d] duration-75 ease-out"
-        />
-      </>
-    );
-  };
+  const animatedProps2 = useAnimatedProps(() => ({
+    strokeDasharray: `${segment2Length.value} ${circumference}`,
+    strokeDashoffset: -circumference + segment2Length.value,
+    transform: [{ rotate: '90deg' }],
+  }));
 
   return (
-    <div className="w-full max-w-md p-4">
-      <div className="relative">
-        <svg viewBox="0 0 100 100" className="w-full">
-          {renderPieSegments()}
-        </svg>
-      </div>
-      
-      <div className="mt-4 flex justify-center space-x-8">
-        {data.map((segment, index) => (
-          <div key={index} className="flex items-center space-x-2">
-            <div 
-              className="w-4 h-4 rounded" 
-              style={{ backgroundColor: segment.color }}
-            ></div>
-            <span className="font-medium">
-              {segment.label}: {scrambledValues[index].toFixed(0)}%
-            </span>
-          </div>
+    <View style={styles.wrapper}>
+      <View style={[styles.container, { width: size, height: size }]}>
+        <Svg width={size} height={size} style={styles.svg}>
+          <AnimatedCircle
+            cx={center}
+            cy={center}
+            r={radius}
+            stroke={data[0].color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            animatedProps={animatedProps1}
+            originX={center}
+            originY={center}
+            strokeLinecap="butt"
+          />
+          <AnimatedCircle
+            cx={center}
+            cy={center}
+            r={radius}
+            stroke={data[1].color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            animatedProps={animatedProps2}
+            originX={center}
+            originY={center}
+            strokeLinecap="butt"
+          />
+        </Svg>
+      </View>
+
+      <View style={styles.legendContainer}>
+        {data.map((item, index) => (
+          <View key={item.label} style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: item.color }]} />
+            <Text style={styles.legendText}>
+              {item.label} ({item.value}%)
+            </Text>
+          </View>
         ))}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 
-export default AnimatedPieChart;
+const styles = StyleSheet.create({
+  wrapper: {
+    alignItems: 'center',
+  },
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  svg: {
+    transform: [{ rotate: '90deg' }],
+  },
+  legendContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  colorBox: {
+    width: 16,
+    height: 16,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#334155',
+  },
+});
+
+export default AnimatedDonutChart;

@@ -34,9 +34,9 @@ export default function Results() {
   ];
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1, padding: 16 }}>
-        <PieChart data={data} />
+    <View className="flex-1">
+      <ScrollView className="items-center flex-1 p-6">
+        <PieChart data={data} size={200} strokeWidth={25} />
       </ScrollView>
     </View>
   );
