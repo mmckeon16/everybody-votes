@@ -6,8 +6,10 @@ interface Option {
 
 interface QuestionFormProps {
   question: string;
+  description?: string;
   options: Option[];
   onSubmit: (selectedOption: Option) => void;
+  submitText?: string;
 }
 
 // QuestionForm.tsx
@@ -21,12 +23,15 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '~/components/ui/card';
 
 export const QuestionForm: React.FC<QuestionFormProps> = ({
   question,
   options,
   onSubmit,
+  submitText = 'Vote',
+  description = '',
 }) => {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
@@ -41,6 +46,9 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
       <Card className="w-full max-w-sm p-2 rounded-2xl">
         <CardHeader className="items-center">
           <CardTitle className="pb-2 text-center">{question}</CardTitle>
+          <CardDescription className="text-base font-semibold">
+            {description}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <View className="flex-column justify-around gap-3">
@@ -62,7 +70,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             onPress={handleSubmit}
             disabled={!selectedOption}
           >
-            <Text>Vote</Text>
+            <Text>{submitText}</Text>
           </Button>
         </CardFooter>
       </Card>

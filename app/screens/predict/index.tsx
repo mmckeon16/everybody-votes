@@ -1,16 +1,16 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import {
-  useGetActiveQuestionQuery,
-  useSubmitVoteMutation,
-} from '../../store/api/questionsApi';
+import { useGetActiveQuestionQuery } from '../../store/api/questionsApi';
 import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
 
 export default function Vote() {
   const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
-  const [submitVote, { isLoading: isSubmitting }] = useSubmitVoteMutation();
+  // const [
+  //   submitPrediction,
+  //   { isLoading: isSubmitting },
+  // ] = useSubmitPredictionMutation();
   const router = useRouter();
 
   // TODO handle if activeQuestion is null
@@ -20,11 +20,11 @@ export default function Vote() {
     if (!activeQuestion) return;
 
     try {
-      // await submitVote({
+      // await submitPrediction({
       //   questionId: activeQuestion.id,
       //   optionId: selectedOption.id,
       // }).unwrap();
-      router.push('/screens/predict');
+      router.push('/');
       // Handle success (e.g., show success message, navigate to results)
     } catch (error) {
       // Handle error
@@ -43,10 +43,12 @@ export default function Vote() {
     <View style={{ flex: 1, alignItems: 'center', padding: 15 }}>
       {activeQuestion && (
         <QuestionForm
-          question={activeQuestion.text}
+          question="Which answer do you think will be the most popular?"
+          description={activeQuestion.text}
           options={activeQuestion.options}
           onSubmit={handleSubmit}
           // disabled={isSubmitting}
+          submitText="Predict"
         />
       )}
     </View>

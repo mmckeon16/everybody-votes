@@ -61,6 +61,15 @@ export default function Screen() {
           </CardFooter>
         </Card>
       )}
+      <Button
+        variant="outline"
+        className="shadow shadow-foreground/5"
+        onPress={() => {
+          router.push('/screens/results');
+        }}
+      >
+        <Text>Results</Text>
+      </Button>
     </View>
   );
 }

@@ -5,43 +5,38 @@ import { useGetQuestionHistoryQuery } from '../../store/api/questionsApi';
 import { Question } from '../../types';
 import QuestionResults from '../../components/QuestionResults';
 import ThemedText from '../../components/ThemedText';
+import PieChart from '../../components/PieChart';
 
 export default function Results() {
-  const { data: questions, isLoading, error } = useGetQuestionHistoryQuery();
+  // const { data: questions, isLoading, error } = useGetQuestionHistoryQuery();
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  //options and percent for each
 
-  if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ThemedText type="default">Failed to load results</ThemedText>
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
+
+  // if (error) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ThemedText type="default">Failed to load results</ThemedText>
+  //     </View>
+  //   );
+  // }
+
+  const data = [
+    { label: 'Option A', value: 50, color: '#56a5f5' },
+    { label: 'Option B', value: 50, color: '#eb8f49' },
+  ];
 
   return (
     <View style={{ flex: 1 }}>
-      <Stack.Screen
-        options={{
-          title: 'Poll Results',
-          headerStyle: { backgroundColor: 'black' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      />
-
       <ScrollView style={{ flex: 1, padding: 16 }}>
-        {questions?.map((question: Question) => (
-          <View key={question.id} style={{ marginBottom: 16 }}>
-            <QuestionResults question={question} />
-          </View>
-        ))}
+        <PieChart data={data} />
       </ScrollView>
     </View>
   );
