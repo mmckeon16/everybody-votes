@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import { Button } from '~/components/ui/button';
-import { useGetActiveQuestionQuery } from './store/api/questionsApi';
 import { Card, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Progress } from '~/components/ui/progress';
 import { Text } from '~/components/ui/text';
@@ -11,10 +10,11 @@ import {
   getTimeUntilExpiration,
   getTimeRemainingPercentage,
 } from './lib/utils';
+import { useActiveQuestion } from './hooks/useActiveQuestion';
 
 export default function Screen() {
   const router = useRouter();
-  const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
+  const { data: activeQuestion, isLoading } = useActiveQuestion();
 
   // TODO add loading state
   console.log('activeQuestion: ', activeQuestion);
