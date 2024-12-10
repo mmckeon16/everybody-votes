@@ -13,6 +13,11 @@ import ThemedText from '../components/ThemedText';
 import { Picker } from '@react-native-picker/picker';
 // import { countries } from '../constants/countries';
 
+const countries = [
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+];
+
 const STEPS = {
   BASIC_INFO: 1,
   LOCATION: 2,
@@ -100,14 +105,14 @@ export default function CompleteProfile() {
               style={styles.input}
               placeholder="Age"
               value={profileData.age}
-              onChangeText={value =>
+              onChangeText={(value) =>
                 setProfileData({ ...profileData, age: value })
               }
               keyboardType="numeric"
             />
             <Picker
               selectedValue={profileData.gender}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, gender: value })
               }
               style={styles.picker}
@@ -129,35 +134,35 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.countryOrigin}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, countryOrigin: value })
               }
               style={styles.picker}
             >
               <Picker.Item label="Country of Origin" value="" />
-              {/* {countries.map(country => (
+              {countries.map((country) => (
                 <Picker.Item
                   key={country.code}
                   label={country.name}
                   value={country.code}
                 />
-              ))} */}
+              ))}
             </Picker>
             <Picker
               selectedValue={profileData.countryResidence}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, countryResidence: value })
               }
               style={styles.picker}
             >
               <Picker.Item label="Country of Residence" value="" />
-              {/* {countries.map(country => (
+              {countries.map((country) => (
                 <Picker.Item
                   key={country.code}
                   label={country.name}
                   value={country.code}
                 />
-              ))} */}
+              ))}
             </Picker>
           </>
         );
@@ -167,7 +172,7 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.raceEthnicity}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, raceEthnicity: value })
               }
               style={styles.picker}
@@ -186,7 +191,7 @@ export default function CompleteProfile() {
             </Picker>
             <Picker
               selectedValue={profileData.politicalAffiliation}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, politicalAffiliation: value })
               }
               style={styles.picker}
@@ -209,7 +214,7 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.occupation}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, occupation: value })
               }
               style={styles.picker}
@@ -224,7 +229,7 @@ export default function CompleteProfile() {
             </Picker>
             <Picker
               selectedValue={profileData.incomeBracket}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, incomeBracket: value })
               }
               style={styles.picker}

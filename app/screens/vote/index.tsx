@@ -6,6 +6,7 @@ import {
 } from '../../store/api/questionsApi';
 import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
+import { ProtectedRoute } from '~/app/components/ProtectedRoute';
 
 export default function Vote() {
   const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
@@ -37,15 +38,17 @@ export default function Vote() {
   }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', padding: 15 }}>
-      {activeQuestion && (
-        <QuestionForm
-          question={activeQuestion.text}
-          options={activeQuestion.options}
-          onSubmit={handleSubmit}
-          // disabled={isSubmitting}
-        />
-      )}
-    </View>
+    <ProtectedRoute>
+      <View style={{ flex: 1, alignItems: 'center', padding: 15 }}>
+        {activeQuestion && (
+          <QuestionForm
+            question={activeQuestion.text}
+            options={activeQuestion.options}
+            onSubmit={handleSubmit}
+            // disabled={isSubmitting}
+          />
+        )}
+      </View>
+    </ProtectedRoute>
   );
 }

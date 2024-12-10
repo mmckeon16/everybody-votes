@@ -19,6 +19,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
