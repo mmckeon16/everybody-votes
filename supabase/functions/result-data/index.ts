@@ -1,8 +1,3 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
@@ -13,35 +8,42 @@ const supabase = createClient(
 );
 
 Deno.serve(async req => {
-  const { questionId } = await req.json();
-
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
-  console.log('HERE IN RESULTS CALL: ', questionId);
 
   try {
+    // Get questionId from URL path
+    const url = new URL(req.url);
+    const questionId = url.pathname.split('/').pop();
+
+    console.log('HERE IN RESULTS CALL: ', questionId);
+
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+
     const { data: answers, error } = await supabase
       .from('answers')
       .select(
         `
-      id,
-      created_at,
-      options (
         id,
-        text,
-        question_id,
-        questions (
+        created_at,
+        options (
           id,
-          text
+          text,
+          question_id,
+          questions (
+            id,
+            text
+          )
+        ),
+        users (
+          id,
+          email
         )
-      ),
-      users (
-        id,
-        email
-      )
-    `
+      `
       )
       .eq('options.question_id', questionId);
 
@@ -69,15 +71,3 @@ Deno.serve(async req => {
     });
   }
 });
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/result-data' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
