@@ -11,6 +11,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import ThemedText from '../components/ThemedText';
 import { Picker } from '@react-native-picker/picker';
+import { useOnboarding } from '../hooks/useOnboarding';
 // import { countries } from '../constants/countries';
 
 const countries = [
@@ -51,6 +52,7 @@ export default function CompleteProfile() {
     occupation: '',
     countryOrigin: '',
   });
+  const { mutateAsync, isPending } = useOnboarding();
 
   const isStepValid = () => {
     switch (currentStep) {
@@ -75,24 +77,18 @@ export default function CompleteProfile() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     try {
-      const { error } = await supabase.from('demographics').insert({
-        user_id: session?.user.id,
-        age: parseInt(profileData.age),
-        gender: profileData.gender,
-        country_residence: profileData.countryResidence,
-        race_ethnicity: profileData.raceEthnicity,
-        income_bracket: profileData.incomeBracket,
-        political_affiliation: profileData.politicalAffiliation,
-        occupation: profileData.occupation,
-        country_origin: profileData.countryOrigin,
+      const submitOnboarding = mutateAsync({
+        profileData,
+        userId: session?.user.id || '',
       });
-
-      if (error) throw error;
       router.replace('/(app)');
     } catch (err) {
-      setError(err.message);
+      console.log(err);
+      setError(
+        err instanceof Error ? err.message : 'An unexpected error occurred'
+      );
     }
   };
 
