@@ -12,16 +12,17 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_ANON_KEY') ?? ''
 );
 
-Deno.serve(async req => {
-  const { questionId } = await req.json();
-
-  // Handle CORS
+Deno.serve(async (req: Request) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
-  console.log('HERE IN RESULTS CALL: ', questionId);
 
   try {
+    const { questionId } = await req.json();
+
+    console.log('HERE IN RESULTS CALL: ', questionId);
+
     const { data: answers, error } = await supabase
       .from('answers')
       .select(
