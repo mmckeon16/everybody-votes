@@ -1,6 +1,3 @@
-import { supabase } from '../supabase';
-import type { Question } from '../../types';
-
 const baseUrl =
   process.env.EXPO_PUBLIC_ENV === 'development'
     ? 'http://127.0.0.1:54321/functions/v1'

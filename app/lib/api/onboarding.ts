@@ -1,4 +1,3 @@
-import { supabase } from '../supabase';
 import type { ProfileData } from '../../types';
 
 const baseUrl =
