@@ -112,6 +112,13 @@ export default function RootLayout() {
                 headerRight: () => <ThemeToggle />,
               }}
             />
+            <Stack.Screen
+              name="screens/thanks/index"
+              options={{
+                title: 'Everybody polls',
+                headerRight: () => <ThemeToggle />,
+              }}
+            />
           </Stack>
           <PortalHost />
         </AuthProvider>

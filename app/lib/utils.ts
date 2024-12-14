@@ -1,4 +1,4 @@
-import { VoteData, AggregatedResults, OptionCount } from '../types';
+import { VoteData, AggregatedResults, OptionPercentage, RGB } from '../types';
 
 /**
  * Formats the time remaining until the given end date
@@ -106,11 +106,14 @@ const aggregateVotes = (data: VoteData[]): AggregatedResults | null => {
     return acc;
   }, {});
 
+  const colorArray = getTwoDistinctColors();
+
   // Convert counts to percentages
-  const options = Object.values(counts).map(option => ({
+  const options = Object.values(counts).map((option, index) => ({
     id: option.id,
     text: option.text,
     percentage: Number(((option.count / totalVotes) * 100).toFixed(1)),
+    color: colorArray[index],
   }));
 
   return {
@@ -118,5 +121,62 @@ const aggregateVotes = (data: VoteData[]): AggregatedResults | null => {
     questionText,
   };
 };
+
+function getColorDistance(color1: RGB, color2: RGB): number {
+  // Calculate Euclidean distance between colors in RGB space
+  const rDiff = color1.r - color2.r;
+  const gDiff = color1.g - color2.g;
+  const bDiff = color1.b - color2.b;
+  return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+}
+
+function rgbToHex(color: RGB): string {
+  const toHex = (n: number) => n.toString(16).padStart(2, '0');
+  return `#${toHex(color.r)}${toHex(color.g)}${toHex(color.b)}`;
+}
+
+function getRandomRGB(): RGB {
+  return {
+    r: Math.floor(Math.random() * 256),
+    g: Math.floor(Math.random() * 256),
+    b: Math.floor(Math.random() * 256),
+  };
+}
+
+function getTwoDistinctColors(): [string, string] {
+  const MIN_DISTANCE = 100; // Minimum color difference threshold
+  const BLACK: RGB = { r: 0, g: 0, b: 0 };
+  const WHITE: RGB = { r: 255, g: 255, b: 255 };
+
+  let color1: RGB;
+  let color2: RGB;
+  let attempts = 0;
+  const MAX_ATTEMPTS = 100;
+
+  do {
+    color1 = getRandomRGB();
+    color2 = getRandomRGB();
+    attempts++;
+
+    // Check if colors are too similar to each other or to black/white
+    const distanceBetweenColors = getColorDistance(color1, color2);
+    const distanceFromBlack1 = getColorDistance(color1, BLACK);
+    const distanceFromBlack2 = getColorDistance(color2, BLACK);
+    const distanceFromWhite1 = getColorDistance(color1, WHITE);
+    const distanceFromWhite2 = getColorDistance(color2, WHITE);
+
+    if (
+      distanceBetweenColors > MIN_DISTANCE &&
+      distanceFromBlack1 > MIN_DISTANCE &&
+      distanceFromBlack2 > MIN_DISTANCE &&
+      distanceFromWhite1 > MIN_DISTANCE &&
+      distanceFromWhite2 > MIN_DISTANCE
+    ) {
+      break;
+    }
+  } while (attempts < MAX_ATTEMPTS);
+
+  return [rgbToHex(color1), rgbToHex(color2)];
+}
 
 export { getTimeUntilExpiration, getTimeRemainingPercentage, aggregateVotes };

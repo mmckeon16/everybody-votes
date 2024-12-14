@@ -45,7 +45,13 @@ export interface OptionPercentage {
   percentage: number;
 }
 
-interface AggregatedResults {
+export interface AggregatedResults {
   options: OptionPercentage[];
   questionText: string;
 }
+
+export type RGB = {
+  r: number;
+  g: number;
+  b: number;
+};

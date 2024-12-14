@@ -24,7 +24,7 @@ export default function Vote() {
       //   questionId: activeQuestion.id,
       //   optionId: selectedOption.id,
       // }).unwrap();
-      router.push('/');
+      router.push('/screens/thanks');
       // Handle success (e.g., show success message, navigate to results)
     } catch (error) {
       // Handle error

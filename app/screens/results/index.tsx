@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useGetResultsForQuestionQuery } from '../../store/api/resultsApi';
 import { Text } from '~/components/ui/text';
 import PieChart from '../../components/PieChart';
@@ -71,21 +71,15 @@ export default function Results() {
     },
   ];
   const aggregateData = aggregateVotes(rawData);
-  console.log('aggregateData: ', aggregateData);
-
-  const data = [
-    { id: 'ksdjp', text: 'Option A', percentage: 50, color: '#56a5f5' },
-    { id: 'hjnv', text: 'Option B', percentage: 50, color: '#eb8f49' },
-  ];
 
   // TODO add in prediction
   return (
     <View className="flex-column items-center overflow-hidden flex-1">
       <Text className="text-2xl text-inherit p-2.5">
-        {aggregateData.questionText}
+        {aggregateData?.questionText}
       </Text>
       <ScrollView className="items-center flex-1 p-6">
-        <PieChart data={aggregateData.options} size={200} strokeWidth={25} />
+        <PieChart data={aggregateData?.options} size={200} strokeWidth={25} />
       </ScrollView>
     </View>
   );
