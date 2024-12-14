@@ -1,20 +1,47 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link, useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase'; // adjust path as needed
 import ThemedText from '../components/ThemedText';
+import { Button } from '~/components/ui/button'; // adjust path if needed
+import { Github, Mail } from 'lucide-react-native'; // assuming you're using lucide icons
 
 export default function SignUp() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { signUp } = useAuth();
   const router = useRouter();
 
-  const handleSignUp = async () => {
+  const signUpWithGoogle = async () => {
     try {
       setError('');
-      await signUp(email, password);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'yourapp://login-callback',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) throw error;
+      router.replace('/auth/complete-profile');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const signUpWithGithub = async () => {
+    try {
+      setError('');
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: 'yourapp://login-callback',
+        },
+      });
+
+      if (error) throw error;
       router.replace('/auth/complete-profile');
     } catch (err: any) {
       setError(err.message);
@@ -33,26 +60,22 @@ export default function SignUp() {
         </ThemedText>
       )}
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
+      <Button
+        onPress={signUpWithGoogle}
+        className="mb-4 flex-row items-center justify-center space-x-2"
+      >
+        <Mail size={20} />
+        <ThemedText type="button">Continue with Google</ThemedText>
+      </Button>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <ThemedText type="button">Sign Up</ThemedText>
-      </TouchableOpacity>
+      <Button
+        onPress={signUpWithGithub}
+        className="mb-4 flex-row items-center justify-center space-x-2"
+        variant="outline"
+      >
+        <Github size={20} />
+        <ThemedText type="button">Continue with GitHub</ThemedText>
+      </Button>
 
       <Link href="/auth/login" asChild>
         <TouchableOpacity style={styles.linkButton}>
@@ -72,20 +95,6 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     marginBottom: 40,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 5,
-  },
-  button: {
-    backgroundColor: '#000',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
   },
   linkButton: {
     marginTop: 20,

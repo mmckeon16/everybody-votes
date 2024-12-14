@@ -1,15 +1,14 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import {
-  useGetActiveQuestionQuery,
-  useSubmitVoteMutation,
-} from '../../store/api/questionsApi';
 import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
+import { ProtectedRoute } from '~/app/components/ProtectedRoute';
+import { useActiveQuestion } from '../../hooks/useActiveQuestion';
+// import { useVote } from '../../hooks/useVote';
 
 export default function Vote() {
-  const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
+  const { data: activeQuestion, isLoading } = useActiveQuestion();
   const [submitVote, { isLoading: isSubmitting }] = useSubmitVoteMutation();
   const router = useRouter();
 
@@ -40,15 +39,19 @@ export default function Vote() {
   }
 
   return (
+    // <ProtectedRoute>
     <View style={{ flex: 1, alignItems: 'center', padding: 15 }}>
       {activeQuestion && (
         <QuestionForm
           question={activeQuestion.text}
           options={activeQuestion.options}
-          onSubmit={handleSubmit}
+          onSubmit={function (selectedOption: Option): void {
+            throw new Error('Function not implemented.');
+          }} // onSubmit={handleSubmit}
           // disabled={isSubmitting}
         />
       )}
     </View>
+    // </ProtectedRoute>
   );
 }

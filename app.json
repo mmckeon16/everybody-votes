@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "yourapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -15,7 +15,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "yourapp",
+              "host": "login-callback"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

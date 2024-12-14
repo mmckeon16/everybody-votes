@@ -1,14 +1,20 @@
 import React from 'react';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
-import { useGetResultsForQuestionQuery } from '../../store/api/resultsApi';
-import { Text } from '~/components/ui/text';
+
+import { Stack } from 'expo-router';
+import { Question } from '../../types';
+import QuestionResults from '../../components/QuestionResults';
 import PieChart from '../../components/PieChart';
+import { useResults } from '../../hooks/useResults';
+import { Text } from '~/components/ui/text';
 import { aggregateVotes } from '../../lib/utils';
 
 export default function Results() {
-  const { data: results, isLoading, error } = useGetResultsForQuestionQuery({
-    questionId: 'your-question-id',
-  });
+  const {
+    data: results,
+    isLoading,
+    error,
+  } = useResults('123e4567-e89b-12d3-a456-426614174000');
   console.log(results);
 
   //options and percent for each

@@ -10,8 +10,7 @@ import {
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from './context/AuthContext';
-import { Provider } from 'react-redux';
-import { store } from './store/store';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
@@ -19,6 +18,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -36,6 +36,8 @@ export {
 
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
@@ -73,7 +75,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
           <Stack>
@@ -115,7 +117,7 @@ export default function RootLayout() {
           </Stack>
           <PortalHost />
         </AuthProvider>
-      </Provider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
