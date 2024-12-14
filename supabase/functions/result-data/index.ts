@@ -1,6 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from '../_shared/cors';
+import { corsHeaders } from '../_shared/cors.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -18,7 +18,6 @@ Deno.serve(async (req: Request) => {
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/');
     const questionId = pathParts[pathParts.length - 1];
-
 
     if (!questionId) {
       throw new Error('questionId is required');
@@ -50,7 +49,6 @@ Deno.serve(async (req: Request) => {
       )
       .eq('id', questionId)
       .single();
-
 
     if (error) throw error;
     console.log('Question Data:', questionData);
