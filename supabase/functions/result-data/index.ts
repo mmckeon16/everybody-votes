@@ -1,6 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from '../_shared/cors';
+import { corsHeaders } from '../_shared/cors.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -14,23 +14,25 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    // Get questionId from URL path
+    // Extract questionId from URL path
     const url = new URL(req.url);
-    const questionId = url.pathname.split('/').pop();
-
-    console.log('HERE IN RESULTS CALL: ', questionId);
+    const pathParts = url.pathname.split('/');
+    const questionId = pathParts[pathParts.length - 1];
 
     if (!questionId) {
-      throw new Error('Question ID is required');
+      throw new Error('questionId is required');
     }
 
-    const { data: answers, error } = await supabase
-      .from('answers')
+    console.log('Question ID:', questionId);
+
+    // Get question and options
+    const { data: questionData, error } = await supabase
+      .from('questions')
       .select(
         `
         id,
-        created_at,
-        options (
+        text,
+        options!inner (
           id,
           text,
           question_id,
@@ -45,26 +47,65 @@ Deno.serve(async (req: Request) => {
         )
       `
       )
-      .eq('options.question_id', questionId);
+      .eq('id', questionId)
+      .single();
 
-    if (error) {
-      console.error('Database error:', error);
-      throw error;
-    }
+    if (error) throw error;
+    console.log('Question Data:', questionData);
 
-    if (!answers) {
-      console.log('No answers found');
-      return new Response(JSON.stringify({ message: 'No answers found' }), {
-        status: 404,
+    // Get all answers for this question's options
+    const { data: answers, error: answersError } = await supabase
+      .from('answers')
+      .select('*');
+    // .select('option_id')
+    // .in(
+    //   'option_id',
+    //   questionData.options.map((opt) => opt.id)
+    // );
+
+    console.log('Answers:', answers);
+
+    if (answersError) throw answersError;
+
+    // Count votes manually
+    const voteCounts = answers.reduce(
+      (counts: Record<string, number>, answer: { option_id: string }) => {
+        counts[answer.option_id] = (counts[answer.option_id] || 0) + 1;
+        return counts;
+      },
+      {}
+    );
+    console.log('Vote Counts:', voteCounts);
+
+    const totalVotes = Object.values(voteCounts).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+    console.log('Total Votes:', totalVotes);
+    const results = questionData.options.map((option) => ({
+      optionId: option.id,
+      text: option.text,
+      votes: voteCounts[option.id] || 0,
+      percentage:
+        totalVotes > 0 ? ((voteCounts[option.id] || 0) / totalVotes) * 100 : 0,
+    }));
+    console.log('Results:', results);
+
+    return new Response(
+      JSON.stringify({
+        results,
+        totalVotes,
+        question: {
+          id: questionData.id,
+          text: questionData.text,
+        },
+      }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Successfully fetched answers:', answers);
-    return new Response(JSON.stringify(answers), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      }
+    );
   } catch (error) {
+    console.error('Function error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

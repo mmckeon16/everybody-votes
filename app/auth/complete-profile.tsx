@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -11,7 +11,13 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import ThemedText from '../components/ThemedText';
 import { Picker } from '@react-native-picker/picker';
+import { useOnboarding } from '../hooks/useOnboarding';
 // import { countries } from '../constants/countries';
+
+const countries = [
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+];
 
 const STEPS = {
   BASIC_INFO: 1,
@@ -46,6 +52,34 @@ export default function CompleteProfile() {
     occupation: '',
     countryOrigin: '',
   });
+  const { mutateAsync, isPending } = useOnboarding();
+
+  useEffect(() => {
+    const prefillUserData = async () => {
+      if (session?.user) {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          // Get user metadata from social provider
+          const metadata = user.user_metadata;
+
+          setProfileData((prev) => ({
+            ...prev,
+            // Pre-fill data if available from social provider
+            countryResidence:
+              metadata?.location?.country_code || prev.countryResidence,
+            occupation: metadata?.occupation || prev.occupation,
+            // Add any other fields that might come from social login
+          }));
+        }
+      }
+    };
+
+    prefillUserData();
+  }, [session]);
 
   const isStepValid = () => {
     switch (currentStep) {
@@ -72,22 +106,50 @@ export default function CompleteProfile() {
 
   const handleSubmit = async () => {
     try {
-      const { error } = await supabase.from('demographics').insert({
-        user_id: session?.user.id,
-        age: parseInt(profileData.age),
-        gender: profileData.gender,
-        country_residence: profileData.countryResidence,
-        race_ethnicity: profileData.raceEthnicity,
-        income_bracket: profileData.incomeBracket,
-        political_affiliation: profileData.politicalAffiliation,
-        occupation: profileData.occupation,
-        country_origin: profileData.countryOrigin,
+      // First update auth metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: {
+          completed_profile: true,
+          ...profileData,
+        },
       });
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // Then submit to your onboarding mutation
+      await mutateAsync({
+        profileData,
+        userId: session?.user.id || '',
+      });
+
       router.replace('/(app)');
     } catch (err) {
-      setError(err.message);
+      console.log(err);
+      setError(
+        err instanceof Error ? err.message : 'An unexpected error occurred'
+      );
+    }
+  };
+
+  const handleSkip = async () => {
+    try {
+      // Mark profile as completed even with minimal data
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: {
+          completed_profile: true,
+          // Include only required fields
+          countryResidence: profileData.countryResidence,
+          age: profileData.age,
+        },
+      });
+
+      if (updateError) throw updateError;
+
+      router.replace('/(app)');
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'An unexpected error occurred'
+      );
     }
   };
 
@@ -100,14 +162,14 @@ export default function CompleteProfile() {
               style={styles.input}
               placeholder="Age"
               value={profileData.age}
-              onChangeText={value =>
+              onChangeText={(value) =>
                 setProfileData({ ...profileData, age: value })
               }
               keyboardType="numeric"
             />
             <Picker
               selectedValue={profileData.gender}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, gender: value })
               }
               style={styles.picker}
@@ -129,35 +191,35 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.countryOrigin}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, countryOrigin: value })
               }
               style={styles.picker}
             >
               <Picker.Item label="Country of Origin" value="" />
-              {/* {countries.map(country => (
+              {countries.map((country) => (
                 <Picker.Item
                   key={country.code}
                   label={country.name}
                   value={country.code}
                 />
-              ))} */}
+              ))}
             </Picker>
             <Picker
               selectedValue={profileData.countryResidence}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, countryResidence: value })
               }
               style={styles.picker}
             >
               <Picker.Item label="Country of Residence" value="" />
-              {/* {countries.map(country => (
+              {countries.map((country) => (
                 <Picker.Item
                   key={country.code}
                   label={country.name}
                   value={country.code}
                 />
-              ))} */}
+              ))}
             </Picker>
           </>
         );
@@ -167,7 +229,7 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.raceEthnicity}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, raceEthnicity: value })
               }
               style={styles.picker}
@@ -186,7 +248,7 @@ export default function CompleteProfile() {
             </Picker>
             <Picker
               selectedValue={profileData.politicalAffiliation}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, politicalAffiliation: value })
               }
               style={styles.picker}
@@ -209,7 +271,7 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.occupation}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, occupation: value })
               }
               style={styles.picker}
@@ -224,7 +286,7 @@ export default function CompleteProfile() {
             </Picker>
             <Picker
               selectedValue={profileData.incomeBracket}
-              onValueChange={value =>
+              onValueChange={(value) =>
                 setProfileData({ ...profileData, incomeBracket: value })
               }
               style={styles.picker}
@@ -244,6 +306,42 @@ export default function CompleteProfile() {
         );
     }
   };
+
+  const renderButtons = () => (
+    <View style={styles.buttonContainer}>
+      {currentStep > 1 && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setCurrentStep(currentStep - 1)}
+        >
+          <ThemedText type="button">Previous</ThemedText>
+        </TouchableOpacity>
+      )}
+
+      {currentStep < Object.keys(STEPS).length ? (
+        <>
+          <TouchableOpacity
+            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
+            onPress={() => setCurrentStep(currentStep + 1)}
+            disabled={!isStepValid()}
+          >
+            <ThemedText type="button">Next</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.skipButton]} onPress={handleSkip}>
+            <ThemedText type="button">Skip for now</ThemedText>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <TouchableOpacity
+          style={[styles.button, !isStepValid() && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={!isStepValid()}
+        >
+          <ThemedText type="button">Complete</ThemedText>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -268,34 +366,7 @@ export default function CompleteProfile() {
 
       {renderStep()}
 
-      <View style={styles.buttonContainer}>
-        {currentStep > 1 && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setCurrentStep(currentStep - 1)}
-          >
-            <ThemedText type="button">Previous</ThemedText>
-          </TouchableOpacity>
-        )}
-
-        {currentStep < Object.keys(STEPS).length ? (
-          <TouchableOpacity
-            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
-            onPress={() => setCurrentStep(currentStep + 1)}
-            disabled={!isStepValid()}
-          >
-            <ThemedText type="button">Next</ThemedText>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
-            onPress={handleSubmit}
-            disabled={!isStepValid()}
-          >
-            <ThemedText type="button">Complete</ThemedText>
-          </TouchableOpacity>
-        )}
-      </View>
+      {renderButtons()}
     </ScrollView>
   );
 }
@@ -349,5 +420,14 @@ const styles = StyleSheet.create({
   error: {
     marginBottom: 20,
     textAlign: 'center',
+  },
+  skipButton: {
+    padding: 15,
+    borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#000',
   },
 });

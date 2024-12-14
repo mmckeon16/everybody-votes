@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useGetActiveQuestionQuery } from '../../store/api/questionsApi';
+import { useActiveQuestion } from '../../hooks/useActiveQuestion';
 import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
 
 export default function Vote() {
-  const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
+  const { data: activeQuestion, isLoading } = useActiveQuestion();
   // const [
   //   submitPrediction,
   //   { isLoading: isSubmitting },
