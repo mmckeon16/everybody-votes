@@ -19,52 +19,79 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { questionId } = await req.json();
+    // Extract questionId from URL path
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split('/');
+    const questionId = pathParts[pathParts.length - 1];
 
-    console.log('HERE IN RESULTS CALL: ', questionId);
+    if (!questionId) {
+      throw new Error('questionId is required');
+    }
 
-    const { data: answers, error } = await supabase
-      .from('answers')
+    console.log('Question ID:', questionId);
+
+    const { data: questionData, error } = await supabase
+      .from('questions')
       .select(
         `
-      id,
-      created_at,
-      options (
         id,
         text,
-        question_id,
-        questions (
+        options!inner (
           id,
           text
         )
-      ),
-      users (
-        id,
-        email
+      `
       )
-    `
+      .eq('id', questionId)
+      .single();
+
+    if (error) throw error;
+
+    const { data: voteCounts, error: countError } = await supabase
+      .from('answers')
+      .select('option_id, count(*)')
+      .in(
+        'option_id',
+        questionData.options.map((opt) => opt.id)
       )
-      .eq('options.question_id', questionId);
+      .group('option_id'); // This groups and counts rows by `option_id`.
 
-    if (error) {
-      console.error('Database error:', error);
-      throw error;
-    }
+    if (countError) throw countError;
 
-    if (!answers) {
-      console.log('No answers found');
-      return new Response(JSON.stringify({ message: 'No answers found' }), {
-        status: 404,
+    // Transform the data
+    const voteMap = Object.fromEntries(
+      voteCounts.map((vc) => [vc.option_id, parseInt(vc.count)])
+    );
+
+    const totalVotes = Object.values(voteMap).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
+    const results = questionData.options.map((option) => ({
+      optionId: option.id,
+      text: option.text,
+      votes: voteMap[option.id] || 0,
+      percentage:
+        totalVotes > 0 ? ((voteMap[option.id] || 0) / totalVotes) * 100 : 0,
+    }));
+
+    return new Response(
+      JSON.stringify({
+        results,
+        totalVotes,
+        question: {
+          id: questionData.id,
+          text: questionData.text,
+        },
+      }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Successfully fetched answers:', answers);
-    return new Response(JSON.stringify(answers), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      }
+    );
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('Function error:', error);
+    return new Response(JSON.stringify({ error: error?.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

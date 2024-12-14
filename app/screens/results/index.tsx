@@ -9,7 +9,11 @@ import PieChart from '../../components/PieChart';
 import { useResults } from '../../hooks/useResults';
 
 export default function Results() {
-  const { data: results, isLoading, error } = useResults('your-question-id');
+  const {
+    data: results,
+    isLoading,
+    error,
+  } = useResults('123e4567-e89b-12d3-a456-426614174000');
   console.log(results);
 
   //options and percent for each
