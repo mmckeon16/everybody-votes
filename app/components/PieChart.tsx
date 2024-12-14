@@ -11,8 +11,8 @@ import Animated, {
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface DataItem {
-  label: string;
-  value: number;
+  text: string;
+  percentage: number;
   color: string;
 }
 
@@ -39,7 +39,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       return;
     }
 
-    const sum = data[0].value + data[1].value;
+    const sum = data[0].percentage + data[1].percentage;
     if (Math.abs(sum - 100) > 0.1) {
       console.warn('Values must sum to 100');
       return;
@@ -54,11 +54,11 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   }, [data]);
 
   const segment1Length = useDerivedValue(() => {
-    return (data[0].value / 100) * circumference * progress.value;
+    return (data[0].percentage / 100) * circumference * progress.value;
   });
 
   const segment2Length = useDerivedValue(() => {
-    return (data[1].value / 100) * circumference * progress.value;
+    return (data[1].percentage / 100) * circumference * progress.value;
   });
 
   const animatedProps1 = useAnimatedProps(() => ({
@@ -81,7 +81,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
             cx={center}
             cy={center}
             r={radius}
-            stroke={data[0].color}
+            stroke="#56a5f5" //{data[0].color}
             strokeWidth={strokeWidth}
             fill="none"
             animatedProps={animatedProps1}
@@ -93,7 +93,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
             cx={center}
             cy={center}
             r={radius}
-            stroke={data[1].color}
+            stroke="#eb8f49" //{data[1].color}
             strokeWidth={strokeWidth}
             fill="none"
             animatedProps={animatedProps2}
@@ -106,10 +106,10 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
 
       <View style={styles.legendContainer}>
         {data.map((item, index) => (
-          <View key={item.label} style={styles.legendItem}>
+          <View key={item.text} style={styles.legendItem}>
             <View style={[styles.colorBox, { backgroundColor: item.color }]} />
             <Text style={styles.legendText}>
-              {item.label} ({item.value}%)
+              {item.text} ({item.percentage}%)
             </Text>
           </View>
         ))}
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   legendContainer: {
     marginTop: 20,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     gap: 20,
   },
   legendItem: {

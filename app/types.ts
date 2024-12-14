@@ -20,3 +20,32 @@ export interface Question {
   totalVotes: number;
   results: OptionResult[];
 }
+
+export interface QuestionInResult {
+  id: string;
+  text: string;
+}
+
+export interface OptionInVoteData {
+  id: string;
+  text: string;
+  question_id: string;
+  questions: QuestionInResult;
+}
+
+export interface VoteData {
+  id: string;
+  created_at: string;
+  options: OptionInVoteData;
+}
+
+export interface OptionPercentage {
+  id: string;
+  text: string;
+  percentage: number;
+}
+
+interface AggregatedResults {
+  options: OptionPercentage[];
+  questionText: string;
+}

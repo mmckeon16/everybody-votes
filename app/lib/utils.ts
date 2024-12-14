@@ -1,3 +1,5 @@
+import { VoteData, AggregatedResults, OptionCount } from '../types';
+
 /**
  * Formats the time remaining until the given end date
  * @param {string} endDateStr - End date string in any format parseable by Date constructor
@@ -80,4 +82,41 @@ const getTimeRemainingPercentage = (
   return percentageRemaining;
 };
 
-export { getTimeUntilExpiration, getTimeRemainingPercentage };
+const aggregateVotes = (data: VoteData[]): AggregatedResults | null => {
+  if (!data || data.length === 0) return null;
+
+  const questionText = data[0].options.questions.text;
+  const totalVotes = data.length;
+
+  // First pass to count votes
+  const counts = data.reduce<
+    Record<string, { id: string; text: string; count: number }>
+  >((acc, item) => {
+    const option = item.options;
+
+    if (!acc[option.id]) {
+      acc[option.id] = {
+        id: option.id,
+        text: option.text,
+        count: 0,
+      };
+    }
+
+    acc[option.id].count++;
+    return acc;
+  }, {});
+
+  // Convert counts to percentages
+  const options = Object.values(counts).map(option => ({
+    id: option.id,
+    text: option.text,
+    percentage: Number(((option.count / totalVotes) * 100).toFixed(1)),
+  }));
+
+  return {
+    options,
+    questionText,
+  };
+};
+
+export { getTimeUntilExpiration, getTimeRemainingPercentage, aggregateVotes };
