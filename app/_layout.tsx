@@ -121,10 +121,17 @@ export default function RootLayout() {
                 headerRight: () => <ThemeToggle />,
               }}
             />
+            <Stack.Screen
+              name="auth/complete-profile"
+              options={{
+                title: 'Everybody polls',
+                headerRight: () => <ThemeToggle />,
+              }}
+            />
           </Stack>
-          <PortalHost />
         </AuthProvider>
       </QueryClientProvider>
+      <PortalHost />
     </ThemeProvider>
   );
 }

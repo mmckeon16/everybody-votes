@@ -50,6 +50,22 @@ export interface AggregatedResults {
   questionText: string;
 }
 
+export interface ProfileData {
+  age: string;
+  gender: string;
+  countryResidence: string;
+  raceEthnicity: string;
+  incomeBracket: string;
+  politicalAffiliation: string;
+  occupation: string;
+  countryOrigin: string;
+}
+
+export interface StepProps {
+  profileData: ProfileData;
+  setProfileData: (data: ProfileData) => void;
+}
+
 export type RGB = {
   r: number;
   g: number;

@@ -70,6 +70,15 @@ export default function Screen() {
       >
         <Text>Results</Text>
       </Button>
+      <Button
+        variant="outline"
+        className="shadow shadow-foreground/5"
+        onPress={() => {
+          router.push('/auth/complete-profile');
+        }}
+      >
+        <Text>signup flow</Text>
+      </Button>
     </View>
   );
 }

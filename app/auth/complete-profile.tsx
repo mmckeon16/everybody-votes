@@ -6,12 +6,17 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import { Progress } from '~/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { Text } from '~/components/ui/text';
+import { Button } from '~/components/ui/button';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import ThemedText from '../components/ThemedText';
 import { Picker } from '@react-native-picker/picker';
 import { useOnboarding } from '../hooks/useOnboarding';
+import Age from './components/age';
+import Gender from './components/gender';
+import { ProfileData } from '../types';
 // import { countries } from '../constants/countries';
 
 const countries = [
@@ -20,22 +25,12 @@ const countries = [
 ];
 
 const STEPS = {
-  BASIC_INFO: 1,
-  LOCATION: 2,
-  DEMOGRAPHICS: 3,
-  SOCIOECONOMIC: 4,
+  AGE: 1,
+  GENDER: 2,
+  LOCATION: 3,
+  DEMOGRAPHICS: 4,
+  SOCIOECONOMIC: 5,
 };
-
-interface ProfileData {
-  age: string;
-  gender: string;
-  countryResidence: string;
-  raceEthnicity: string;
-  incomeBracket: string;
-  politicalAffiliation: string;
-  occupation: string;
-  countryOrigin: string;
-}
 
 export default function CompleteProfile() {
   const { session } = useAuth();
@@ -66,7 +61,7 @@ export default function CompleteProfile() {
           // Get user metadata from social provider
           const metadata = user.user_metadata;
 
-          setProfileData((prev) => ({
+          setProfileData(prev => ({
             ...prev,
             // Pre-fill data if available from social provider
             countryResidence:
@@ -83,8 +78,10 @@ export default function CompleteProfile() {
 
   const isStepValid = () => {
     switch (currentStep) {
-      case STEPS.BASIC_INFO:
-        return profileData.age !== '' && profileData.gender !== '';
+      case STEPS.AGE:
+        return profileData.age !== '';
+      case STEPS.GENDER:
+        return profileData.gender !== '';
       case STEPS.LOCATION:
         return (
           profileData.countryResidence !== '' &&
@@ -155,35 +152,13 @@ export default function CompleteProfile() {
 
   const renderStep = () => {
     switch (currentStep) {
-      case STEPS.BASIC_INFO:
+      case STEPS.AGE:
         return (
-          <>
-            <TextInput
-              style={styles.input}
-              placeholder="Age"
-              value={profileData.age}
-              onChangeText={(value) =>
-                setProfileData({ ...profileData, age: value })
-              }
-              keyboardType="numeric"
-            />
-            <Picker
-              selectedValue={profileData.gender}
-              onValueChange={(value) =>
-                setProfileData({ ...profileData, gender: value })
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Select Gender" value="" />
-              <Picker.Item label="Male" value="male" />
-              <Picker.Item label="Female" value="female" />
-              <Picker.Item label="Non-binary" value="non-binary" />
-              <Picker.Item
-                label="Prefer not to say"
-                value="prefer-not-to-say"
-              />
-            </Picker>
-          </>
+          <Age profileData={profileData} setProfileData={setProfileData} />
+        );
+      case STEPS.GENDER:
+        return (
+          <Gender profileData={profileData} setProfileData={setProfileData} />
         );
 
       case STEPS.LOCATION:
@@ -191,13 +166,13 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.countryOrigin}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 setProfileData({ ...profileData, countryOrigin: value })
               }
               style={styles.picker}
             >
               <Picker.Item label="Country of Origin" value="" />
-              {countries.map((country) => (
+              {countries.map(country => (
                 <Picker.Item
                   key={country.code}
                   label={country.name}
@@ -207,13 +182,13 @@ export default function CompleteProfile() {
             </Picker>
             <Picker
               selectedValue={profileData.countryResidence}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 setProfileData({ ...profileData, countryResidence: value })
               }
               style={styles.picker}
             >
               <Picker.Item label="Country of Residence" value="" />
-              {countries.map((country) => (
+              {countries.map(country => (
                 <Picker.Item
                   key={country.code}
                   label={country.name}
@@ -229,7 +204,7 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.raceEthnicity}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 setProfileData({ ...profileData, raceEthnicity: value })
               }
               style={styles.picker}
@@ -248,7 +223,7 @@ export default function CompleteProfile() {
             </Picker>
             <Picker
               selectedValue={profileData.politicalAffiliation}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 setProfileData({ ...profileData, politicalAffiliation: value })
               }
               style={styles.picker}
@@ -271,7 +246,7 @@ export default function CompleteProfile() {
           <>
             <Picker
               selectedValue={profileData.occupation}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 setProfileData({ ...profileData, occupation: value })
               }
               style={styles.picker}
@@ -286,7 +261,7 @@ export default function CompleteProfile() {
             </Picker>
             <Picker
               selectedValue={profileData.incomeBracket}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 setProfileData({ ...profileData, incomeBracket: value })
               }
               style={styles.picker}
@@ -309,63 +284,54 @@ export default function CompleteProfile() {
 
   const renderButtons = () => (
     <View style={styles.buttonContainer}>
-      {currentStep > 1 && (
-        <TouchableOpacity
-          style={styles.button}
+      {currentStep > 1 ? (
+        <Button
+          variant="outline"
+          className="shadow shadow-foreground/5"
           onPress={() => setCurrentStep(currentStep - 1)}
         >
-          <ThemedText type="button">Previous</ThemedText>
-        </TouchableOpacity>
+          <Text>Previous</Text>
+        </Button>
+      ) : (
+        <View />
       )}
 
       {currentStep < Object.keys(STEPS).length ? (
         <>
-          <TouchableOpacity
-            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
+          <Button
+            variant="outline"
+            className="shadow shadow-foreground/5"
             onPress={() => setCurrentStep(currentStep + 1)}
             disabled={!isStepValid()}
           >
-            <ThemedText type="button">Next</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.skipButton]} onPress={handleSkip}>
-            <ThemedText type="button">Skip for now</ThemedText>
-          </TouchableOpacity>
+            <Text>Next</Text>
+          </Button>
         </>
       ) : (
-        <TouchableOpacity
-          style={[styles.button, !isStepValid() && styles.buttonDisabled]}
+        <Button
+          variant="outline"
+          className="shadow shadow-foreground/5"
           onPress={handleSubmit}
           disabled={!isStepValid()}
         >
-          <ThemedText type="button">Complete</ThemedText>
-        </TouchableOpacity>
+          <Text>Complete</Text>
+        </Button>
       )}
     </View>
   );
 
   return (
     <ScrollView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        Complete Your Profile
-      </ThemedText>
+      <Text className="text-3xl text-center">Complete Your Profile</Text>
 
-      <View style={styles.progressBar}>
-        <View
-          style={[
-            styles.progress,
-            { width: `${(currentStep / Object.keys(STEPS).length) * 100}%` },
-          ]}
-        />
-      </View>
+      <Progress
+        value={(currentStep / Object.keys(STEPS).length) * 100}
+        className="h-2 my-8"
+        indicatorClassName="bg-sky-600"
+      />
 
-      {error && (
-        <ThemedText type="error" style={styles.error}>
-          {error}
-        </ThemedText>
-      )}
-
+      {error && <Text>{error}</Text>}
       {renderStep()}
-
       {renderButtons()}
     </ScrollView>
   );
