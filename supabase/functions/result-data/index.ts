@@ -30,6 +30,7 @@ Deno.serve(async (req: Request) => {
 
     console.log('Question ID:', questionId);
 
+    // Get question and options
     const { data: questionData, error } = await supabase
       .from('questions')
       .select(
@@ -46,35 +47,45 @@ Deno.serve(async (req: Request) => {
       .single();
 
     if (error) throw error;
+    console.log('Question Data:', questionData);
 
-    const { data: voteCounts, error: countError } = await supabase
+    // Get all answers for this question's options
+    const { data: answers, error: answersError } = await supabase
       .from('answers')
-      .select('option_id, count(*)')
-      .in(
-        'option_id',
-        questionData.options.map((opt) => opt.id)
-      )
-      .group('option_id'); // This groups and counts rows by `option_id`.
+      .select('*');
+    // .select('option_id')
+    // .in(
+    //   'option_id',
+    //   questionData.options.map((opt) => opt.id)
+    // );
 
-    if (countError) throw countError;
+    console.log('Answers:', answers);
 
-    // Transform the data
-    const voteMap = Object.fromEntries(
-      voteCounts.map((vc) => [vc.option_id, parseInt(vc.count)])
+    if (answersError) throw answersError;
+
+    // Count votes manually
+    const voteCounts = answers.reduce(
+      (counts: Record<string, number>, answer: { option_id: string }) => {
+        counts[answer.option_id] = (counts[answer.option_id] || 0) + 1;
+        return counts;
+      },
+      {}
     );
+    console.log('Vote Counts:', voteCounts);
 
-    const totalVotes = Object.values(voteMap).reduce(
+    const totalVotes = Object.values(voteCounts).reduce(
       (sum, count) => sum + count,
       0
     );
-
+    console.log('Total Votes:', totalVotes);
     const results = questionData.options.map((option) => ({
       optionId: option.id,
       text: option.text,
-      votes: voteMap[option.id] || 0,
+      votes: voteCounts[option.id] || 0,
       percentage:
-        totalVotes > 0 ? ((voteMap[option.id] || 0) / totalVotes) * 100 : 0,
+        totalVotes > 0 ? ((voteCounts[option.id] || 0) / totalVotes) * 100 : 0,
     }));
+    console.log('Results:', results);
 
     return new Response(
       JSON.stringify({
@@ -91,7 +102,7 @@ Deno.serve(async (req: Request) => {
     );
   } catch (error) {
     console.error('Function error:', error);
-    return new Response(JSON.stringify({ error: error?.message }), {
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
