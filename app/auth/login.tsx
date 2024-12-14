@@ -1,98 +1,46 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { Link, useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
-import ThemedText from '../components/ThemedText';
+import React from 'react';
+import { View } from 'react-native';
+import { supabase } from '../lib/supabase'; // adjust path as needed
+import { Button } from '~/components/ui/button'; // adjust path as needed
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { signIn } = useAuth();
-  const router = useRouter();
-
-  const handleLogin = async () => {
+  const signInWithGoogle = async () => {
     try {
-      setError('');
-      await signIn(email, password);
-      router.replace('/(app)');
-    } catch (err: any) {
-      setError(err.message);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'yourapp://login-callback', // replace with your app's scheme
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
+  };
+
+  const signInWithGithub = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: 'yourapp://login-callback', // replace with your app's scheme
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error signing in:', error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        Welcome to Everybody Votes
-      </ThemedText>
+    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+      <Button onPress={signInWithGoogle} className="mb-4">
+        Sign in with Google
+      </Button>
 
-      {error && (
-        <ThemedText type="error" style={styles.error}>
-          {error}
-        </ThemedText>
-      )}
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <ThemedText type="button">Sign In</ThemedText>
-      </TouchableOpacity>
-
-      <Link href="/auth/signup" asChild>
-        <TouchableOpacity style={styles.linkButton}>
-          <ThemedText type="link">Don't have an account? Sign up</ThemedText>
-        </TouchableOpacity>
-      </Link>
+      <Button onPress={signInWithGithub}>Sign in with GitHub</Button>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 40,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 5,
-  },
-  button: {
-    backgroundColor: '#000',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  linkButton: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  error: {
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-});

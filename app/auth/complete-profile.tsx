@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -54,6 +54,33 @@ export default function CompleteProfile() {
   });
   const { mutateAsync, isPending } = useOnboarding();
 
+  useEffect(() => {
+    const prefillUserData = async () => {
+      if (session?.user) {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          // Get user metadata from social provider
+          const metadata = user.user_metadata;
+
+          setProfileData((prev) => ({
+            ...prev,
+            // Pre-fill data if available from social provider
+            countryResidence:
+              metadata?.location?.country_code || prev.countryResidence,
+            occupation: metadata?.occupation || prev.occupation,
+            // Add any other fields that might come from social login
+          }));
+        }
+      }
+    };
+
+    prefillUserData();
+  }, [session]);
+
   const isStepValid = () => {
     switch (currentStep) {
       case STEPS.BASIC_INFO:
@@ -77,15 +104,49 @@ export default function CompleteProfile() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
-      const submitOnboarding = mutateAsync({
+      // First update auth metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: {
+          completed_profile: true,
+          ...profileData,
+        },
+      });
+
+      if (updateError) throw updateError;
+
+      // Then submit to your onboarding mutation
+      await mutateAsync({
         profileData,
         userId: session?.user.id || '',
       });
+
       router.replace('/(app)');
     } catch (err) {
       console.log(err);
+      setError(
+        err instanceof Error ? err.message : 'An unexpected error occurred'
+      );
+    }
+  };
+
+  const handleSkip = async () => {
+    try {
+      // Mark profile as completed even with minimal data
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: {
+          completed_profile: true,
+          // Include only required fields
+          countryResidence: profileData.countryResidence,
+          age: profileData.age,
+        },
+      });
+
+      if (updateError) throw updateError;
+
+      router.replace('/(app)');
+    } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unexpected error occurred'
       );
@@ -246,6 +307,42 @@ export default function CompleteProfile() {
     }
   };
 
+  const renderButtons = () => (
+    <View style={styles.buttonContainer}>
+      {currentStep > 1 && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setCurrentStep(currentStep - 1)}
+        >
+          <ThemedText type="button">Previous</ThemedText>
+        </TouchableOpacity>
+      )}
+
+      {currentStep < Object.keys(STEPS).length ? (
+        <>
+          <TouchableOpacity
+            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
+            onPress={() => setCurrentStep(currentStep + 1)}
+            disabled={!isStepValid()}
+          >
+            <ThemedText type="button">Next</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.skipButton]} onPress={handleSkip}>
+            <ThemedText type="button">Skip for now</ThemedText>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <TouchableOpacity
+          style={[styles.button, !isStepValid() && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={!isStepValid()}
+        >
+          <ThemedText type="button">Complete</ThemedText>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
   return (
     <ScrollView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
@@ -269,34 +366,7 @@ export default function CompleteProfile() {
 
       {renderStep()}
 
-      <View style={styles.buttonContainer}>
-        {currentStep > 1 && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setCurrentStep(currentStep - 1)}
-          >
-            <ThemedText type="button">Previous</ThemedText>
-          </TouchableOpacity>
-        )}
-
-        {currentStep < Object.keys(STEPS).length ? (
-          <TouchableOpacity
-            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
-            onPress={() => setCurrentStep(currentStep + 1)}
-            disabled={!isStepValid()}
-          >
-            <ThemedText type="button">Next</ThemedText>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={[styles.button, !isStepValid() && styles.buttonDisabled]}
-            onPress={handleSubmit}
-            disabled={!isStepValid()}
-          >
-            <ThemedText type="button">Complete</ThemedText>
-          </TouchableOpacity>
-        )}
-      </View>
+      {renderButtons()}
     </ScrollView>
   );
 }
@@ -350,5 +420,14 @@ const styles = StyleSheet.create({
   error: {
     marginBottom: 20,
     textAlign: 'center',
+  },
+  skipButton: {
+    padding: 15,
+    borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#000',
   },
 });
