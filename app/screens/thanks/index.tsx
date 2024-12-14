@@ -5,12 +5,12 @@ import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { getTimeUntilExpiration } from '../../lib/utils';
 import LottieView from 'lottie-react-native';
-import { useGetActiveQuestionQuery } from '../../store/api/questionsApi';
+import { useActiveQuestion } from '../../hooks/useActiveQuestion';
 
 export default function Thanks() {
   const router = useRouter();
 
-  const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
+  const { data: activeQuestion, isLoading } = useActiveQuestion();
   const confettiRef = useRef<LottieView>(null);
 
   // confettiRef.current?.play(0);
