@@ -100,6 +100,20 @@ export default function RootLayout() {
                 headerRight: () => <ThemeToggle />,
               }}
             />
+            <Stack.Screen
+              name="screens/predict/index"
+              options={{
+                title: 'Everybody polls',
+                headerRight: () => <ThemeToggle />,
+              }}
+            />
+            <Stack.Screen
+              name="screens/results/index"
+              options={{
+                title: 'Everybody polls',
+                headerRight: () => <ThemeToggle />,
+              }}
+            />
           </Stack>
           <PortalHost />
         </AuthProvider>

@@ -1,48 +1,51 @@
-// import React from 'react';
-// import { View, ScrollView, ActivityIndicator } from 'react-native';
-// import { Stack } from 'expo-router';
-// import { useGetQuestionHistoryQuery } from '../../store/api/questionsApi';
-// import { Question } from '../../types';
-// import QuestionResults from '../../components/QuestionResults';
-// import ThemedText from '../../components/ThemedText';
+import React from 'react';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
+import { useGetResultsForQuestionQuery } from '../../store/api/resultsApi';
 
-// export default function Results() {
-//   const { data: questions, isLoading, error } = useGetQuestionHistoryQuery();
+import { Stack } from 'expo-router';
+import { Question } from '../../types';
+import QuestionResults from '../../components/QuestionResults';
+import ThemedText from '../../components/ThemedText';
+import PieChart from '../../components/PieChart';
 
-//   if (isLoading) {
-//     return (
-//       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//         <ActivityIndicator size="large" />
-//       </View>
-//     );
-//   }
+export default function Results() {
+  const {
+    data: results,
+    isLoading,
+    error,
+  } = useGetResultsForQuestionQuery({
+    questionId: 'your-question-id',
+  });
+  console.log(results);
 
-//   if (error) {
-//     return (
-//       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//         <ThemedText type="default">Failed to load results</ThemedText>
-//       </View>
-//     );
-//   }
+  //options and percent for each
 
-//   return (
-//     <View style={{ flex: 1 }}>
-//       <Stack.Screen
-//         options={{
-//           title: 'Poll Results',
-//           headerStyle: { backgroundColor: 'black' },
-//           headerTintColor: '#fff',
-//           headerTitleStyle: { fontWeight: 'bold' },
-//         }}
-//       />
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
-//       <ScrollView style={{ flex: 1, padding: 16 }}>
-//         {questions?.map((question: Question) => (
-//           <View key={question.id} style={{ marginBottom: 16 }}>
-//             <QuestionResults question={question} />
-//           </View>
-//         ))}
-//       </ScrollView>
-//     </View>
-//   );
-// }
+  // if (error) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ThemedText type="default">Failed to load results</ThemedText>
+  //     </View>
+  //   );
+  // }
+
+  const data = [
+    { label: 'Option A', value: 50, color: '#56a5f5' },
+    { label: 'Option B', value: 50, color: '#eb8f49' },
+  ];
+
+  return (
+    <View className="flex-1">
+      <ScrollView className="items-center flex-1 p-6">
+        <PieChart data={data} size={200} strokeWidth={25} />
+      </ScrollView>
+    </View>
+  );
+}

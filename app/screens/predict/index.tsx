@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useGetActiveQuestionQuery } from '../../store/api/questionsApi';
 import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
-import { ProtectedRoute } from '~/app/components/ProtectedRoute';
-import { useActiveQuestion } from '../../hooks/useActiveQuestion';
-// import { useVote } from '../../hooks/useVote';
 
 export default function Vote() {
-  const { data: activeQuestion, isLoading } = useActiveQuestion();
-  const [submitVote, { isLoading: isSubmitting }] = useSubmitVoteMutation();
+  const { data: activeQuestion, isLoading } = useGetActiveQuestionQuery();
+  // const [
+  //   submitPrediction,
+  //   { isLoading: isSubmitting },
+  // ] = useSubmitPredictionMutation();
   const router = useRouter();
 
   // TODO handle if activeQuestion is null
@@ -19,11 +20,11 @@ export default function Vote() {
     if (!activeQuestion) return;
 
     try {
-      // await submitVote({
+      // await submitPrediction({
       //   questionId: activeQuestion.id,
       //   optionId: selectedOption.id,
       // }).unwrap();
-      router.push('/screens/predict');
+      router.push('/');
       // Handle success (e.g., show success message, navigate to results)
     } catch (error) {
       // Handle error
@@ -39,19 +40,17 @@ export default function Vote() {
   }
 
   return (
-    // <ProtectedRoute>
     <View style={{ flex: 1, alignItems: 'center', padding: 15 }}>
       {activeQuestion && (
         <QuestionForm
-          question={activeQuestion.text}
+          question="Which answer do you think will be the most popular?"
+          description={activeQuestion.text}
           options={activeQuestion.options}
-          onSubmit={function (selectedOption: Option): void {
-            throw new Error('Function not implemented.');
-          }} // onSubmit={handleSubmit}
+          onSubmit={handleSubmit}
           // disabled={isSubmitting}
+          submitText="Predict"
         />
       )}
     </View>
-    // </ProtectedRoute>
   );
 }

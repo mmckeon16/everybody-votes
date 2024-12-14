@@ -20,7 +20,7 @@ export default function Screen() {
   console.log('activeQuestion: ', activeQuestion);
 
   return (
-    <View className="flex-1 items-center gap-5 p-6 bg-secondary/30">
+    <View className="flex-1 items-center gap-5 p-6">
       {isLoading ? (
         <SkeletonCard />
       ) : (
@@ -61,6 +61,15 @@ export default function Screen() {
           </CardFooter>
         </Card>
       )}
+      <Button
+        variant="outline"
+        className="shadow shadow-foreground/5"
+        onPress={() => {
+          router.push('/screens/results');
+        }}
+      >
+        <Text>Results</Text>
+      </Button>
     </View>
   );
 }
