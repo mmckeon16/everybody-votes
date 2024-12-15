@@ -1,7 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Button } from '~/components/ui/button'; // adjust path as needed
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Select,
   SelectContent,
@@ -11,21 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
-import { ProfileData, StepProps } from '../../types';
+import { StepProps } from '../../types';
 
 const Gender: React.FC<StepProps> = ({ setProfileData, profileData }) => {
-  const insets = useSafeAreaInsets();
-  const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
-    left: 12,
-    right: 12,
-  };
   return (
     <View>
       <Select
         className="web:w-full"
-        // value={profileData.gender}
         onValueChange={value =>
           setProfileData({ ...profileData, gender: value })
         }

@@ -16,6 +16,8 @@ import { Picker } from '@react-native-picker/picker';
 import { useOnboarding } from '../hooks/useOnboarding';
 import Age from './components/age';
 import Gender from './components/gender';
+import Location from './components/location';
+
 import { ProfileData } from '../types';
 // import { countries } from '../constants/countries';
 
@@ -163,40 +165,7 @@ export default function CompleteProfile() {
 
       case STEPS.LOCATION:
         return (
-          <>
-            <Picker
-              selectedValue={profileData.countryOrigin}
-              onValueChange={value =>
-                setProfileData({ ...profileData, countryOrigin: value })
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Country of Origin" value="" />
-              {countries.map(country => (
-                <Picker.Item
-                  key={country.code}
-                  label={country.name}
-                  value={country.code}
-                />
-              ))}
-            </Picker>
-            <Picker
-              selectedValue={profileData.countryResidence}
-              onValueChange={value =>
-                setProfileData({ ...profileData, countryResidence: value })
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Country of Residence" value="" />
-              {countries.map(country => (
-                <Picker.Item
-                  key={country.code}
-                  label={country.name}
-                  value={country.code}
-                />
-              ))}
-            </Picker>
-          </>
+          <Location profileData={profileData} setProfileData={setProfileData} />
         );
 
       case STEPS.DEMOGRAPHICS:
