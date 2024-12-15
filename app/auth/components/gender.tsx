@@ -16,7 +16,7 @@ const Gender: React.FC<StepProps> = ({ setProfileData, profileData }) => {
     <View>
       <Select
         className="web:w-full"
-        onValueChange={value =>
+        onValueChange={({ value }) =>
           setProfileData({ ...profileData, gender: value })
         }
       >

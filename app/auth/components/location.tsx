@@ -23,18 +23,18 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
       <Select
         className="web:w-full"
         onValueChange={({ value }) => {
-          setCountryOfOrigin(value);
+          const lowerCaseVal = value.toLowerCase();
+          setCountryOfOrigin(lowerCaseVal);
           if (checkedSameCountry) {
             // then also save
             setProfileData({
               ...profileData,
-              countryOrigin: value,
-              countryResidence: value,
+              countryOrigin: lowerCaseVal,
+              countryResidence: lowerCaseVal,
             });
           } else {
-            setProfileData({ ...profileData, countryOrigin: value });
+            setProfileData({ ...profileData, countryOrigin: lowerCaseVal });
           }
-          console.log('profule: ', profileData);
         }}
       >
         <SelectTrigger>
@@ -82,7 +82,10 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         <Select
           className="web:w-full"
           onValueChange={({ value }) => {
-            setProfileData({ ...profileData, countryResidence: value });
+            setProfileData({
+              ...profileData,
+              countryResidence: value.toLowerCase(),
+            });
           }}
         >
           <SelectTrigger>

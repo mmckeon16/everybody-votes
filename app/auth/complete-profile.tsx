@@ -1,30 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Progress } from '~/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { Picker } from '@react-native-picker/picker';
 import { useOnboarding } from '../hooks/useOnboarding';
 import Age from './components/age';
 import Gender from './components/gender';
 import Location from './components/location';
+import Demographics from './components/demographics';
+import SocioEconomic from './components/socioEconomic';
 
 import { ProfileData } from '../types';
-// import { countries } from '../constants/countries';
-
-const countries = [
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
-];
 
 const STEPS = {
   AGE: 1,
@@ -170,83 +159,18 @@ export default function CompleteProfile() {
 
       case STEPS.DEMOGRAPHICS:
         return (
-          <>
-            <Picker
-              selectedValue={profileData.raceEthnicity}
-              onValueChange={value =>
-                setProfileData({ ...profileData, raceEthnicity: value })
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Race/Ethnicity" value="" />
-              <Picker.Item label="Asian" value="asian" />
-              <Picker.Item label="Black/African" value="black" />
-              <Picker.Item label="Hispanic/Latino" value="hispanic" />
-              <Picker.Item label="White/Caucasian" value="white" />
-              <Picker.Item label="Mixed" value="mixed" />
-              <Picker.Item label="Other" value="other" />
-              <Picker.Item
-                label="Prefer not to say"
-                value="prefer-not-to-say"
-              />
-            </Picker>
-            <Picker
-              selectedValue={profileData.politicalAffiliation}
-              onValueChange={value =>
-                setProfileData({ ...profileData, politicalAffiliation: value })
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Political Affiliation" value="" />
-              <Picker.Item label="Conservative" value="conservative" />
-              <Picker.Item label="Liberal" value="liberal" />
-              <Picker.Item label="Moderate" value="moderate" />
-              <Picker.Item label="Other" value="other" />
-              <Picker.Item
-                label="Prefer not to say"
-                value="prefer-not-to-say"
-              />
-            </Picker>
-          </>
+          <Demographics
+            profileData={profileData}
+            setProfileData={setProfileData}
+          />
         );
 
       case STEPS.SOCIOECONOMIC:
         return (
-          <>
-            <Picker
-              selectedValue={profileData.occupation}
-              onValueChange={value =>
-                setProfileData({ ...profileData, occupation: value })
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Occupation" value="" />
-              <Picker.Item label="Student" value="student" />
-              <Picker.Item label="Professional" value="professional" />
-              <Picker.Item label="Service Worker" value="service" />
-              <Picker.Item label="Self-employed" value="self-employed" />
-              <Picker.Item label="Retired" value="retired" />
-              <Picker.Item label="Other" value="other" />
-            </Picker>
-            <Picker
-              selectedValue={profileData.incomeBracket}
-              onValueChange={value =>
-                setProfileData({ ...profileData, incomeBracket: value })
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Income Bracket" value="" />
-              <Picker.Item label="Under $25,000" value="under-25k" />
-              <Picker.Item label="$25,000 - $49,999" value="25k-50k" />
-              <Picker.Item label="$50,000 - $74,999" value="50k-75k" />
-              <Picker.Item label="$75,000 - $99,999" value="75k-100k" />
-              <Picker.Item label="$100,000+" value="100k-plus" />
-              <Picker.Item
-                label="Prefer not to say"
-                value="prefer-not-to-say"
-              />
-            </Picker>
-          </>
+          <SocioEconomic
+            profileData={profileData}
+            setProfileData={setProfileData}
+          />
         );
     }
   };

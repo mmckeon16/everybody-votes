@@ -198,3 +198,38 @@ export const countries = [
   'Zambia',
   'Zimbabwe',
 ];
+
+export const demographics = [
+  'Asian',
+  'Black/African',
+  'Hispanic/Latino',
+  'White/Caucasian',
+  'Mixed',
+  'Other',
+  'Prefer not to say',
+];
+
+export const politicalParties = [
+  'Conservative',
+  'Liberal',
+  'Moderate',
+  'Other',
+  'Prefer not to say',
+];
+
+export const occupations = [
+  { value: 'Student', label: 'student' },
+  { value: 'Professional', label: 'professional' },
+  { value: 'Service Worker', label: 'service' },
+  { value: 'Self-employed', label: 'self-employed' },
+  { value: 'Retired', label: 'retired' },
+  { value: 'Other', label: 'other' },
+];
+
+export const incomes = [
+  { value: 'Under $25,000', label: 'under-25k' },
+  { value: '$25,000 - $49,999', label: '25k-50k' },
+  { value: '$50,000 - $74,999', label: '50k-75k' },
+  { value: '$75,000 - $99,999', label: '75k-100k' },
+  { value: '$100,000+', label: '100k-plus' },
+];
