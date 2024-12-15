@@ -110,31 +110,9 @@ export default function CompleteProfile() {
         userId: session?.user.id || '',
       });
 
-      router.replace('/(app)');
+      router.push('/auth/celebrate');
     } catch (err) {
       console.log(err);
-      setError(
-        err instanceof Error ? err.message : 'An unexpected error occurred'
-      );
-    }
-  };
-
-  const handleSkip = async () => {
-    try {
-      // Mark profile as completed even with minimal data
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: {
-          completed_profile: true,
-          // Include only required fields
-          countryResidence: profileData.countryResidence,
-          age: profileData.age,
-        },
-      });
-
-      if (updateError) throw updateError;
-
-      router.replace('/(app)');
-    } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unexpected error occurred'
       );
@@ -176,7 +154,7 @@ export default function CompleteProfile() {
   };
 
   const renderButtons = () => (
-    <View style={styles.buttonContainer}>
+    <View className="flex flex-row justify-between mt-5">
       {currentStep > 1 ? (
         <Button
           variant="outline"
@@ -214,7 +192,7 @@ export default function CompleteProfile() {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView className="flex p-5">
       <Text className="text-3xl text-center">Complete Your Profile</Text>
 
       <Progress
@@ -229,64 +207,3 @@ export default function CompleteProfile() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: '#ddd',
-    borderRadius: 2,
-    marginBottom: 30,
-  },
-  progress: {
-    height: '100%',
-    backgroundColor: '#000',
-    borderRadius: 2,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 5,
-  },
-  picker: {
-    marginBottom: 15,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: '#000',
-    padding: 15,
-    borderRadius: 5,
-    flex: 1,
-    marginHorizontal: 5,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  error: {
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  skipButton: {
-    padding: 15,
-    borderRadius: 5,
-    flex: 1,
-    marginHorizontal: 5,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#000',
-  },
-});
