@@ -193,7 +193,7 @@ export default function CompleteProfile() {
 
   return (
     <ScrollView className="flex p-5">
-      <Text className="text-3xl text-center">Complete Your Profile</Text>
+      <Text className="text-2xl text-center">Complete your profile</Text>
 
       <Progress
         value={(currentStep / Object.keys(STEPS).length) * 100}

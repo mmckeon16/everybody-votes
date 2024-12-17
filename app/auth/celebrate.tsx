@@ -12,7 +12,7 @@ export default function Celebrate() {
   return (
     <View className="flex-col items-center justify-center overflow-hidden flex-1 p-8 gap-10 relative mt-2">
       <View className="z-10 flex flex-col gap-5">
-        <Text className="text-4xl text-center">
+        <Text className="text-3xl text-center">
           Thanks for filling out your profile
         </Text>
         <Text className="text-lg text-center">

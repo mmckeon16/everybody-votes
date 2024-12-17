@@ -1,9 +1,24 @@
 import React from 'react';
 import { View } from 'react-native';
-import { supabase } from '../lib/supabase'; // adjust path as needed
-import { Button } from '~/components/ui/button'; // adjust path as needed
+import { useRouter } from 'expo-router';
+import { useColorScheme as useNativewindColorScheme } from 'nativewind';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { supabase } from '../lib/supabase';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
+
+import {
+  Card,
+  CardDescription,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card';
 
 export default function Login() {
+  const { colorScheme } = useNativewindColorScheme();
+  const router = useRouter();
+
   const signInWithGoogle = async () => {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -35,12 +50,49 @@ export default function Login() {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
-      <Button onPress={signInWithGoogle} className="mb-4">
-        Sign in with Google
-      </Button>
+    <View className="flex items-center justify-center p-4 h-full">
+      <Card className="w-full max-w-sm p-2 rounded-2xl">
+        <CardHeader className="items-center pb-3">
+          <CardTitle className="pb-2 text-center">Log in </CardTitle>
+          <CardDescription className="flex flex-row items-center">
+            Need and account?
+            <Button
+              variant="link"
+              className="py-0 px-2"
+              onPress={() => {
+                router.push('/auth/signup');
+              }}
+            >
+              Sign up
+            </Button>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            onPress={signInWithGoogle}
+            className="mb-4 flex flex-row gap-2"
+          >
+            <AntDesign
+              name="google"
+              size={24}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+            <Text>Sign in with Google</Text>
+          </Button>
 
-      <Button onPress={signInWithGithub}>Sign in with GitHub</Button>
+          <Button
+            onPress={signInWithGithub}
+            className="mb-4 flex flex-row gap-2"
+          >
+            <AntDesign
+              name="github"
+              size={24}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+            <Text>Sign in with GitHub</Text>
+          </Button>
+        </CardContent>
+      </Card>
     </View>
   );
 }
