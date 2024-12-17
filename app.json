@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "yourapp",
+    "scheme": "everybody-votes",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -22,8 +22,8 @@
           "autoVerify": true,
           "data": [
             {
-              "scheme": "yourapp",
-              "host": "login-callback"
+              "scheme": "everybody-votes",
+              "host": "auth/complete-profile"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
@@ -38,7 +38,7 @@
     "plugins": [
       "expo-router",
       [
-        "expo-splash-screen",
+        "expo-splash-scen",
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,

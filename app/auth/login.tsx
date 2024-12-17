@@ -9,7 +9,7 @@ export default function Login() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'yourapp://login-callback', // replace with your app's scheme
+          redirectTo: 'everybody-votes://auth/complete-profile', // replace with your app's scheme
         },
       });
 
