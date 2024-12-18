@@ -4,8 +4,9 @@ import Svg, { Circle } from 'react-native-svg';
 import Animated, {
   useAnimatedProps,
   useSharedValue,
-  withSpring,
+  withTiming,
   useDerivedValue,
+  Easing,
 } from 'react-native-reanimated';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -30,7 +31,6 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
-
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -45,11 +45,9 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       return;
     }
 
-    progress.value = withSpring(1, {
-      damping: 20,
-      stiffness: 20,
-      mass: 1,
-      duration: 3000,
+    progress.value = withTiming(1, {
+      duration: 2000, // Increased duration for more noticeable slow start
+      easing: Easing.bezier(0.16, 0, 0.4, 1), // Modified curve for slower start
     });
   }, [data]);
 
@@ -87,7 +85,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
             animatedProps={animatedProps1}
             originX={center}
             originY={center}
-            strokeLinecap="butt"
+            strokeLinecap="round"
           />
           <AnimatedCircle
             cx={center}
@@ -99,11 +97,10 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
             animatedProps={animatedProps2}
             originX={center}
             originY={center}
-            strokeLinecap="butt"
+            strokeLinecap="round"
           />
         </Svg>
       </View>
-
       <View style={styles.legendContainer}>
         {data.map((item, index) => (
           <View key={item.text} style={styles.legendItem}>
