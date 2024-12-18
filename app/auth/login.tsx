@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -34,16 +34,30 @@ export default function Login() {
 
   const signInWithGoogle = async () => {
     try {
+      console.log('Starting Google OAuth...');
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'everybody-votes://auth/complete-profile', // replace with your app's scheme
+          redirectTo: Platform.select({
+            web: `${window.location.origin}`,
+            default: 'everybody-votes://',
+          }),
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
 
+      console.log('OAuth response:', { data, error });
       if (error) throw error;
+
+      if (Platform.OS !== 'web' && data?.url) {
+        await supabase.auth.getSession();
+        router.push('/auth/complete-profile');
+      }
     } catch (error) {
-      console.error('Error signing in:', error);
+      console.error('Error signing in with Google:', error);
     }
   };
 
@@ -52,7 +66,7 @@ export default function Login() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
-          redirectTo: 'yourapp://login-callback', // replace with your app's scheme
+          redirectTo: 'everybody-votes://auth/complete-profile',
         },
       });
 
