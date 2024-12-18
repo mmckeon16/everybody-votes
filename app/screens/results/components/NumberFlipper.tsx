@@ -11,19 +11,24 @@ const NumberFlipper: React.FC<NumberFlipperProps> = ({ targetNumber }) => {
   useEffect(() => {
     setCurrentNumber(0);
 
-    const duration = 1800; // 3 seconds
-    const steps = targetNumber;
-    const interval = duration / steps;
+    const duration = 1700; // 3 seconds
+    const framesPerSecond = 60;
+    const totalFrames = (duration / 1000) * framesPerSecond;
+    const incrementPerFrame = targetNumber / totalFrames;
 
-    let count = 0;
+    let frame = 0;
     const timer = setInterval(() => {
-      count++;
-      if (count <= targetNumber) {
-        setCurrentNumber(count);
+      frame++;
+      if (frame <= totalFrames) {
+        const newValue = Math.min(
+          Math.round(incrementPerFrame * frame),
+          targetNumber
+        );
+        setCurrentNumber(newValue);
       } else {
         clearInterval(timer);
       }
-    }, interval);
+    }, 1000 / framesPerSecond);
 
     return () => clearInterval(timer);
   }, [targetNumber]);

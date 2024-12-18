@@ -109,13 +109,13 @@ export default function Results() {
         {aggregateData?.questionText}
       </Text>
       <View className="flex items-center flex-1 p-6">
-        <PieChart data={aggregateData?.options} size={200} strokeWidth={25} />
-
-        <View>
-          <Text>
-            <NumberFlipper targetNumber={100} /> total votes
-          </Text>
-        </View>
+        <PieChart data={aggregateData?.options} size={200} strokeWidth={25}>
+          <View className="flex justify-center">
+            <Text>
+              <NumberFlipper targetNumber={100000} /> votes
+            </Text>
+          </View>
+        </PieChart>
       </View>
     </View>
   );
