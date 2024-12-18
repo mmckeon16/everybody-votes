@@ -7,7 +7,13 @@ import { supabase } from '../lib/supabase';
 import LoginProviderButton from './components/LoginProviderButton';
 import { IconProps } from '../types';
 
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card';
 
 const FacebookIconButton: React.FC<IconProps> = ({ size, color }) => {
   return <Fontisto name="facebook" size={size} color={color} />;
@@ -55,6 +61,7 @@ export default function Login() {
       <Card className="w-full max-w-sm p-2 rounded-2xl">
         <CardHeader className="items-center pb-3">
           <CardTitle className="pb-2 text-center">Log in </CardTitle>
+          <CardDescription>Log in to make your voice heard</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginProviderButton provider="google" providerDisplayName="Google" />
