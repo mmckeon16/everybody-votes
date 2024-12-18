@@ -142,13 +142,6 @@ export default function RootLayout() {
                 headerRight: () => <ThemeToggle />,
               }}
             />
-            <Stack.Screen
-              name="auth/signup"
-              options={{
-                title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
-              }}
-            />
           </Stack>
         </AuthProvider>
       </QueryClientProvider>

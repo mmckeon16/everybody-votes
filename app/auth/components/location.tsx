@@ -62,7 +62,6 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           onCheckedChange={() => {
             if (checkedSameCountry) {
               // then they are unchecking the box
-              console.log('unchecking', profileData);
               setProfileData({ ...profileData, countryResidence: '' });
             } else {
               console.log('checking', profileData);
