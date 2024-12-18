@@ -32,6 +32,7 @@ export default function Login() {
   const signInWithGoogle = async () => {
     try {
       console.log('Starting Google OAuth...');
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
