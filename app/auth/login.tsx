@@ -3,9 +3,12 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Fontisto from '@expo/vector-icons/Fontisto';
 import { supabase } from '../lib/supabase';
+import LoginProviderButton from './components/LoginProviderButton';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
+import { IconProps } from '../types';
 
 import {
   Card,
@@ -14,6 +17,16 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+
+const FacebookIconButton: React.FC<IconProps> = ({ size, color }) => {
+  console.log('rendered it');
+  return <Fontisto name="facebook" size={size} color={color} />;
+};
+
+const AppleIconButton: React.FC<IconProps> = ({ size, color }) => {
+  console.log('rendered it');
+  return <AntDesign name="apple1" size={size} color={color} />;
+};
 
 export default function Login() {
   const { colorScheme } = useNativewindColorScheme();
@@ -68,29 +81,21 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button
-            onPress={signInWithGoogle}
-            className="mb-4 flex flex-row gap-2"
-          >
-            <AntDesign
-              name="google"
-              size={24}
-              color={colorScheme === 'dark' ? 'black' : 'white'}
-            />
-            <Text>Sign in with Google</Text>
-          </Button>
-
-          <Button
-            onPress={signInWithGithub}
-            className="mb-4 flex flex-row gap-2"
-          >
-            <AntDesign
-              name="github"
-              size={24}
-              color={colorScheme === 'dark' ? 'black' : 'white'}
-            />
-            <Text>Sign in with GitHub</Text>
-          </Button>
+          <LoginProviderButton provider="google" providerDisplayName="Google" />
+          <LoginProviderButton
+            provider="facebook"
+            providerDisplayName="Facebook"
+          />
+          <LoginProviderButton
+            provider="twitter"
+            providerDisplayName="Twitter"
+          />
+          <LoginProviderButton
+            provider="apple"
+            providerDisplayName="Apple"
+            IconComponent={AppleIconButton}
+          />
+          <LoginProviderButton provider="github" providerDisplayName="Github" />
         </CardContent>
       </Card>
     </View>

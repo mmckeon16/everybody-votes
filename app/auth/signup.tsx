@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { supabase } from '../lib/supabase'; // adjust path as needed
-import ThemedText from '../components/ThemedText';
-import { Button } from '~/components/ui/button'; // adjust path if needed
-import { Github, Mail } from 'lucide-react-native'; // assuming you're using lucide icons
+import { useColorScheme as useNativewindColorScheme } from 'nativewind';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import {
+  Card,
+  CardDescription,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '~/components/ui/card';
 
 export default function SignUp() {
   const [error, setError] = useState('');
   const router = useRouter();
+  const { colorScheme } = useNativewindColorScheme();
 
   const signUpWithGoogle = async () => {
     try {
@@ -26,7 +36,7 @@ export default function SignUp() {
 
       if (error) throw error;
       router.replace('/auth/complete-profile');
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message);
     }
   };
@@ -43,65 +53,55 @@ export default function SignUp() {
 
       if (error) throw error;
       router.replace('/auth/complete-profile');
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        Create Account
-      </ThemedText>
+    <View className="flex items-center justify-center p-4 h-full">
+      <Card className="w-full max-w-sm p-2 rounded-2xl">
+        <CardHeader className="items-center pb-3">
+          <CardTitle className="pb-2 text-center">Create Account</CardTitle>
+          <CardDescription className="flex flex-row items-center">
+            Already have an account?{' '}
+            <Button
+              variant="link"
+              className="py-0 px-2"
+              onPress={() => {
+                router.push('/auth/login');
+              }}
+            >
+              Sign in
+            </Button>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            onPress={signUpWithGoogle}
+            className="mb-4 flex flex-row gap-2"
+          >
+            <AntDesign
+              name="google"
+              size={24}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+            <Text>Continue with Google</Text>
+          </Button>
 
-      {error && (
-        <ThemedText type="error" style={styles.error}>
-          {error}
-        </ThemedText>
-      )}
-
-      <Button
-        onPress={signUpWithGoogle}
-        className="mb-4 flex-row items-center justify-center space-x-2"
-      >
-        <Mail size={20} />
-        <ThemedText type="button">Continue with Google</ThemedText>
-      </Button>
-
-      <Button
-        onPress={signUpWithGithub}
-        className="mb-4 flex-row items-center justify-center space-x-2"
-        variant="outline"
-      >
-        <Github size={20} />
-        <ThemedText type="button">Continue with GitHub</ThemedText>
-      </Button>
-
-      <Link href="/auth/login" asChild>
-        <TouchableOpacity style={styles.linkButton}>
-          <ThemedText type="link">Already have an account? Sign in</ThemedText>
-        </TouchableOpacity>
-      </Link>
+          <Button
+            onPress={signUpWithGithub}
+            className="mb-4 flex flex-row gap-2"
+          >
+            <AntDesign
+              name="github"
+              size={24}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+            <Text>Continue with GitHub</Text>
+          </Button>
+        </CardContent>
+      </Card>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 40,
-  },
-  linkButton: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  error: {
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-});

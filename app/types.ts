@@ -71,3 +71,14 @@ export type RGB = {
   g: number;
   b: number;
 };
+
+export interface IconProps {
+  size: number;
+  color: string;
+}
+
+export interface ProviderButtonProps {
+  provider: string;
+  providerDisplayName: string;
+  IconComponent: React.FC<IconProps>;
+}
