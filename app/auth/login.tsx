@@ -1,13 +1,11 @@
 import React from 'react';
 import { View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { supabase } from '../lib/supabase';
 import LoginProviderButton from './components/LoginProviderButton';
 import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
 import { IconProps } from '../types';
 
 import {
@@ -29,7 +27,6 @@ const AppleIconButton: React.FC<IconProps> = ({ size, color }) => {
 };
 
 export default function Login() {
-  const { colorScheme } = useNativewindColorScheme();
   const router = useRouter();
 
   const signInWithGoogle = async () => {
@@ -97,19 +94,28 @@ export default function Login() {
         <CardContent>
           <LoginProviderButton provider="google" providerDisplayName="Google" />
           <LoginProviderButton
-            provider="facebook"
-            providerDisplayName="Facebook"
-          />
-          <LoginProviderButton
-            provider="twitter"
-            providerDisplayName="Twitter"
-          />
-          <LoginProviderButton
             provider="apple"
             providerDisplayName="Apple"
             IconComponent={AppleIconButton}
           />
-          <LoginProviderButton provider="github" providerDisplayName="Github" />
+          <View className="flex flex-row justify-center gap-5">
+            <LoginProviderButton
+              provider="facebook"
+              providerDisplayName="Facebook"
+              IconComponent={FacebookIconButton}
+              isSmall={true}
+            />
+            <LoginProviderButton
+              provider="twitter"
+              providerDisplayName="Twitter"
+              isSmall={true}
+            />
+            <LoginProviderButton
+              provider="github"
+              providerDisplayName="Github"
+              isSmall={true}
+            />
+          </View>
         </CardContent>
       </Card>
     </View>

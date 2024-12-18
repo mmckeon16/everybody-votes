@@ -81,4 +81,5 @@ export interface ProviderButtonProps {
   provider: string;
   providerDisplayName: string;
   IconComponent: React.FC<IconProps>;
+  isSmall: boolean;
 }
