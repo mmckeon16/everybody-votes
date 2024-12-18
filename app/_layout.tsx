@@ -19,6 +19,7 @@ import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import HeaderActions from './components/HeaderActions';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -83,63 +84,70 @@ export default function RootLayout() {
               name="index"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="auth"
               options={{
                 headerShown: false,
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="screens/vote/index"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="screens/predict/index"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="screens/results/index"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="screens/thanks/index"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="auth/complete-profile"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="auth/celebrate"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
               name="auth/login"
               options={{
                 title: 'Everybody polls',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <HeaderActions />,
+              }}
+            />
+            <Stack.Screen
+              name="auth/signup"
+              options={{
+                title: 'Everybody polls',
+                headerRight: () => <HeaderActions />,
               }}
             />
           </Stack>
