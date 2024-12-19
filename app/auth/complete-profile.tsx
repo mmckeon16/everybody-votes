@@ -104,16 +104,20 @@ export default function CompleteProfile() {
         userId: session.user.id,
       });
 
-      // Optionally update auth metadata to indicate profile is completed
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: {
-          completed_profile: true,
-        },
-      });
+      console.log('Profile data submitted');
 
-      if (updateError) throw updateError;
+      // Optionally update auth metadata to indicate profile is completed
+      // const { error: updateError } = await supabase.auth.updateUser({
+      //   data: {
+      //     completed_profile: true,
+      //   },
+      // });
+
+      console.log('going to celebrate');
 
       router.push('/auth/celebrate');
+
+      // if (updateError) throw updateError;
     } catch (err) {
       console.error('Error submitting profile:', err);
       setError(

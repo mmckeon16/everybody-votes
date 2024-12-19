@@ -56,6 +56,43 @@ serve(async (req) => {
       }
     }
 
+    // Check if demographics already exist for this user
+    const { data: existingDemographics, error: checkError } =
+      await supabaseClient
+        .from('demographics')
+        .select('id')
+        .eq('user_id', onboarding.user_id)
+        .single();
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      // PGRST116 is "not found" error
+      console.error('Error checking existing demographics:', checkError);
+      throw checkError;
+    }
+
+    //if demographics already exist, in production, throw an error
+    //if in development, delete the existing demographics for this user
+    //and update user metadata to mark profile as incomplete
+    if (existingDemographics) {
+      if (!isDevelopment)
+        throw new Error(
+          'Demographics already exist for this user. Please use the update endpoint.'
+        );
+
+      //if in development, delete the existing demographics for this user
+      await supabaseClient
+        .from('demographics')
+        .delete()
+        .eq('user_id', onboarding.user_id);
+
+      //update user metadata to mark profile as incomplete
+      await supabaseClient.auth.admin.updateUserById(onboarding.user_id, {
+        user_metadata: {
+          completed_profile: false,
+        },
+      });
+    }
+
     // Then insert into demographics
     // Let's break this into steps for clarity
     console.log('Inserting demographics:', onboarding);
@@ -81,6 +118,19 @@ serve(async (req) => {
     if (error) {
       console.error('Select error:', error);
       throw error;
+    }
+
+    // Update auth metadata to mark profile as completed
+    const { error: updateError } =
+      await supabaseClient.auth.admin.updateUserById(onboarding.user_id, {
+        user_metadata: {
+          completed_profile: true,
+        },
+      });
+
+    if (updateError) {
+      console.error('Error updating user metadata:', updateError);
+      throw updateError;
     }
 
     return new Response(JSON.stringify({ data }), {

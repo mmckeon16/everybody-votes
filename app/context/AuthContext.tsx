@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       if (session) {
         setSession(session);
-        checkProfileCompletion(session.user.id);
+        checkProfileCompletion(session);
       }
       setIsLoading(false);
     });
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (session) {
         setSession(session);
-        await checkProfileCompletion(session.user.id);
+        await checkProfileCompletion(session);
       } else {
         setSession(null);
         setHasCompletedProfile(false);
@@ -64,30 +64,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  async function checkProfileCompletion(userId: string | undefined) {
-    if (!userId) {
-      setHasCompletedProfile(false);
-      return;
-    }
+  const checkProfileCompletion = async (session: Session) => {
+    if (!session?.user) return false;
 
-    try {
-      const { data, error } = await supabase
-        .from('demographics')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      if (error || !data) {
-        setHasCompletedProfile(false);
-        router.push('/auth/complete-profile');
-      } else {
-        setHasCompletedProfile(true);
-      }
-    } catch (err) {
-      console.error('Error checking profile:', err);
+    console.log('Checking profileCompletion for user:', session.user.id);
+    console.log('User metadata:', session.user.user_metadata);
+    // Check user metadata directly
+    if (!session.user.user_metadata?.completed_profile) {
       setHasCompletedProfile(false);
+      router.push('/auth/complete-profile');
+    } else {
+      setHasCompletedProfile(true);
     }
-  }
+  };
 
   const value = {
     session,
