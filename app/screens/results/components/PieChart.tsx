@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import { View, StyleSheet } from 'react-native';
+import { Text } from '~/components/ui/text';
+
+import Svg, { Circle, G } from 'react-native-svg';
 import Animated, {
   useAnimatedProps,
   useSharedValue,
-  withSpring,
+  withTiming,
   useDerivedValue,
+  Easing,
 } from 'react-native-reanimated';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -20,18 +23,22 @@ interface DonutChartProps {
   data: [DataItem, DataItem];
   size?: number;
   strokeWidth?: number;
+  children?: React.ReactNode;
 }
 
 const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   data,
   size = 200,
   strokeWidth = 25,
+  children,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
-
   const progress = useSharedValue(0);
+
+  // Calculate the size for the center content
+  const centerContentSize = Math.floor(radius * 1.4);
 
   useEffect(() => {
     if (data.length !== 2) {
@@ -45,11 +52,9 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       return;
     }
 
-    progress.value = withSpring(1, {
-      damping: 20,
-      stiffness: 20,
-      mass: 1,
-      duration: 3000,
+    progress.value = withTiming(1, {
+      duration: 2000,
+      easing: Easing.bezier(0.16, 0, 0.4, 1),
     });
   }, [data]);
 
@@ -76,34 +81,49 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   return (
     <View style={styles.wrapper}>
       <View style={[styles.container, { width: size, height: size }]}>
-        <Svg width={size} height={size} style={styles.svg}>
-          <AnimatedCircle
-            cx={center}
-            cy={center}
-            r={radius}
-            stroke={data[0].color}
-            strokeWidth={strokeWidth}
-            fill="none"
-            animatedProps={animatedProps1}
-            originX={center}
-            originY={center}
-            strokeLinecap="butt"
-          />
-          <AnimatedCircle
-            cx={center}
-            cy={center}
-            r={radius}
-            stroke={data[1].color}
-            strokeWidth={strokeWidth}
-            fill="none"
-            animatedProps={animatedProps2}
-            originX={center}
-            originY={center}
-            strokeLinecap="butt"
-          />
+        <View
+          style={{
+            position: 'absolute',
+            width: centerContentSize,
+            height: centerContentSize,
+            left: (size - centerContentSize) / 2,
+            top: (size - centerContentSize) / 2,
+            zIndex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {children}
+        </View>
+        <Svg width={size} height={size}>
+          <G rotation={90} origin={`${center}, ${center}`}>
+            <AnimatedCircle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={data[0].color}
+              strokeWidth={strokeWidth}
+              fill="none"
+              animatedProps={animatedProps1}
+              originX={center}
+              originY={center}
+              strokeLinecap="round"
+            />
+            <AnimatedCircle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={data[1].color}
+              strokeWidth={strokeWidth}
+              fill="none"
+              animatedProps={animatedProps2}
+              originX={center}
+              originY={center}
+              strokeLinecap="round"
+            />
+          </G>
         </Svg>
       </View>
-
       <View style={styles.legendContainer}>
         {data.map((item, index) => (
           <View key={item.text} style={styles.legendItem}>
@@ -125,9 +145,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  svg: {
-    transform: [{ rotate: '90deg' }],
+    position: 'relative',
   },
   legendContainer: {
     marginTop: 20,

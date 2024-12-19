@@ -3,10 +3,11 @@ import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
 import { Question } from '../../types';
 import QuestionResults from '../../components/QuestionResults';
-import PieChart from '../../components/PieChart';
+import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
 import { aggregateVotes } from '../../lib/utils';
+import NumberFlipper from './components/NumberFlipper';
 
 export default function Results() {
   const { data: results, isLoading, error } = useResults(
@@ -63,6 +64,32 @@ export default function Results() {
       id: 'UUID HERE',
       created_at: 'new Date',
       options: {
+        id: 'option id',
+        text: 'Yes',
+        question_id: 'your-question-id',
+        questions: {
+          id: 'your-question-id',
+          text: 'Should US Presidents have term limits',
+        },
+      },
+    },
+    {
+      id: 'UUID HERE',
+      created_at: 'new Date',
+      options: {
+        id: 'option id',
+        text: 'Yes',
+        question_id: 'your-question-id',
+        questions: {
+          id: 'your-question-id',
+          text: 'Should US Presidents have term limits',
+        },
+      },
+    },
+    {
+      id: 'UUID HERE',
+      created_at: 'new Date',
+      options: {
         id: 'option id 2',
         text: 'No',
         question_id: 'your-question-id',
@@ -81,9 +108,15 @@ export default function Results() {
       <Text className="text-2xl text-inherit p-2.5">
         {aggregateData?.questionText}
       </Text>
-      <ScrollView className="items-center flex-1 p-6">
-        <PieChart data={aggregateData?.options} size={200} strokeWidth={25} />
-      </ScrollView>
+      <View className="flex items-center flex-1 p-6">
+        <PieChart data={aggregateData?.options} size={200} strokeWidth={25}>
+          <View className="flex justify-center">
+            <Text>
+              <NumberFlipper targetNumber={100000} /> votes
+            </Text>
+          </View>
+        </PieChart>
+      </View>
     </View>
   );
 }

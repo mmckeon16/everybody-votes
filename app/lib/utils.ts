@@ -106,7 +106,7 @@ const aggregateVotes = (data: VoteData[]): AggregatedResults | null => {
     return acc;
   }, {});
 
-  const colorArray = getTwoDistinctColors();
+  const colorArray = returnSetColors();
 
   // Convert counts to percentages
   const options = Object.values(counts).map((option, index) => ({
@@ -141,6 +141,10 @@ function getRandomRGB(): RGB {
     g: Math.floor(Math.random() * 256),
     b: Math.floor(Math.random() * 256),
   };
+}
+
+function returnSetColors(): [string, string] {
+  return ['#0284c7', '#034780'];
 }
 
 function getTwoDistinctColors(): [string, string] {
