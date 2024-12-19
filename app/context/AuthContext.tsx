@@ -89,7 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signIn({ email, password });
       if (error) throw error;
     },
-    signOut: () => supabase.auth.signOut(),
+    signOut: async () => {
+      await supabase.auth.signOut();
+      router.replace('/');
+    },
     isAuthenticated: !!session,
     hasCompletedProfile,
   };
