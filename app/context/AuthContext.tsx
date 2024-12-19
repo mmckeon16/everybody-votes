@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 
 interface AuthContextType {
   session: Session | null;
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     console.log('Setting up auth listeners...');
@@ -63,7 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function checkProfileCompletion(userId: string | undefined) {
-    console.log('Checking profile completion for user:', userId);
     if (!userId) {
       setHasCompletedProfile(false);
       return;
@@ -76,10 +77,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('user_id', userId)
         .single();
 
-      console.log('Profile check result:', { data, error });
-      setHasCompletedProfile(!!data && !error);
+      if (error || !data) {
+        setHasCompletedProfile(false);
+        router.push('/auth/complete-profile');
+      } else {
+        setHasCompletedProfile(true);
+      }
     } catch (err) {
-      console.error('Error checking profile completion:', err);
+      console.error('Error checking profile:', err);
       setHasCompletedProfile(false);
     }
   }

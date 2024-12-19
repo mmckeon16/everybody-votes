@@ -31,23 +31,74 @@ serve(async (req) => {
 
     const { onboarding } = (await req.json()) as { onboarding: OnboardingData };
 
+    console.log('Checking user:', onboarding.user_id);
+
+    // Add debug logging
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    console.log('SUPABASE_URL:', supabaseUrl);
+    const isDevelopment =
+      supabaseUrl?.includes('localhost') ||
+      supabaseUrl?.includes('127.0.0.1') ||
+      supabaseUrl?.includes('kong') ||
+      process.env.NODE_ENV === 'development';
+    console.log('Is Development?', isDevelopment);
+
+    if (!isDevelopment) {
+      // Only check auth in production
+      const {
+        data: { user },
+        error: userError,
+      } = await supabaseClient.auth.admin.getUserById(onboarding.user_id);
+
+      if (userError || !user) {
+        console.error('User lookup error:', userError);
+        throw new Error(`User ${onboarding.user_id} not found`);
+      }
+    }
+
+    // Then insert into demographics
+    // Let's break this into steps for clarity
+    console.log('Inserting demographics:', onboarding);
+
+    const insertResponse = await supabaseClient
+      .from('demographics')
+      .insert(onboarding);
+
+    console.log('Insert response:', insertResponse);
+
+    if (insertResponse.error) {
+      console.error('Insert error:', insertResponse.error);
+      throw insertResponse.error;
+    }
+
+    // After successful insert, get the inserted row
     const { data, error } = await supabaseClient
       .from('demographics')
-      .insert(onboarding)
       .select()
+      .eq('user_id', onboarding.user_id)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Select error:', error);
+      throw error;
+    }
 
     return new Response(JSON.stringify({ data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
+    console.error('Function error:', error);
+    return new Response(
+      JSON.stringify({
+        error: error.message,
+        details: error instanceof Error ? error.stack : undefined,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      }
+    );
   }
 });
 

@@ -52,7 +52,7 @@ export default function CompleteProfile() {
           // Get user metadata from social provider
           const metadata = user.user_metadata;
 
-          setProfileData(prev => ({
+          setProfileData((prev) => ({
             ...prev,
             // Pre-fill data if available from social provider
             countryResidence:
@@ -94,25 +94,28 @@ export default function CompleteProfile() {
 
   const handleSubmit = async () => {
     try {
-      // First update auth metadata
+      if (!session?.user?.id) {
+        throw new Error('No authenticated user found');
+      }
+
+      // Submit to demographics table via our edge function
+      await mutateAsync({
+        profileData,
+        userId: session.user.id,
+      });
+
+      // Optionally update auth metadata to indicate profile is completed
       const { error: updateError } = await supabase.auth.updateUser({
         data: {
           completed_profile: true,
-          ...profileData,
         },
       });
 
       if (updateError) throw updateError;
 
-      // Then submit to your onboarding mutation
-      await mutateAsync({
-        profileData,
-        userId: session?.user.id || '',
-      });
-
       router.push('/auth/celebrate');
     } catch (err) {
-      console.log(err);
+      console.error('Error submitting profile:', err);
       setError(
         err instanceof Error ? err.message : 'An unexpected error occurred'
       );
