@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
-import { Stack } from 'expo-router';
-import { Question } from '../../types';
-import QuestionResults from '../../components/QuestionResults';
+import LottieView from 'lottie-react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
 import { aggregateVotes } from '../../lib/utils';
 import NumberFlipper from './components/NumberFlipper';
+import Flower from './components/Flower';
 
 export default function Results() {
   const { data: results, isLoading, error } = useResults(
     '123e4567-e89b-12d3-a456-426614174000'
   );
   console.log(results);
+  const flower = useRef<LottieView>(null);
 
   //options and percent for each
 
@@ -116,6 +116,7 @@ export default function Results() {
             </Text>
           </View>
         </PieChart>
+        <Flower />
       </View>
     </View>
   );
