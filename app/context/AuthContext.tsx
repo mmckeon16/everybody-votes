@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 
 interface AuthContextType {
   session: Session | null;
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     console.log('Setting up auth listeners...');
@@ -32,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       if (session) {
         setSession(session);
-        checkProfileCompletion(session.user.id);
+        checkProfileCompletion(session);
       }
       setIsLoading(false);
     });
@@ -50,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (session) {
         setSession(session);
-        await checkProfileCompletion(session.user.id);
+        await checkProfileCompletion(session);
       } else {
         setSession(null);
         setHasCompletedProfile(false);
@@ -62,27 +64,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  async function checkProfileCompletion(userId: string | undefined) {
-    console.log('Checking profile completion for user:', userId);
-    if (!userId) {
-      setHasCompletedProfile(false);
-      return;
-    }
+  const checkProfileCompletion = async (session: Session) => {
+    if (!session?.user) return false;
 
-    try {
-      const { data, error } = await supabase
-        .from('demographics')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      console.log('Profile check result:', { data, error });
-      setHasCompletedProfile(!!data && !error);
-    } catch (err) {
-      console.error('Error checking profile completion:', err);
+    console.log('Checking profileCompletion for user:', session.user.id);
+    console.log('User metadata:', session.user.user_metadata);
+    // Check user metadata directly
+    if (!session.user.user_metadata?.completed_profile) {
       setHasCompletedProfile(false);
+      router.push('/auth/complete-profile');
+    } else {
+      setHasCompletedProfile(true);
     }
-  }
+  };
 
   const value = {
     session,
@@ -95,7 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signIn({ email, password });
       if (error) throw error;
     },
-    signOut: () => supabase.auth.signOut(),
+    signOut: async () => {
+      await supabase.auth.signOut();
+      router.replace('/');
+    },
     isAuthenticated: !!session,
     hasCompletedProfile,
   };
