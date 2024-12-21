@@ -1,6 +1,5 @@
-import React, { useRef } from 'react';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
-import LottieView from 'lottie-react-native';
+import React from 'react';
+import { View } from 'react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
@@ -12,8 +11,7 @@ export default function Results() {
   const { data: results, isLoading, error } = useResults(
     '123e4567-e89b-12d3-a456-426614174000'
   );
-  console.log(results);
-  const flower = useRef<LottieView>(null);
+  // console.log(results);
 
   //options and percent for each
 
@@ -116,7 +114,8 @@ export default function Results() {
             </Text>
           </View>
         </PieChart>
-        <Flower />
+        {/* <Flower /> */}
+        <Flower color="blue" isBlooming={true} />
       </View>
     </View>
   );
