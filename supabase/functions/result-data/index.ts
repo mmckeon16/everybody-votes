@@ -8,97 +8,108 @@ const supabase = createClient(
 );
 
 Deno.serve(async (req: Request) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    // Extract questionId from URL path
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/');
     const questionId = pathParts[pathParts.length - 1];
 
-    if (!questionId) {
-      throw new Error('questionId is required');
-    }
+    console.log('Processing request for questionId:', questionId);
 
-    console.log('Question ID:', questionId);
-
-    // Get question and options
-    const { data: questionData, error } = await supabase
+    // First get the question and its options
+    const { data: questionData, error: questionError } = await supabase
       .from('questions')
       .select(
         `
         id,
         text,
-        options!inner (
+        options (
           id,
-          text,
-          question_id,
-          questions (
-            id,
-            text
-          )
-        ),
-        users (
-          id,
-          email
+          text
         )
       `
       )
       .eq('id', questionId)
       .single();
 
-    if (error) throw error;
-    console.log('Question Data:', questionData);
+    if (questionError) throw questionError;
+    console.log('Question data:', questionData);
 
     // Get all answers for this question's options
+    const optionIds = questionData.options.map((opt) => opt.id);
+    console.log('Looking for answers with option_ids:', optionIds);
+
     const { data: answers, error: answersError } = await supabase
       .from('answers')
-      .select('*');
-    // .select('option_id')
-    // .in(
-    //   'option_id',
-    //   questionData.options.map((opt) => opt.id)
-    // );
+      .select(
+        `
+        id,
+        user_id,
+        option_id,
+        demographics (
+          age,
+          gender,
+          country_residence,
+          race_ethnicity,
+          income_bracket,
+          political_affiliation,
+          occupation,
+          country_origin
+        )
+      `
+      )
+      .in('option_id', optionIds);
 
-    console.log('Answers:', answers);
+    console.log('Raw answers query result:', { answers, answersError });
+
+    // If we still get no answers, let's try a simple answers query
+    const { data: simpleAnswers, error: simpleError } = await supabase
+      .from('answers')
+      .select('*');
+
+    console.log('Simple answers query result:', { simpleAnswers, simpleError });
 
     if (answersError) throw answersError;
+    console.log('Answers data:', answers);
 
-    // Count votes manually
-    const voteCounts = answers.reduce(
-      (counts: Record<string, number>, answer: { option_id: string }) => {
-        counts[answer.option_id] = (counts[answer.option_id] || 0) + 1;
-        return counts;
-      },
-      {}
-    );
-    console.log('Vote Counts:', voteCounts);
+    // Process vote counts
+    const voteCounts = answers.reduce((acc, answer) => {
+      acc[answer.option_id] = (acc[answer.option_id] || 0) + 1;
+      return acc;
+    }, {});
 
     const totalVotes = Object.values(voteCounts).reduce(
-      (sum, count) => sum + count,
+      (sum: number, count: number) => sum + count,
       0
     );
-    console.log('Total Votes:', totalVotes);
+
+    // Format results
     const results = questionData.options.map((option) => ({
       optionId: option.id,
-      text: option.text,
+      optionText: option.text,
       votes: voteCounts[option.id] || 0,
       percentage:
         totalVotes > 0 ? ((voteCounts[option.id] || 0) / totalVotes) * 100 : 0,
+      responses: answers
+        .filter((answer) => answer.option_id === option.id)
+        .map((answer) => ({
+          userId: answer.user_id,
+          demographics: answer.demographics,
+        })),
     }));
-    console.log('Results:', results);
 
     return new Response(
       JSON.stringify({
-        results,
-        totalVotes,
         question: {
           id: questionData.id,
           text: questionData.text,
         },
+        results,
+        totalVotes,
+        voteCounts,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
