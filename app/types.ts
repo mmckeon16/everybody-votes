@@ -1,10 +1,10 @@
 export interface Option {
-  id: number;
+  id: string;
   text: string;
 }
 
 export interface OptionResult {
-  optionId: number;
+  optionId: string;
   text: string;
   votes: number;
   percentage: number;

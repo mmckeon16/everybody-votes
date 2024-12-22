@@ -1,31 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
 import { ProtectedRoute } from '~/app/components/ProtectedRoute';
 import { useActiveQuestion } from '../../hooks/useActiveQuestion';
-// import { useVote } from '../../hooks/useVote';
+import { useVote } from '../../hooks/useVote';
+import { useAuth } from '~/app/context/AuthContext';
 
 export default function Vote() {
   const { data: activeQuestion, isLoading } = useActiveQuestion();
-  // const [submitVote, { isLoading: isSubmitting }] = useSubmitVoteMutation();
+  const { mutateAsync, isPending } = useVote();
   const router = useRouter();
+  const { session } = useAuth();
 
   // TODO handle if activeQuestion is null
   console.log('data: ', activeQuestion);
 
   const handleSubmit = async (selectedOption: Option) => {
-    if (!activeQuestion) return;
+    if (!session?.user?.id && !selectedOption) return;
 
     try {
-      // await submitVote({
-      //   questionId: activeQuestion.id,
-      //   optionId: selectedOption.id,
-      // }).unwrap();
+      await mutateAsync({
+        optionId: selectedOption.id || '',
+        userId: session?.user?.id || '',
+      });
+
       router.push('/screens/predict');
       // Handle success (e.g., show success message, navigate to results)
     } catch (error) {
+      console.error('There was an error');
       // Handle error
     }
   };
@@ -46,7 +50,7 @@ export default function Vote() {
             question={activeQuestion.text}
             options={activeQuestion.options}
             onSubmit={function (selectedOption: Option): void {
-              throw new Error('Function not implemented.');
+              handleSubmit(selectedOption);
             }} // onSubmit={handleSubmit}
             // disabled={isSubmitting}
           />
