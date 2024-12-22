@@ -40,32 +40,42 @@ const FilterModal = () => {
                   <AccordionTrigger>
                     <Text>{name}</Text>
                   </AccordionTrigger>
-                  <AccordionContent className="flex flex-row flex-wrap gap-y-2">
-                    {name === 'Country of origin'
-                      ? options?.map(option => (
-                          <View className="flex flex-row gap-2 w-1/2">
-                            <Checkbox
-                              id={option}
-                              checked={false}
-                              onCheckedChange={() => {
-                                console.log('checked', option);
-                              }}
-                            />
-                            <Label nativeID={option}>{option}</Label>
-                          </View>
-                        ))
-                      : options?.map(({ label, value }) => (
-                          <View className="flex flex-row gap-2 w-1/2">
-                            <Checkbox
-                              id={value}
-                              checked={false}
-                              onCheckedChange={() => {
-                                console.log('checked', label);
-                              }}
-                            />
-                            <Label nativeID={value}>{label}</Label>
-                          </View>
-                        ))}
+                  <AccordionContent>
+                    <ScrollView
+                      className="max-h-52"
+                      contentContainerStyle={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        gap: 8, // This will add spacing between items
+                        flexGrow: 1,
+                      }}
+                    >
+                      {name === 'Country of origin'
+                        ? options?.map(option => (
+                            <View className="flex flex-row gap-2 w-1/3 px-2">
+                              <Checkbox
+                                id={option}
+                                checked={false}
+                                onCheckedChange={() => {
+                                  console.log('checked', option);
+                                }}
+                              />
+                              <Label nativeID={option}>{option}</Label>
+                            </View>
+                          ))
+                        : options?.map(({ label, value }) => (
+                            <View className="flex flex-row gap-2 w-1/3 px-2">
+                              <Checkbox
+                                id={value}
+                                checked={false}
+                                onCheckedChange={() => {
+                                  console.log('checked', label);
+                                }}
+                              />
+                              <Label nativeID={value}>{label}</Label>
+                            </View>
+                          ))}
+                    </ScrollView>
                   </AccordionContent>
                 </AccordionItem>
               ))}
