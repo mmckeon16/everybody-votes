@@ -3,8 +3,18 @@ import { View } from 'react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
+import { Button } from '~/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '~/components/ui/card';
 import { aggregateVotes } from '../../lib/utils';
 import NumberFlipper from './components/NumberFlipper';
+import Filter from './components/Filter';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import Flower from './components/Flower';
 
 export default function Results() {
@@ -103,20 +113,28 @@ export default function Results() {
   // TODO add in prediction
   return (
     <View className="flex-column items-center overflow-hidden flex-1">
-      <Text className="text-2xl text-inherit p-2.5">
-        {aggregateData?.questionText}
-      </Text>
-      <View className="flex items-center flex-1 p-6">
-        <PieChart data={aggregateData?.options} size={200} strokeWidth={25}>
-          <View className="flex justify-center">
-            <Text>
-              <NumberFlipper targetNumber={100000} /> votes
-            </Text>
+      <Card className="max-w-3xl m-6">
+        <CardHeader className="items-center">
+          <CardTitle className="pb-2 text-center">
+            {aggregateData?.questionText}
+          </CardTitle>
+          <CardDescription className="self-start ml-6">
+            <Filter />
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <View className="flex items-center flex-1">
+            <PieChart data={aggregateData?.options} size={200} strokeWidth={25}>
+              <View className="flex justify-center">
+                <Text>
+                  <NumberFlipper targetNumber={100000} /> votes
+                </Text>
+              </View>
+            </PieChart>
+            {/* <Flower color="blue" isBlooming={true} /> */}
           </View>
-        </PieChart>
-        {/* <Flower /> */}
-        <Flower color="blue" isBlooming={true} />
-      </View>
+        </CardContent>
+      </Card>
     </View>
   );
 }

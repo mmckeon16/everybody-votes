@@ -30,6 +30,7 @@
     "@react-navigation/native-stack": "^7.1.14",
     "@rn-primitives/avatar": "^1.1.0",
     "@rn-primitives/checkbox": "^1.1.0",
+    "@rn-primitives/dropdown-menu": "^1.1.0",
     "@rn-primitives/label": "^1.1.0",
     "@rn-primitives/portal": "^1.1.0",
     "@rn-primitives/progress": "^1.1.0",

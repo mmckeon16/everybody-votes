@@ -42,6 +42,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
             className="text-foreground text-sm native:text-lg"
             placeholder="Country of origin"
           />
+          {/* TODO add state if country is USA */}
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
