@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
@@ -13,7 +13,8 @@ import {
 } from '~/components/ui/card';
 import { aggregateVotes } from '../../lib/utils';
 import NumberFlipper from './components/NumberFlipper';
-import Filter from './components/Filter';
+// import FilterDropDown from './components/FilterDropDown';
+import FilterModal from './components/FilterModal';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Flower from './components/Flower';
 
@@ -21,6 +22,7 @@ export default function Results() {
   const { data: results, isLoading, error } = useResults(
     '123e4567-e89b-12d3-a456-426614174000'
   );
+  const [filteredValues, setFilteredValues] = useState();
   // console.log(results);
 
   //options and percent for each
@@ -119,7 +121,7 @@ export default function Results() {
             {aggregateData?.questionText}
           </CardTitle>
           <CardDescription className="self-start ml-6">
-            <Filter />
+            <FilterModal />
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -135,6 +137,7 @@ export default function Results() {
           </View>
         </CardContent>
       </Card>
+      <Card className="max-w-3xl m-6">{filteredValues}</Card>
     </View>
   );
 }

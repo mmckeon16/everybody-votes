@@ -28,6 +28,7 @@
     "@react-navigation/elements": "^2.2.4",
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/native-stack": "^7.1.14",
+    "@rn-primitives/accordion": "^1.1.0",
     "@rn-primitives/avatar": "^1.1.0",
     "@rn-primitives/checkbox": "^1.1.0",
     "@rn-primitives/dropdown-menu": "^1.1.0",
