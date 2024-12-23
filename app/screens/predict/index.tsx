@@ -2,32 +2,29 @@ import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useActiveQuestion } from '../../hooks/useActiveQuestion';
+import { usePrediction } from '../../hooks/usePrediction';
 import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
+import { useAuth } from '~/app/context/AuthContext';
 
 export default function Vote() {
   const { data: activeQuestion, isLoading } = useActiveQuestion();
-  // const [
-  //   submitPrediction,
-  //   { isLoading: isSubmitting },
-  // ] = useSubmitPredictionMutation();
+  const { mutateAsync, isPending } = usePrediction();
   const router = useRouter();
-
-  // TODO handle if activeQuestion is null
-  console.log('data: ', activeQuestion);
+  const { session } = useAuth();
 
   const handleSubmit = async (selectedOption: Option) => {
-    if (!activeQuestion) return;
+    if (!session?.user?.id || !selectedOption) return;
 
     try {
-      // await submitPrediction({
-      //   questionId: activeQuestion.id,
-      //   optionId: selectedOption.id,
-      // }).unwrap();
+      await mutateAsync({
+        optionId: selectedOption.id,
+        userId: session.user.id,
+      });
       router.push('/screens/thanks');
-      // Handle success (e.g., show success message, navigate to results)
     } catch (error) {
-      // Handle error
+      console.error('Error submitting prediction:', error);
+      // Handle error (show error message, etc.)
     }
   };
 
@@ -47,7 +44,7 @@ export default function Vote() {
           description={activeQuestion.text}
           options={activeQuestion.options}
           onSubmit={handleSubmit}
-          // disabled={isSubmitting}
+          // disabled={isPending}
           submitText="Predict"
         />
       )}
