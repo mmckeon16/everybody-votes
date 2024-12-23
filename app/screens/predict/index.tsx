@@ -7,9 +7,9 @@ import QuestionForm from '../../components/QuestionForm';
 import { Option } from '../../types';
 import { useAuth } from '~/app/context/AuthContext';
 
-export default function Vote() {
+export default function Predict() {
   const { data: activeQuestion, isLoading } = useActiveQuestion();
-  const { mutateAsync, isPending } = usePrediction();
+  const { mutateAsync: submitPrediction, isPending } = usePrediction();
   const router = useRouter();
   const { session } = useAuth();
 
@@ -17,14 +17,14 @@ export default function Vote() {
     if (!session?.user?.id || !selectedOption) return;
 
     try {
-      await mutateAsync({
+      await submitPrediction({
         optionId: selectedOption.id,
         userId: session.user.id,
       });
       router.push('/screens/thanks');
     } catch (error) {
-      console.error('Error submitting prediction:', error);
-      // Handle error (show error message, etc.)
+      // Error is handled by the mutation
+      // Only redirect on success
     }
   };
 
@@ -44,8 +44,8 @@ export default function Vote() {
           description={activeQuestion.text}
           options={activeQuestion.options}
           onSubmit={handleSubmit}
-          // disabled={isPending}
-          submitText="Predict"
+          disabled={isPending}
+          submitText={isPending ? 'Submitting...' : 'Predict'}
         />
       )}
     </View>
