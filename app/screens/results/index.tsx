@@ -17,11 +17,15 @@ import NumberFlipper from './components/NumberFlipper';
 import FilterModal from './components/FilterModal';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Flower from './components/Flower';
+import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
 
 export default function Results() {
-  const { data: results, isLoading, error } = useResults(
-    '123e4567-e89b-12d3-a456-426614174000'
-  );
+  const { data: activeQuestion } = useActiveQuestion();
+
+  const { data: results, isLoading, error } = useResults(activeQuestion.id);
+  console.log('Data from results....');
+  console.log(results);
+
   const [filteredValues, setFilteredValues] = useState();
   // console.log(results);
 

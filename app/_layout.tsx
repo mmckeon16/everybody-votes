@@ -20,6 +20,7 @@ import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import HeaderActions from './components/HeaderActions';
+import Toast from 'react-native-toast-message';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -157,6 +158,7 @@ export default function RootLayout() {
         </AuthProvider>
       </QueryClientProvider>
       <PortalHost />
+      <Toast />
     </ThemeProvider>
   );
 }

@@ -1,9 +1,3 @@
-// types.ts
-interface Option {
-  id: number;
-  text: string;
-}
-
 interface QuestionFormProps {
   question: string;
   description?: string;
@@ -25,6 +19,7 @@ import {
   CardTitle,
   CardDescription,
 } from '~/components/ui/card';
+import { Option } from '../types';
 
 export const QuestionForm: React.FC<QuestionFormProps> = ({
   question,
@@ -35,6 +30,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 }) => {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
+  console.log(options);
   const handleSubmit = (): void => {
     if (selectedOption) {
       onSubmit(selectedOption);
@@ -52,7 +48,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         </CardHeader>
         <CardContent>
           <View className="flex-column justify-around gap-3">
-            {options.map(option => (
+            {options.map((option) => (
               <Button
                 key={option.id}
                 onPress={() => setSelectedOption(option)}
