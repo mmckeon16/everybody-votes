@@ -20,16 +20,24 @@ import Flower from './components/Flower';
 import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
 
 export default function Results() {
+  const [filteredDemographics, setFilteredDemographics] = useState({});
   const { data: activeQuestion } = useActiveQuestion();
 
-  const { data: results, isLoading, error } = useResults(activeQuestion?.id);
-  console.log('Data from results....');
-  console.log(results);
+  const { data: totalResults, isLoading, error } = useResults(
+    activeQuestion?.id,
+    {}
+  );
+  console.log('Data from totalResults....');
+  console.log(totalResults);
 
-  const [filteredValues, setFilteredValues] = useState();
-  // console.log(results);
+  const {
+    data: filteredResults,
+    isLoading: filteredIsLoading,
+    error: filteredError,
+  } = useResults(activeQuestion?.id, filteredDemographics);
 
-  //options and percent for each
+  console.log('Data from filtered....', filteredDemographics);
+  console.log(filteredResults);
 
   // if (isLoading) {
   //   return (
@@ -125,7 +133,10 @@ export default function Results() {
             {aggregateData?.questionText}
           </CardTitle>
           <CardDescription className="self-start ml-6">
-            <FilterModal />
+            <FilterModal
+              filteredDemographics={filteredDemographics}
+              setFilteredDemographics={setFilteredDemographics}
+            />
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -141,7 +152,7 @@ export default function Results() {
           </View>
         </CardContent>
       </Card>
-      <Card className="max-w-3xl m-6">{filteredValues}</Card>
+      {/* <Card className="max-w-3xl m-6">{filteredValues}</Card> */}
     </View>
   );
 }

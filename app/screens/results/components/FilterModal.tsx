@@ -14,7 +14,15 @@ import {
 import { Checkbox } from '~/components/ui/checkbox';
 import { demographics } from '../constants';
 
-const FilterModal = () => {
+interface FilterModalProps {
+  filteredDemographics: object;
+  setFilteredDemographics: Function;
+}
+
+const FilterModal: React.FC<FilterModalProps> = ({
+  filteredDemographics,
+  setFilteredDemographics,
+}) => {
   const [modalVisible, setModalVisible] = useState(false); // TODO use useRef
   const [data, setData] = useState(demographics); // TODO use useRef
 
@@ -86,6 +94,11 @@ const FilterModal = () => {
                                       );
                                     }
                                     setData([...updatedData]);
+                                    setFilteredDemographics({
+                                      ...filteredDemographics,
+                                      [updatedData[index].id]:
+                                        updatedData[index]?.selected,
+                                    });
                                   }}
                                 />
                                 <Label nativeID={option}>{option}</Label>
@@ -115,6 +128,11 @@ const FilterModal = () => {
                                           value
                                         );
                                       }
+                                      setFilteredDemographics({
+                                        ...filteredDemographics,
+                                        [updatedData[index].id]:
+                                          updatedData[index]?.selected,
+                                      });
                                       setData([...updatedData]);
                                     }}
                                   />
@@ -129,7 +147,7 @@ const FilterModal = () => {
               </Accordion>
               <Button
                 variant="outline"
-                onPress={() => setModalVisible(!modalVisible)}
+                onPress={() => setModalVisible(!modalVisible)} // TODO only set state once button is pressed here
                 className="mt-6"
               >
                 <Text>Generate visualization</Text>

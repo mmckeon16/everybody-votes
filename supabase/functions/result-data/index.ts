@@ -19,7 +19,27 @@ Deno.serve(async (req: Request) => {
 
     console.log('Processing request for questionId:', questionId);
 
-    // First get the question and its options
+    // Get demographic filters from query params
+    const demographicFilters: Record<string, string[]> = {};
+    const validDemographicFields = [
+      'age',
+      'gender',
+      'country_residence',
+      'race_ethnicity',
+      'income_bracket',
+      'political_affiliation',
+      'occupation',
+      'country_origin',
+    ];
+
+    validDemographicFields.forEach(field => {
+      const values = url.searchParams.getAll(field);
+      if (values.length > 0) {
+        demographicFilters[field] = values;
+      }
+    });
+
+    // Get the question and its options (unchanged)
     const { data: questionData, error: questionError } = await supabase
       .from('questions')
       .select(
@@ -36,13 +56,11 @@ Deno.serve(async (req: Request) => {
       .single();
 
     if (questionError) throw questionError;
-    console.log('Question data:', questionData);
 
-    // Get all answers for this question's options
-    const optionIds = questionData.options.map((opt) => opt.id);
-    console.log('Looking for answers with option_ids:', optionIds);
+    // Get answers for this question's options with demographic filters
+    const optionIds = questionData.options.map(opt => opt.id);
 
-    const { data: answers, error: answersError } = await supabase
+    let answersQuery = supabase
       .from('answers')
       .select(
         `
@@ -63,19 +81,30 @@ Deno.serve(async (req: Request) => {
       )
       .in('option_id', optionIds);
 
-    console.log('Raw answers query result:', { answers, answersError });
+    // Add demographic filters to the query
+    if (Object.keys(demographicFilters).length > 0) {
+      // Build the filter conditions
+      const filterConditions = Object.entries(demographicFilters).map(
+        ([field, values]) => ({
+          [`demographics.${field}`]: values,
+        })
+      );
 
-    // If we still get no answers, let's try a simple answers query
-    const { data: simpleAnswers, error: simpleError } = await supabase
-      .from('answers')
-      .select('*');
+      // Apply OR condition for multiple values of the same field
+      filterConditions.forEach(condition => {
+        answersQuery = answersQuery.or(
+          `${Object.keys(condition)[0]}.in.(${Object.values(condition)[0].join(
+            ','
+          )})`
+        );
+      });
+    }
 
-    console.log('Simple answers query result:', { simpleAnswers, simpleError });
+    const { data: answers, error: answersError } = await answersQuery;
 
     if (answersError) throw answersError;
-    console.log('Answers data:', answers);
 
-    // Process vote counts
+    // Rest of the processing remains the same
     const voteCounts = answers.reduce((acc, answer) => {
       acc[answer.option_id] = (acc[answer.option_id] || 0) + 1;
       return acc;
@@ -86,16 +115,15 @@ Deno.serve(async (req: Request) => {
       0
     );
 
-    // Format results
-    const results = questionData.options.map((option) => ({
+    const results = questionData.options.map(option => ({
       optionId: option.id,
       optionText: option.text,
       votes: voteCounts[option.id] || 0,
       percentage:
         totalVotes > 0 ? ((voteCounts[option.id] || 0) / totalVotes) * 100 : 0,
       responses: answers
-        .filter((answer) => answer.option_id === option.id)
-        .map((answer) => ({
+        .filter(answer => answer.option_id === option.id)
+        .map(answer => ({
           userId: answer.user_id,
           demographics: answer.demographics,
         })),
@@ -110,6 +138,7 @@ Deno.serve(async (req: Request) => {
         results,
         totalVotes,
         voteCounts,
+        appliedFilters: demographicFilters,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -3,6 +3,7 @@ import { countries } from '../../auth/constants';
 export const demographics = [
   {
     name: 'Gender',
+    id: 'gender',
     selected: [],
     options: [
       { label: 'Male', value: 'male' },
@@ -12,6 +13,7 @@ export const demographics = [
   },
   {
     name: 'Age',
+    id: 'age',
     selected: [],
     options: [
       { label: '<18', value: '<18' },
@@ -26,11 +28,13 @@ export const demographics = [
   },
   {
     name: 'Country of origin',
+    id: 'country_origin',
     selected: [],
     options: [...countries],
   },
   {
     name: 'Race/Ethnicity',
+    id: 'race_ethnicity',
     selected: [],
     options: [
       { label: 'Asian', value: 'asian' },
@@ -42,6 +46,7 @@ export const demographics = [
   },
   {
     name: 'Politics',
+    id: 'political_affiliation',
     selected: [],
     options: [
       { label: 'Conservative', value: 'conservative' },
@@ -52,6 +57,7 @@ export const demographics = [
 
   {
     name: 'Occupation',
+    id: 'occupation',
     selected: [],
     options: [
       { label: 'balls', value: 'balls' },
@@ -61,6 +67,7 @@ export const demographics = [
   },
   {
     name: 'Income bracket',
+    id: 'income_bracket',
     selected: [],
     options: [
       { label: 'balls', value: 'balls' },
