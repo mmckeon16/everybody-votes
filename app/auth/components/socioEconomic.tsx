@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import React from 'react';
 import {
   Select,
   SelectContent,
@@ -9,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
-import { Text } from '~/components/ui/text';
+import { View } from 'react-native';
 import { StepProps } from '../../types';
 import { occupations, incomes } from '../constants';
 
@@ -21,7 +20,8 @@ const SocioEconomic: React.FC<StepProps> = ({
     <View className="flex flex-col gap-6">
       <Select
         className="web:w-full"
-        onValueChange={({ value }) => {
+        onValueChange={value => {
+          // Remove destructuring
           setProfileData({ ...profileData, occupation: value });
         }}
       >
@@ -33,12 +33,10 @@ const SocioEconomic: React.FC<StepProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>
-              <Text>Occupation</Text>
-            </SelectLabel>
+            <SelectLabel>Occupation</SelectLabel>
             {occupations.map(({ value, label }) => (
               <SelectItem label={value} value={label} key={label}>
-                <Text>{value}</Text>
+                {value} {/* Remove Text wrapper */}
               </SelectItem>
             ))}
           </SelectGroup>
@@ -46,7 +44,8 @@ const SocioEconomic: React.FC<StepProps> = ({
       </Select>
       <Select
         className="web:w-full"
-        onValueChange={({ value }) => {
+        onValueChange={value => {
+          // Remove destructuring
           setProfileData({ ...profileData, incomeBracket: value });
         }}
       >
@@ -58,12 +57,10 @@ const SocioEconomic: React.FC<StepProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>
-              <Text>Income Bracket</Text>
-            </SelectLabel>
+            <SelectLabel>Income Bracket</SelectLabel>
             {incomes.map(({ value, label }) => (
               <SelectItem label={value} value={label} key={label}>
-                <Text>{value}</Text>
+                {value} {/* Remove Text wrapper */}
               </SelectItem>
             ))}
           </SelectGroup>

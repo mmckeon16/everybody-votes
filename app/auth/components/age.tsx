@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Text } from '~/components/ui/text';
-
 import { StepProps } from '../../types';
 
 const Age: React.FC<StepProps> = ({ setProfileData, profileData }) => {

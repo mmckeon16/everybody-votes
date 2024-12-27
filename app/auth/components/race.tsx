@@ -9,8 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Text } from '~/components/ui/text';
+import { Label } from '~/components/ui/label';
 import { StepProps } from '../../types';
-import { demographics, politicalParties } from '../constants';
+import { demographics } from '../constants';
 
 const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
@@ -36,7 +38,9 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Race/Ethnicity</SelectLabel>
+            <SelectLabel>
+              <Text>Race/Ethnicity</Text>
+            </SelectLabel>
             {demographics.map(demographic => (
               <SelectItem
                 label={demographic}

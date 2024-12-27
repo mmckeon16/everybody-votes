@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
+import { Label } from '~/components/ui/label';
 import { StepProps } from '../../types';
 import { politicalParties } from '../constants';
 

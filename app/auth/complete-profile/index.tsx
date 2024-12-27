@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Progress } from '~/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { Text } from '~/components/ui/text';
@@ -126,7 +126,6 @@ export default function CompleteProfile() {
       );
     }
   };
-
   const renderStep = () => {
     switch (currentStep) {
       case STEPS.AGE:
@@ -137,22 +136,18 @@ export default function CompleteProfile() {
         return (
           <Gender profileData={profileData} setProfileData={setProfileData} />
         );
-
       case STEPS.LOCATION:
         return (
           <Location profileData={profileData} setProfileData={setProfileData} />
         );
-
       case STEPS.RACE:
         return (
           <Race profileData={profileData} setProfileData={setProfileData} />
         );
-
       case STEPS.POLITICS:
         return (
           <Politics profileData={profileData} setProfileData={setProfileData} />
         );
-
       case STEPS.SOCIOECONOMIC:
         return (
           <SocioEconomic
@@ -160,6 +155,8 @@ export default function CompleteProfile() {
             setProfileData={setProfileData}
           />
         );
+      default:
+        return <View />; // Return empty view as fallback
     }
   };
 
