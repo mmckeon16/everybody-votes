@@ -44,7 +44,7 @@ export default function Celebrate() {
             variant="outline"
             className="shadow shadow-foreground/5"
             onPress={() => {
-              router.replace('/(app');
+              router.replace('/');
             }}
           >
             <Text>Go home</Text>
