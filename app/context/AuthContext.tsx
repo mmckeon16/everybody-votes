@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', {
+      console.log('Auth state changed AFTER ONBOARDING:', {
         event,
         userId: session?.user?.id,
         userEmail: session?.user?.email,
@@ -67,14 +67,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkProfileCompletion = async (session: Session) => {
     if (!session?.user) return false;
 
-    console.log('Checking profileCompletion for user:', session.user.id);
-    console.log('User metadata:', session.user.user_metadata);
-    // Check user metadata directly
-    if (!session.user.user_metadata?.completed_profile) {
+    try {
+      console.log('Checking profileCompletion for user:', session.user.id);
+
+      // Fetch fresh user data
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error('Error fetching user:', error);
+        return false;
+      }
+
+      console.log('Fresh user metadata:', user?.user_metadata);
+
+      if (!user?.user_metadata?.completed_profile) {
+        setHasCompletedProfile(false);
+      } else {
+        setHasCompletedProfile(true);
+      }
+    } catch (error) {
+      console.error('Error checking profile completion:', error);
+      // Default to false on error for security
       setHasCompletedProfile(false);
-      router.push('/auth/complete-profile');
-    } else {
-      setHasCompletedProfile(true);
+      return false;
     }
   };
 
