@@ -20,6 +20,8 @@ interface OnboardingData {
 }
 
 serve(async (req) => {
+  const isDevelopment = isDevelopmentEnvironment();
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -33,16 +35,6 @@ serve(async (req) => {
     const { onboarding } = (await req.json()) as { onboarding: OnboardingData };
 
     console.log('Checking user:', onboarding.user_id);
-
-    // Add debug logging
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    console.log('SUPABASE_URL:', supabaseUrl);
-    const isDevelopment =
-      supabaseUrl?.includes('localhost') ||
-      supabaseUrl?.includes('127.0.0.1') ||
-      supabaseUrl?.includes('kong') ||
-      process.env.NODE_ENV === 'development';
-    console.log('Is Development?', isDevelopment);
 
     if (!isDevelopment) {
       // Only check auth in production
