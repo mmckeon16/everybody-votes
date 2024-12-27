@@ -10,12 +10,17 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
+import { Label } from '~/components/ui/label';
 import { StepProps } from '../../types';
 
 const Gender: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
-    <View>
+    <View className="flex flex-col gap-3">
+      <Label nativeID="gender">
+        <Text>Gender</Text>
+      </Label>
       <Select
+        id="gender"
         className="web:w-full"
         onValueChange={({ value }) =>
           setProfileData({ ...profileData, gender: value })

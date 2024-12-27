@@ -16,7 +16,7 @@ import { demographics } from '../constants';
 
 const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
-    <View className="flex flex-col gap-6">
+    <View className="flex flex-col gap-3">
       <Label nativeID="race">
         <Text>Race/Ethnicity</Text>
       </Label>

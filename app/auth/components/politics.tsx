@@ -16,7 +16,7 @@ import { politicalParties } from '../constants';
 
 const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
-    <View className="flex flex-col gap-2">
+    <View className="flex flex-col gap-3">
       <Label nativeID="politics">
         <Text>Political Affiliation</Text>
       </Label>
@@ -41,7 +41,7 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
             <SelectLabel>
               <Text>Political Affiliation</Text>
             </SelectLabel>
-            {politicalParties.map((politicalParty) => (
+            {politicalParties.map(politicalParty => (
               <SelectItem
                 label={politicalParty}
                 value={politicalParty}
