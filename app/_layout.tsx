@@ -16,9 +16,7 @@ import { Platform } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
-import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
-import { ProtectedRoute } from './components/ProtectedRoute';
 import HeaderActions from './components/HeaderActions';
 import Toast from 'react-native-toast-message';
 

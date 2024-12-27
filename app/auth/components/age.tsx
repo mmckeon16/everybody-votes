@@ -8,9 +8,7 @@ import { StepProps } from '../../types';
 const Age: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
     <View className="flex flex-col gap-3">
-      <Label nativeID="age">
-        <Text>Age</Text>
-      </Label>
+        <Label nativeID="age"><Text>Age</Text></Label>
       <Input
         id="age"
         placeholder="Age"
@@ -18,8 +16,6 @@ const Age: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         onChangeText={(value: string) =>
           setProfileData({ ...profileData, age: value })
         }
-        aria-labelledby="inputLabel"
-        aria-errormessage="inputError"
         keyboardType="numeric"
       />
     </View>
