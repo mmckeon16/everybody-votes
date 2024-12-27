@@ -12,6 +12,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
   hasCompletedProfile: boolean;
+  refreshProfileStatus: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -22,37 +23,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    console.log('Setting up auth listeners...');
+  const refreshUserMetadata = async () => {
+    try {
+      const {
+        data: { session: currentSession },
+      } = await supabase.auth.refreshSession();
+      console.log(
+        'Refreshed session metadata:',
+        currentSession?.user?.user_metadata
+      );
 
-    // Initial session check
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('Initial session check:', {
-        hasSession: !!session,
-        error,
-        userId: session?.user?.id,
-      });
-      if (session) {
-        setSession(session);
-        checkProfileCompletion(session);
+      if (currentSession?.user) {
+        setSession(currentSession);
+        const isCompleted =
+          !!currentSession.user.user_metadata?.completed_profile;
+        console.log('Profile completion status:', isCompleted);
+        setHasCompletedProfile(isCompleted);
       }
-      setIsLoading(false);
-    });
+    } catch (error) {
+      console.error('Error refreshing session:', error);
+    }
+  };
 
-    // Auth state change listener
+  // Initial setup
+  useEffect(() => {
+    console.log('Initial auth setup...');
+
+    const setupAuth = async () => {
+      try {
+        const {
+          data: { session: initialSession },
+        } = await supabase.auth.getSession();
+        console.log('Initial session:', {
+          exists: !!initialSession,
+          metadata: initialSession?.user?.user_metadata,
+        });
+
+        if (initialSession) {
+          setSession(initialSession);
+          await refreshUserMetadata();
+        }
+      } catch (error) {
+        console.error('Error in initial auth setup:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    setupAuth();
+  }, []);
+
+  // Auth state change listener
+  useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed AFTER ONBOARDING:', {
+    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      console.log('Auth state changed:', {
         event,
-        userId: session?.user?.id,
-        userEmail: session?.user?.email,
-        sessionExists: !!session,
+        metadata: currentSession?.user?.user_metadata,
       });
 
-      if (session) {
-        setSession(session);
-        await checkProfileCompletion(session);
+      if (currentSession) {
+        setSession(currentSession);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          await refreshUserMetadata();
+        }
       } else {
         setSession(null);
         setHasCompletedProfile(false);
@@ -64,36 +99,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const checkProfileCompletion = async (session: Session) => {
-    if (!session?.user) return false;
-
-    try {
-      console.log('Checking profileCompletion for user:', session.user.id);
-
-      // Fetch fresh user data
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
-      if (error) {
-        console.error('Error fetching user:', error);
-        return false;
-      }
-
-      console.log('Fresh user metadata:', user?.user_metadata);
-
-      if (!user?.user_metadata?.completed_profile) {
-        setHasCompletedProfile(false);
-      } else {
-        setHasCompletedProfile(true);
-      }
-    } catch (error) {
-      console.error('Error checking profile completion:', error);
-      // Default to false on error for security
-      setHasCompletedProfile(false);
-      return false;
-    }
+  // Expose a method to manually refresh the profile status
+  const refreshProfileStatus = async () => {
+    await refreshUserMetadata();
   };
 
   const value = {
@@ -108,11 +116,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
     },
     signOut: async () => {
-      await supabase.auth.signOut();
-      router.replace('/auth');
+      console.log('Signing out...');
+
+      const { error } = await supabase.auth.signOut();
+      if (error) console.log(error);
+      console.log('signed out...');
+      router.replace('/');
     },
     isAuthenticated: !!session,
     hasCompletedProfile,
+    refreshProfileStatus, // Expose this method to force refresh when needed
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

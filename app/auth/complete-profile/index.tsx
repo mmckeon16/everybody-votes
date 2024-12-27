@@ -15,6 +15,7 @@ import Politics from '../components/politics';
 import SocioEconomic from '../components/socioEconomic';
 
 import { ProfileData } from '../../types';
+import Toast from 'react-native-toast-message';
 
 const STEPS = {
   AGE: 1,
@@ -26,7 +27,7 @@ const STEPS = {
 };
 
 export default function CompleteProfile() {
-  const { session } = useAuth();
+  const { session, refreshProfileStatus } = useAuth();
   const router = useRouter();
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
@@ -54,7 +55,7 @@ export default function CompleteProfile() {
           // Get user metadata from social provider
           const metadata = user.user_metadata;
 
-          setProfileData(prev => ({
+          setProfileData((prev) => ({
             ...prev,
             // Pre-fill data if available from social provider
             countryResidence:
@@ -99,31 +100,44 @@ export default function CompleteProfile() {
         throw new Error('No authenticated user found');
       }
 
-      // Submit to demographics table via our edge function
-      await mutateAsync({
+      console.log('Starting profile submission...');
+
+      const result = await mutateAsync({
         profileData,
         userId: session.user.id,
       });
 
-      console.log('Profile data submitted');
+      console.log('Profile data submitted, result:', result);
 
-      // Optionally update auth metadata to indicate profile is completed
-      // const { error: updateError } = await supabase.auth.updateUser({
-      //   data: {
-      //     completed_profile: true,
-      //   },
-      // });
+      // Force refresh the profile status
+      console.log('Refreshing profile status...');
+      // await refreshProfileStatus();
 
-      console.log('going to celebrate');
+      console.log('Profile status refreshed, attempting navigation...');
 
-      router.push('/auth/celebrate');
+      // Add a small delay before navigation
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // if (updateError) throw updateError;
+      // Try both navigation methods
+      try {
+        await router.push('/auth/celebrate');
+      } catch (navError) {
+        console.error('Navigation error:', navError);
+        // Fallback navigation
+        router.replace('/auth/celebrate');
+      }
+
+      console.log('Navigation completed');
     } catch (err) {
-      console.error('Error submitting profile:', err);
+      console.error('Error in handleSubmit:', err);
       setError(
         err instanceof Error ? err.message : 'An unexpected error occurred'
       );
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: err instanceof Error ? err.message : 'Failed to submit profile',
+      });
     }
   };
   const renderStep = () => {

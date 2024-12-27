@@ -126,10 +126,18 @@ serve(async (req) => {
       throw updateError;
     }
 
-    return new Response(JSON.stringify({ data }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    });
+    console.log('Successfully updated user metadata');
+
+    return new Response(
+      JSON.stringify({
+        data: { success: true, message: 'Profile completed successfully' },
+        metadata_updated: true,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error('Function error:', error);
     return new Response(
