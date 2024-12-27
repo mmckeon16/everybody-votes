@@ -5,8 +5,7 @@ export const isDevelopmentEnvironment = () => {
   const isDevelopment =
     supabaseUrl?.includes('localhost') ||
     supabaseUrl?.includes('127.0.0.1') ||
-    supabaseUrl?.includes('kong') ||
-    process.env.NODE_ENV === 'development';
+    supabaseUrl?.includes('kong');
 
   console.log('Is Development?', isDevelopment);
   return isDevelopment;
