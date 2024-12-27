@@ -10,20 +10,19 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '~/components/ui/card';
 
-const confetti = require('../../../assets/lottie/celebrate.json');
+const confetti = require('../../../assets/lottie/vote.json');
 
 export default function Celebrate() {
   const router = useRouter();
   const confettiRef = useRef<LottieView>(null);
 
   return (
-    <View className="flex-col items-center justify-center overflow-hidden p-8 mt-2">
-      <Card className="w-full max-w-sm p-2 rounded-2xl">
-        <CardHeader className="items-center">
-          <CardTitle className="pb-2 text-center">
+    <View className="flex-col items-center overflow-hidden p-8 mt-2 h-full">
+      <Card className="w-full max-w-md p-2 rounded-2xl">
+        <CardHeader>
+          <CardTitle className="pb-2">
             Thanks for filling out your profile
           </CardTitle>
           <CardDescription>
@@ -52,15 +51,17 @@ export default function Celebrate() {
         </CardContent>
       </Card>
 
-      <LottieView
-        ref={confettiRef}
-        source={confetti}
-        autoPlay={true}
-        loop={false}
-        style={{ width: 200, height: 200 }} // Explicit dimensions
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-full z-0 pointer-events-none"
-        resizeMode="cover"
-      />
+      <View className="pt-7 self-center flex-1">
+        <LottieView
+          ref={confettiRef}
+          source={confetti}
+          autoPlay={true}
+          loop={false}
+          style={{ width: '100%', height: '100%' }} // Explicit dimensions
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-full z-0 pointer-events-none"
+          resizeMode="cover"
+        />
+      </View>
     </View>
   );
 }
