@@ -41,7 +41,7 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
             <SelectLabel>
               <Text>Political Affiliation</Text>
             </SelectLabel>
-            {politicalParties.map(politicalParty => (
+            {politicalParties.map((politicalParty) => (
               <SelectItem
                 label={politicalParty}
                 value={politicalParty}
