@@ -26,11 +26,11 @@ export default function Vote() {
         userId: session?.user?.id || '',
       });
 
+      // Only navigate on successful submission
       router.push('/screens/predict');
-      // Handle success (e.g., show success message, navigate to results)
     } catch (error) {
-      console.error('There was an error');
-      // Handle error
+      // Error is now handled by the mutation's onError
+      console.error('Vote submission failed:', error);
     }
   };
 
