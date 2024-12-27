@@ -14,7 +14,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    return <Redirect href="/auth/login" />;
+    return <Redirect href="/auth" />;
   }
 
   if (!hasCompletedProfile) {

@@ -4,16 +4,16 @@ import { Progress } from '~/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../context/AuthContext';
-import { useOnboarding } from '../hooks/useOnboarding';
-import Age from './components/age';
-import Gender from './components/gender';
-import Location from './components/location';
-import Demographics from './components/demographics';
-import SocioEconomic from './components/socioEconomic';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
+import { useOnboarding } from '../../hooks/useOnboarding';
+import Age from '../components/age';
+import Gender from '../components/gender';
+import Location from '../components/location';
+import Demographics from '../components/demographics';
+import SocioEconomic from '../components/socioEconomic';
 
-import { ProfileData } from '../types';
+import { ProfileData } from '../../types';
 
 const STEPS = {
   AGE: 1,

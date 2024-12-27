@@ -147,13 +147,13 @@ export default function RootLayout() {
                 headerRight: () => <HeaderActions />,
               }}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name="auth/signup"
-              options={{
+               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
               }}
-            />
+            /> */}
           </Stack>
         </AuthProvider>
       </QueryClientProvider>

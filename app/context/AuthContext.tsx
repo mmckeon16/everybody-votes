@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     signOut: async () => {
       await supabase.auth.signOut();
-      router.replace('/');
+      router.replace('/auth');
     },
     isAuthenticated: !!session,
     hasCompletedProfile,

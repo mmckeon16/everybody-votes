@@ -5,6 +5,8 @@ import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import LottieView from 'lottie-react-native';
 
+const confetti = require('../../../assets/lottie/celebrate.json');
+
 export default function Celebrate() {
   const router = useRouter();
   const confettiRef = useRef<LottieView>(null);
@@ -40,7 +42,7 @@ export default function Celebrate() {
 
       <LottieView
         ref={confettiRef}
-        source={require('../../assets/lottie/celebrate.json')}
+        source={confetti}
         autoPlay={true}
         loop={false}
         style={{ width: 200, height: 200 }} // Explicit dimensions
