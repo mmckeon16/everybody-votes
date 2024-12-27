@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Modal, ScrollView, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -16,6 +16,7 @@ import { demographics } from '../constants';
 
 const FilterModal = () => {
   const [modalVisible, setModalVisible] = useState(false); // TODO use useRef
+  const [data, setData] = useState(demographics); // TODO use useRef
 
   return (
     <View>
@@ -45,8 +46,8 @@ const FilterModal = () => {
                 defaultValue={['item-1']}
                 className="w-full native:max-w-md"
               >
-                {demographics.map(({ name, options }) => (
-                  <AccordionItem value={name}>
+                {data.map(({ name, options, selected = [] }, index) => (
+                  <AccordionItem value={name} key={name}>
                     <AccordionTrigger>
                       <Text>{name}</Text>
                     </AccordionTrigger>
@@ -65,26 +66,62 @@ const FilterModal = () => {
                               <View className="flex flex-row gap-2 w-2/5 px-2 truncate">
                                 <Checkbox
                                   id={option}
-                                  checked={false}
+                                  key={option}
+                                  checked={selected.includes(option)}
                                   onCheckedChange={() => {
-                                    console.log('checked', option);
+                                    let updatedData = data;
+                                    if (selected.includes(option)) {
+                                      const updatedSelected = data[
+                                        index
+                                      ]?.selected.filter(
+                                        item => item !== option
+                                      );
+                                      updatedData[index] = {
+                                        ...updatedData[index],
+                                        selected: updatedSelected,
+                                      };
+                                    } else {
+                                      updatedData[index]?.selected?.push(
+                                        option
+                                      );
+                                    }
+                                    setData([...updatedData]);
                                   }}
                                 />
                                 <Label nativeID={option}>{option}</Label>
                               </View>
                             ))
-                          : options?.map(({ label, value }) => (
-                              <View className="flex flex-row gap-2 w-1/3 px-2">
-                                <Checkbox
-                                  id={value}
-                                  checked={false}
-                                  onCheckedChange={() => {
-                                    console.log('checked', label);
-                                  }}
-                                />
-                                <Label nativeID={value}>{label}</Label>
-                              </View>
-                            ))}
+                          : options?.map(({ label, value }) => {
+                              return (
+                                <View className="flex flex-row gap-2 w-1/3 px-2">
+                                  <Checkbox
+                                    id={value}
+                                    key={value}
+                                    checked={selected.includes(value)}
+                                    onCheckedChange={() => {
+                                      let updatedData = data;
+                                      if (selected.includes(value)) {
+                                        const updatedSelected = data[
+                                          index
+                                        ]?.selected.filter(
+                                          item => item !== value
+                                        );
+                                        updatedData[index] = {
+                                          ...updatedData[index],
+                                          selected: updatedSelected,
+                                        };
+                                      } else {
+                                        updatedData[index]?.selected?.push(
+                                          value
+                                        );
+                                      }
+                                      setData([...updatedData]);
+                                    }}
+                                  />
+                                  <Label nativeID={value}>{label}</Label>
+                                </View>
+                              );
+                            })}
                       </ScrollView>
                     </AccordionContent>
                   </AccordionItem>

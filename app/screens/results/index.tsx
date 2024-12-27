@@ -22,7 +22,7 @@ import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
 export default function Results() {
   const { data: activeQuestion } = useActiveQuestion();
 
-  const { data: results, isLoading, error } = useResults(activeQuestion.id);
+  const { data: results, isLoading, error } = useResults(activeQuestion?.id);
   console.log('Data from results....');
   console.log(results);
 
