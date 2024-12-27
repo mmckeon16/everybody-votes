@@ -10,7 +10,8 @@ import { useOnboarding } from '../../hooks/useOnboarding';
 import Age from '../components/age';
 import Gender from '../components/gender';
 import Location from '../components/location';
-import Demographics from '../components/demographics';
+import Race from '../components/race';
+import Politics from '../components/politics';
 import SocioEconomic from '../components/socioEconomic';
 
 import { ProfileData } from '../../types';
@@ -19,8 +20,9 @@ const STEPS = {
   AGE: 1,
   GENDER: 2,
   LOCATION: 3,
-  DEMOGRAPHICS: 4,
-  SOCIOECONOMIC: 5,
+  POLITICS: 4,
+  RACE: 5,
+  SOCIOECONOMIC: 6,
 };
 
 export default function CompleteProfile() {
@@ -52,7 +54,7 @@ export default function CompleteProfile() {
           // Get user metadata from social provider
           const metadata = user.user_metadata;
 
-          setProfileData((prev) => ({
+          setProfileData(prev => ({
             ...prev,
             // Pre-fill data if available from social provider
             countryResidence:
@@ -78,11 +80,10 @@ export default function CompleteProfile() {
           profileData.countryResidence !== '' &&
           profileData.countryOrigin !== ''
         );
-      case STEPS.DEMOGRAPHICS:
-        return (
-          profileData.raceEthnicity !== '' &&
-          profileData.politicalAffiliation !== ''
-        );
+      case STEPS.RACE:
+        return profileData.raceEthnicity !== '';
+      case STEPS.POLITICS:
+        return profileData.politicalAffiliation !== '';
       case STEPS.SOCIOECONOMIC:
         return (
           profileData.occupation !== '' && profileData.incomeBracket !== ''
@@ -142,12 +143,14 @@ export default function CompleteProfile() {
           <Location profileData={profileData} setProfileData={setProfileData} />
         );
 
-      case STEPS.DEMOGRAPHICS:
+      case STEPS.RACE:
         return (
-          <Demographics
-            profileData={profileData}
-            setProfileData={setProfileData}
-          />
+          <Race profileData={profileData} setProfileData={setProfileData} />
+        );
+
+      case STEPS.POLITICS:
+        return (
+          <Politics profileData={profileData} setProfileData={setProfileData} />
         );
 
       case STEPS.SOCIOECONOMIC:
@@ -201,13 +204,11 @@ export default function CompleteProfile() {
   return (
     <ScrollView className="flex p-5">
       <Text className="text-2xl text-center">Complete your profile</Text>
-
       <Progress
         value={(currentStep / Object.keys(STEPS).length) * 100}
         className="h-2 my-8"
         indicatorClassName="bg-sky-600"
       />
-
       {error && <Text>{error}</Text>}
       {renderStep()}
       {renderButtons()}

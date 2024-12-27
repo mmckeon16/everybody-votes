@@ -44,3 +44,4 @@ export const resultsApi = {
     };
   },
 };
+export default resultsApi;

@@ -46,3 +46,4 @@ export const questionsApi = {
     return response.json();
   },
 };
+export default questionsApi;

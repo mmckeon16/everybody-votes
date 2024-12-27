@@ -71,9 +71,6 @@ export default function RootLayout() {
     });
   }, []);
 
-  console.log('colorScheme', colorScheme);
-  console.log('is dark: ', isDarkColorScheme);
-
   if (!isColorSchemeLoaded) {
     return null;
   }

@@ -17,3 +17,5 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = () => {
     </View>
   );
 };
+
+export default SkeletonCard;

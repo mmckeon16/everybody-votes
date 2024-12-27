@@ -44,3 +44,5 @@ export function useVote() {
     },
   });
 }
+
+export default useVote;

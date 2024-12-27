@@ -19,3 +19,5 @@ export const predictionsApi = {
     return response.json();
   },
 };
+
+export default predictionsApi;

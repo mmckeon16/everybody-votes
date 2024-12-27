@@ -30,3 +30,5 @@ export const onboardingApi = {
     return response.json();
   },
 };
+
+export default onboardingApi

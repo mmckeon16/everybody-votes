@@ -8,3 +8,5 @@ export function useResults(questionId: string, demographicsFilter: object) {
       resultsApi.getResultsForQuestion(questionId, demographicsFilter),
   });
 }
+
+export default useResults;

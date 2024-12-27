@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Text } from '~/components/ui/text';
 import { StepProps } from '../../types';
 
 const Gender: React.FC<StepProps> = ({ setProfileData, profileData }) => {
@@ -28,18 +29,20 @@ const Gender: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Gender</SelectLabel>
+            <SelectLabel>
+              <Text>Gender</Text>
+            </SelectLabel>
             <SelectItem label="Male" value="male">
-              Male
+              <Text>Male</Text>
             </SelectItem>
             <SelectItem label="Female" value="female">
-              Female
+              <Text>Female</Text>
             </SelectItem>
             <SelectItem label="Non-binary" value="non-binary">
-              Non-binary
+              <Text>Non-binary</Text>
             </SelectItem>
             <SelectItem label="Prefer not to say" value="prefer-not-to-say">
-              Prefer not to say
+              <Text>Prefer not to say</Text>
             </SelectItem>
           </SelectGroup>
         </SelectContent>

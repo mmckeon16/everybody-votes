@@ -19,3 +19,4 @@ export const votingApi = {
     return response.json();
   },
 };
+export default votingApi;

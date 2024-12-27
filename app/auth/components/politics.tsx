@@ -9,43 +9,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Text } from '~/components/ui/text';
 import { StepProps } from '../../types';
-import { demographics, politicalParties } from '../constants';
+import { politicalParties } from '../constants';
 
 const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
-    <View className="flex flex-col gap-6">
+    <View className="flex flex-col gap-2">
+      <Label nativeID="politics">
+        <Text>Political Affiliation</Text>
+      </Label>
       <Select
-        className="web:w-full"
-        onValueChange={({ value }) => {
-          setProfileData({
-            ...profileData,
-            raceEthnicity: value.toLowerCase(),
-          });
-        }}
-      >
-        <SelectTrigger>
-          <SelectValue
-            className="text-foreground text-sm native:text-lg"
-            placeholder="Race/Ethnicity"
-          />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Race/Ethnicity</SelectLabel>
-            {demographics.map(demographic => (
-              <SelectItem
-                label={demographic}
-                value={demographic}
-                key={demographic}
-              >
-                {demographic}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <Select
+        id="politics"
         className="web:w-full"
         onValueChange={({ value }) => {
           setProfileData({
@@ -62,14 +37,16 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Political Affiliation</SelectLabel>
+            <SelectLabel>
+              <Text>Political Affiliation</Text>
+            </SelectLabel>
             {politicalParties.map(politicalParty => (
               <SelectItem
                 label={politicalParty}
                 value={politicalParty}
                 key={politicalParty}
               >
-                {politicalParty}
+                <Text>{politicalParty}</Text>
               </SelectItem>
             ))}
           </SelectGroup>

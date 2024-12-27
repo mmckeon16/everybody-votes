@@ -1,13 +1,19 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Input } from '~/components/ui/input';
-import { Button } from '~/components/ui/button'; // adjust path as needed
-import { ProfileData, StepProps } from '../../types';
+import { Label } from '~/components/ui/label';
+import { Text } from '~/components/ui/text';
+
+import { StepProps } from '../../types';
 
 const Age: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
-    <View>
+    <View className="flex flex-col gap-3">
+      <Label nativeID="age">
+        <Text>Age</Text>
+      </Label>
       <Input
+        id="age"
         placeholder="Age"
         value={profileData?.age}
         onChangeText={(value: string) =>

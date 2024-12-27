@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Text } from '~/components/ui/text';
 import { StepProps } from '../../types';
 import { occupations, incomes } from '../constants';
 
@@ -32,10 +33,12 @@ const SocioEconomic: React.FC<StepProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Occupation</SelectLabel>
+            <SelectLabel>
+              <Text>Occupation</Text>
+            </SelectLabel>
             {occupations.map(({ value, label }) => (
               <SelectItem label={value} value={label} key={label}>
-                {value}
+                <Text>{value}</Text>
               </SelectItem>
             ))}
           </SelectGroup>
@@ -55,10 +58,12 @@ const SocioEconomic: React.FC<StepProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Income Bracket</SelectLabel>
+            <SelectLabel>
+              <Text>Income Bracket</Text>
+            </SelectLabel>
             {incomes.map(({ value, label }) => (
               <SelectItem label={value} value={label} key={label}>
-                {value}
+                <Text>{value}</Text>
               </SelectItem>
             ))}
           </SelectGroup>

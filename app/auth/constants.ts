@@ -233,3 +233,11 @@ export const incomes = [
   { value: '$75,000 - $99,999', label: '75k-100k' },
   { value: '$100,000+', label: '100k-plus' },
 ];
+
+export default {
+  countries,
+  incomes,
+  occupations,
+  politicalParties,
+  demographics,
+};

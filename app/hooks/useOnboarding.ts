@@ -13,3 +13,4 @@ export function useOnboarding() {
     }) => onboardingApi.submitOnboarding(profileData, userId),
   });
 }
+ export default useOnboarding

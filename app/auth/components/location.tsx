@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Text } from '~/components/ui/text';
 import { Label } from '~/components/ui/label';
 import { Checkbox } from '~/components/ui/checkbox';
 import { StepProps } from '../../types';
@@ -46,10 +47,12 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Country of origin</SelectLabel>
+            <SelectLabel>
+              <Text>Country of origin</Text>
+            </SelectLabel>
             {countries.map(country => (
               <SelectItem label={country} value={country} key={country}>
-                {country}
+                <Text>{country}</Text>
               </SelectItem>
             ))}
           </SelectGroup>
@@ -75,7 +78,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           }}
         />
         <Label nativeID="country">
-          I'm currently living in my country of origin
+          <Text>I'm currently living in my country of origin</Text>
         </Label>
       </View>
       {!checkedSameCountry && (
@@ -96,10 +99,12 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Country of Residence</SelectLabel>
+              <SelectLabel>
+                <Text>Country of Residence</Text>
+              </SelectLabel>
               {countries.map(country => (
                 <SelectItem label={country} value={country} key={country}>
-                  {country}
+                  <Text>{country}</Text>
                 </SelectItem>
               ))}
             </SelectGroup>

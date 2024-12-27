@@ -76,3 +76,7 @@ export const demographics = [
     ],
   },
 ];
+
+export default {
+  demographics,
+};

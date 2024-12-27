@@ -7,3 +7,5 @@ export function useActiveQuestion() {
     queryFn: questionsApi.getActiveQuestion,
   });
 }
+
+export default useActiveQuestion;

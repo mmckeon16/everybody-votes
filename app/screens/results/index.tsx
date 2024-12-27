@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
-import { Button } from '~/components/ui/button';
 import {
   Card,
   CardContent,

@@ -30,3 +30,5 @@ export function usePrediction() {
     },
   });
 }
+
+export default usePrediction;
