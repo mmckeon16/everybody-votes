@@ -14,7 +14,7 @@ import Animated, {
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface DataItem {
-  text: string;
+  optionText: string;
   percentage: number;
   color: string;
 }
@@ -32,8 +32,6 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   strokeWidth = 25,
   children,
 }) => {
-  console.log('PIE DATA: ', data.length);
-
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
@@ -101,6 +99,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
           <G rotation={90} origin={`${center}, ${center}`}>
             <AnimatedCircle
               cx={center}
+              key={`donut-segment-${data[0]?.optionText}`} // using text as unique identifier
               cy={center}
               r={radius}
               stroke={data[0].color}
@@ -113,6 +112,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
             />
             <AnimatedCircle
               cx={center}
+              key={`donut-segment-${data[1]?.optionText}`} // using text as unique identifier
               cy={center}
               r={radius}
               stroke={data[1].color}
@@ -128,7 +128,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       </View>
       <View style={styles.legendContainer}>
         {data.map((item, index) => (
-          <View key={item.text} style={styles.legendItem}>
+          <View key={item.optionText} style={styles.legendItem}>
             <View style={[styles.colorBox, { backgroundColor: item.color }]} />
             <Text style={styles.legendText}>
               {item.text} ({item.percentage}%)

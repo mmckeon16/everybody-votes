@@ -12,18 +12,20 @@ import Gender from '../components/gender';
 import Location from '../components/location';
 import Race from '../components/race';
 import Politics from '../components/politics';
+import Occupation from '../components/occupation';
 import SocioEconomic from '../components/socioEconomic';
 
 import { ProfileData } from '../../types';
 import Toast from 'react-native-toast-message';
 
 const STEPS = {
-  AGE: 1,
+  AGE: 6,
   GENDER: 2,
   LOCATION: 3,
   POLITICS: 4,
   RACE: 5,
-  SOCIOECONOMIC: 6,
+  OCCUPATION: 1,
+  SOCIOECONOMIC: 7,
 };
 
 export default function CompleteProfile() {
@@ -55,7 +57,7 @@ export default function CompleteProfile() {
           // Get user metadata from social provider
           const metadata = user.user_metadata;
 
-          setProfileData((prev) => ({
+          setProfileData(prev => ({
             ...prev,
             // Pre-fill data if available from social provider
             countryResidence:
@@ -85,10 +87,10 @@ export default function CompleteProfile() {
         return profileData.raceEthnicity !== '';
       case STEPS.POLITICS:
         return profileData.politicalAffiliation !== '';
+      case STEPS.OCCUPATION:
+        return profileData.occupation !== '';
       case STEPS.SOCIOECONOMIC:
-        return (
-          profileData.occupation !== '' && profileData.incomeBracket !== ''
-        );
+        return profileData.incomeBracket !== '';
       default:
         return false;
     }
@@ -117,7 +119,7 @@ export default function CompleteProfile() {
       console.log('Profile status refreshed, attempting navigation...');
 
       // Add a small delay before navigation
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Try both navigation methods
       // why is this needed?
@@ -164,6 +166,13 @@ export default function CompleteProfile() {
       case STEPS.POLITICS:
         return (
           <Politics profileData={profileData} setProfileData={setProfileData} />
+        );
+      case STEPS.OCCUPATION:
+        return (
+          <Occupation
+            profileData={profileData}
+            setProfileData={setProfileData}
+          />
         );
       case STEPS.SOCIOECONOMIC:
         return (

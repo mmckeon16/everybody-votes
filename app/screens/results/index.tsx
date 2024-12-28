@@ -21,8 +21,7 @@ export default function Results() {
   const { data: activeQuestion } = useActiveQuestion();
 
   const { data: totalResults, isLoading, error } = useResults(
-    activeQuestion?.id,
-    {}
+    activeQuestion?.id
   );
   console.log('Data from totalResults....');
   console.log(totalResults);
