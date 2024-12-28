@@ -11,12 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-
-const confetti = require('../../../assets/lottie/vote.json');
+const vote = require('../../../assets/lottie/vote.json');
 
 export default function Celebrate() {
   const router = useRouter();
-  const confettiRef = useRef<LottieView>(null);
+  const voteRef = useRef<LottieView>(null);
 
   return (
     <View className="flex-col items-center overflow-hidden p-8 mt-2 h-full">
@@ -53,8 +52,8 @@ export default function Celebrate() {
 
       <View className="pt-7 self-center flex-1">
         <LottieView
-          ref={confettiRef}
-          source={confetti}
+          ref={voteRef}
+          source={vote}
           autoPlay={true}
           loop={false}
           style={{ width: '100%', height: '100%' }} // Explicit dimensions

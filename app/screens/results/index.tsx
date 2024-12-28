@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
@@ -10,16 +10,14 @@ import {
   CardTitle,
   CardDescription,
 } from '~/components/ui/card';
-import { aggregateVotes } from '../../lib/utils';
 import NumberFlipper from './components/NumberFlipper';
-// import FilterDropDown from './components/FilterDropDown';
 import FilterModal from './components/FilterModal';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import Flower from './components/Flower';
+import FilteredResultsCard from './components/FilteredResultsCard';
 import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
+import { addColorToResults } from '../../lib/utils';
 
 export default function Results() {
-  const [filteredDemographics, setFilteredDemographics] = useState({});
+  const [filteredDemographics, setFilteredDemographics] = useState(null);
   const { data: activeQuestion } = useActiveQuestion();
 
   const { data: totalResults, isLoading, error } = useResults(
@@ -28,109 +26,30 @@ export default function Results() {
   );
   console.log('Data from totalResults....');
   console.log(totalResults);
+  const nullData = { question: null, totalVotes: null, results: null };
+  const { data: { question, totalVotes, results } = nullData } =
+    totalResults || {};
 
-  const {
-    data: filteredResults,
-    isLoading: filteredIsLoading,
-    error: filteredError,
-  } = useResults(activeQuestion?.id, filteredDemographics);
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-  console.log('Data from filtered....', filteredDemographics);
-  console.log(filteredResults);
-
-  // if (isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <ActivityIndicator size="large" />
-  //     </View>
-  //   );
-  // }
-
-  // if (error) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <ThemedText type="default">Failed to load results</ThemedText>
-  //     </View>
-  //   );
-  // }
-
-  /*
-  id,
-  created_at,
-  options (
-    id,
-    text,
-    question_id,
-    questions (
-      id,
-      text
-
-      */
-
-  const rawData = [
-    {
-      id: 'UUID HERE',
-      created_at: 'new Date',
-      options: {
-        id: 'option id',
-        text: 'Yes',
-        question_id: 'your-question-id',
-        questions: {
-          id: 'your-question-id',
-          text: 'Should US Presidents have term limits',
-        },
-      },
-    },
-    {
-      id: 'UUID HERE',
-      created_at: 'new Date',
-      options: {
-        id: 'option id',
-        text: 'Yes',
-        question_id: 'your-question-id',
-        questions: {
-          id: 'your-question-id',
-          text: 'Should US Presidents have term limits',
-        },
-      },
-    },
-    {
-      id: 'UUID HERE',
-      created_at: 'new Date',
-      options: {
-        id: 'option id',
-        text: 'Yes',
-        question_id: 'your-question-id',
-        questions: {
-          id: 'your-question-id',
-          text: 'Should US Presidents have term limits',
-        },
-      },
-    },
-    {
-      id: 'UUID HERE',
-      created_at: 'new Date',
-      options: {
-        id: 'option id 2',
-        text: 'No',
-        question_id: 'your-question-id',
-        questions: {
-          id: 'your-question-id',
-          text: 'Should US Presidents have term limits',
-        },
-      },
-    },
-  ];
-  const aggregateData = aggregateVotes(rawData);
-
-  // TODO add in prediction
+  if (error) {
+    return (
+      <View className="flex justify-center items-center">
+        <Text>Failed to load results</Text>
+      </View>
+    );
+  }
   return (
     <View className="flex-column items-center overflow-hidden flex-1">
       <Card className="max-w-3xl m-6">
         <CardHeader className="items-center">
-          <CardTitle className="pb-2 text-center">
-            {aggregateData?.questionText}
-          </CardTitle>
+          <CardTitle className="pb-2 text-center">{question?.text}</CardTitle>
           <CardDescription className="self-start ml-6">
             <FilterModal
               filteredDemographics={filteredDemographics}
@@ -139,19 +58,30 @@ export default function Results() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <View className="flex items-center flex-1">
-            <PieChart data={aggregateData?.options} size={200} strokeWidth={25}>
-              <View className="flex justify-center">
-                <Text>
-                  <NumberFlipper targetNumber={100000} /> votes
-                </Text>
-              </View>
-            </PieChart>
-            {/* <Flower color="blue" isBlooming={true} /> */}
-          </View>
+          {results && results.length === 2 && (
+            <View className="flex items-center flex-1">
+              <PieChart
+                data={addColorToResults(results)}
+                size={200}
+                strokeWidth={25}
+              >
+                <View className="flex justify-center">
+                  <Text>
+                    <NumberFlipper targetNumber={totalVotes} /> votes
+                  </Text>
+                </View>
+              </PieChart>
+            </View>
+          )}
         </CardContent>
       </Card>
-      {/* <Card className="max-w-3xl m-6">{filteredValues}</Card> */}
+      {console.log('filtered', filteredDemographics)}
+      {filteredDemographics && (
+        <FilteredResultsCard
+          filteredDemographics={filteredDemographics}
+          activeQuestion={activeQuestion}
+        />
+      )}
     </View>
   );
 }

@@ -32,6 +32,8 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   strokeWidth = 25,
   children,
 }) => {
+  console.log('PIE DATA: ', data.length);
+
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;

@@ -82,45 +82,14 @@ const getTimeRemainingPercentage = (
   return percentageRemaining;
 };
 
-const aggregateVotes = (data: VoteData[]): AggregatedResults | null => {
-  if (!data || data.length === 0) return null;
+function addColorToResults<T>(results: T[]): (T & { color: string })[] {
+  const colors = returnSetColors();
 
-  const questionText = data[0].options.questions.text;
-  const totalVotes = data.length;
-
-  // First pass to count votes
-  const counts = data.reduce<
-    Record<string, { id: string; text: string; count: number }>
-  >((acc, item) => {
-    const option = item.options;
-
-    if (!acc[option.id]) {
-      acc[option.id] = {
-        id: option.id,
-        text: option.text,
-        count: 0,
-      };
-    }
-
-    acc[option.id].count++;
-    return acc;
-  }, {});
-
-  const colorArray = returnSetColors();
-
-  // Convert counts to percentages
-  const options = Object.values(counts).map((option, index) => ({
-    id: option.id,
-    text: option.text,
-    percentage: Number(((option.count / totalVotes) * 100).toFixed(1)),
-    color: colorArray[index],
+  return results.map((result, index) => ({
+    ...result,
+    color: colors[index % colors.length], // Use modulo to cycle through colors
   }));
-
-  return {
-    options,
-    questionText,
-  };
-};
+}
 
 function getColorDistance(color1: RGB, color2: RGB): number {
   // Calculate Euclidean distance between colors in RGB space
@@ -183,4 +152,8 @@ function getTwoDistinctColors(): [string, string] {
   return [rgbToHex(color1), rgbToHex(color2)];
 }
 
-export { getTimeUntilExpiration, getTimeRemainingPercentage, aggregateVotes };
+export {
+  getTimeUntilExpiration,
+  getTimeRemainingPercentage,
+  addColorToResults,
+};

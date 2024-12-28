@@ -25,6 +25,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const [modalVisible, setModalVisible] = useState(false); // TODO use useRef
   const [data, setData] = useState(demographics); // TODO use useRef
+  const [userSelectedDemographics, setUserSelectedDemographics] = useState(
+    filteredDemographics
+  ); // TODO use useRef
 
   return (
     <View>
@@ -71,10 +74,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
                       >
                         {name === 'Country of origin'
                           ? options?.map(option => (
-                              <View className="flex flex-row gap-2 w-2/5 px-2 truncate">
+                              <View
+                                key={option}
+                                className="flex flex-row gap-2 w-2/5 px-2 truncate"
+                              >
                                 <Checkbox
                                   id={option}
-                                  key={option}
                                   checked={selected.includes(option)}
                                   onCheckedChange={() => {
                                     let updatedData = data;
@@ -94,8 +99,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                       );
                                     }
                                     setData([...updatedData]);
-                                    setFilteredDemographics({
-                                      ...filteredDemographics,
+                                    setUserSelectedDemographics({
+                                      ...userSelectedDemographics,
                                       [updatedData[index].id]:
                                         updatedData[index]?.selected,
                                     });
@@ -106,10 +111,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
                             ))
                           : options?.map(({ label, value }) => {
                               return (
-                                <View className="flex flex-row gap-2 w-1/3 px-2">
+                                <View
+                                  className="flex flex-row gap-2 w-1/3 px-2"
+                                  key={value}
+                                >
                                   <Checkbox
                                     id={value}
-                                    key={value}
                                     checked={selected.includes(value)}
                                     onCheckedChange={() => {
                                       let updatedData = data;
@@ -128,8 +135,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                           value
                                         );
                                       }
-                                      setFilteredDemographics({
-                                        ...filteredDemographics,
+                                      setUserSelectedDemographics({
+                                        ...userSelectedDemographics,
                                         [updatedData[index].id]:
                                           updatedData[index]?.selected,
                                       });
@@ -147,7 +154,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </Accordion>
               <Button
                 variant="outline"
-                onPress={() => setModalVisible(!modalVisible)} // TODO only set state once button is pressed here
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  setFilteredDemographics(userSelectedDemographics);
+                }}
                 className="mt-6"
               >
                 <Text>Generate visualization</Text>
