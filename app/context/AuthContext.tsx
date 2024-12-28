@@ -12,7 +12,6 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
   hasCompletedProfile: boolean;
-  refreshProfileStatus: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -23,71 +22,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
   const router = useRouter();
 
-  const refreshUserMetadata = async () => {
-    try {
-      const {
-        data: { session: currentSession },
-      } = await supabase.auth.refreshSession();
-      console.log(
-        'Refreshed session metadata:',
-        currentSession?.user?.user_metadata
-      );
-
-      if (currentSession?.user) {
-        setSession(currentSession);
-        const isCompleted =
-          !!currentSession.user.user_metadata?.completed_profile;
-        console.log('Profile completion status:', isCompleted);
-        setHasCompletedProfile(isCompleted);
-      }
-    } catch (error) {
-      console.error('Error refreshing session:', error);
-    }
-  };
-
-  // Initial setup
   useEffect(() => {
-    console.log('Initial auth setup...');
+    console.log('Setting up auth listeners...');
 
-    const setupAuth = async () => {
-      try {
-        const {
-          data: { session: initialSession },
-        } = await supabase.auth.getSession();
-        console.log('Initial session:', {
-          exists: !!initialSession,
-          metadata: initialSession?.user?.user_metadata,
-        });
-
-        if (initialSession) {
-          setSession(initialSession);
-          await refreshUserMetadata();
-        }
-      } catch (error) {
-        console.error('Error in initial auth setup:', error);
-      } finally {
-        setIsLoading(false);
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      console.log('Initial session check:', {
+        hasSession: !!session,
+        error,
+        userId: session?.user?.id,
+      });
+      if (session) {
+        setSession(session);
+        checkProfileCompletion(session);
       }
-    };
-
-    setupAuth();
+      setIsLoading(false);
+    });
   }, []);
 
-  // Auth state change listener
   useEffect(() => {
+    // Auth state change listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', {
         event,
-        metadata: currentSession?.user?.user_metadata,
+        userId: session?.user?.id,
+        userEmail: session?.user?.email,
+        sessionExists: !!session,
       });
 
-      if (currentSession) {
-        setSession(currentSession);
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          await refreshUserMetadata();
-        }
+      if (session) {
+        // setSession(session);
+        await checkProfileCompletion(session);
       } else {
         setSession(null);
         setHasCompletedProfile(false);
@@ -97,11 +64,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [session]);
 
-  // Expose a method to manually refresh the profile status
-  const refreshProfileStatus = async () => {
-    await refreshUserMetadata();
+  const checkProfileCompletion = async (session: Session) => {
+    if (!session?.user) return false;
+
+    console.log('Checking profileCompletion for user:', session.user.id);
+    console.log('User metadata:', session.user.user_metadata);
+    // Check user metadata directly
+    if (!session.user.user_metadata?.completed_profile) {
+      setHasCompletedProfile(false);
+      router.push('/auth/complete-profile');
+    } else {
+      setHasCompletedProfile(true);
+    }
   };
 
   const value = {
@@ -116,16 +92,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
     },
     signOut: async () => {
-      console.log('Signing out...');
-
-      const { error } = await supabase.auth.signOut();
-      if (error) console.log(error);
-      console.log('signed out...');
-      router.replace('/');
+      await supabase.auth.signOut();
+      router.replace('/auth');
     },
     isAuthenticated: !!session,
     hasCompletedProfile,
-    refreshProfileStatus, // Expose this method to force refresh when needed
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
