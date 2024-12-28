@@ -1,143 +1,326 @@
-import React, { useState } from 'react';
-import { Text } from '~/components/ui/text';
-import { View } from 'react-native';
+import * as React from 'react';
+import { View, TextInput, Text } from 'react-native';
+import { Search } from 'lucide-react-native';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectGroup,
   SelectTrigger,
-  SelectSeparator,
   SelectValue,
 } from '~/components/ui/select';
-import { Input } from '~/components/ui/input';
 
-const occupationCategories = {
-  business_entrepreneurship: {
+// Define types for our occupation data
+type OccupationSubcategory = {
+  label: string;
+  value: string;
+};
+
+type OccupationCategory = {
+  label: string;
+  value: string;
+  subcategories: OccupationSubcategory[];
+};
+
+type Props = {
+  onSelect?: (value: {
+    categoryValue: string;
+    subcategoryValue?: string;
+    other?: string;
+    displayValue: string;
+  }) => void;
+};
+
+const occupationCategories: OccupationCategory[] = [
+  {
     label: 'Business & Entrepreneurship',
-    options: [
-      { label: 'Business Owner', value: 'biz_owner' },
+    value: 'business',
+    subcategories: [
+      { label: 'Business Owner', value: 'business_owner' },
       { label: 'Franchise Owner', value: 'franchise_owner' },
       { label: 'Startup Founder', value: 'startup_founder' },
-      { label: 'Small Business Operator', value: 'small_biz_op' },
-      { label: 'Independent Contractor', value: 'ind_contractor' },
+      { label: 'Small Business Operator', value: 'small_business_operator' },
+      { label: 'Independent Contractor', value: 'independent_contractor' },
     ],
   },
-  entertainment_arts: {
+  {
     label: 'Entertainment & Performing Arts',
-    options: [
+    value: 'entertainment',
+    subcategories: [
       { label: 'Actor/Actress', value: 'actor' },
       { label: 'Theater Performer', value: 'theater' },
       { label: 'Voice Actor', value: 'voice_actor' },
       { label: 'Stunt Performer', value: 'stunt' },
-      { label: 'TV/Film Production', value: 'tv_film_prod' },
+      { label: 'TV/Film Production', value: 'tv_film' },
+      { label: 'Talent Agent', value: 'talent_agent' },
+      { label: 'Casting Professional', value: 'casting' },
     ],
   },
-  military_defense: {
+  {
     label: 'Military & Defense',
-    options: [
-      { label: 'Active Duty Military', value: 'active_military' },
-      { label: 'Military Reserve', value: 'military_reserve' },
-      { label: 'Defense Contractor', value: 'defense_contract' },
-      { label: 'Veterans Affairs', value: 'vet_affairs' },
-      { label: 'Military Training', value: 'military_train' },
+    value: 'military',
+    subcategories: [
+      { label: 'Active Duty Military', value: 'active_duty' },
+      { label: 'Military Reserve', value: 'reserve' },
+      { label: 'Defense Contractor', value: 'defense_contractor' },
+      { label: 'Veterans Affairs', value: 'veterans_affairs' },
+      { label: 'Military Training', value: 'military_training' },
+      { label: 'Military Technology', value: 'military_tech' },
+      { label: 'Military Healthcare', value: 'military_healthcare' },
     ],
   },
-  construction_trades: {
+  {
     label: 'Construction & Trades',
-    options: [
-      { label: 'General Contracting', value: 'gen_contract' },
-      { label: 'Construction Management', value: 'const_mgmt' },
+    value: 'construction',
+    subcategories: [
+      { label: 'General Contracting', value: 'general_contracting' },
+      { label: 'Construction Management', value: 'construction_mgmt' },
       { label: 'Carpentry', value: 'carpentry' },
       { label: 'Electrical', value: 'electrical' },
       { label: 'Plumbing', value: 'plumbing' },
+      { label: 'HVAC', value: 'hvac' },
+      { label: 'Masonry', value: 'masonry' },
     ],
   },
-  real_estate: {
+  {
     label: 'Real Estate & Property',
-    options: [
+    value: 'real_estate',
+    subcategories: [
       { label: 'Real Estate Sales', value: 're_sales' },
-      { label: 'Property Management', value: 'prop_mgmt' },
-      { label: 'Real Estate Development', value: 're_dev' },
-      { label: 'Commercial Real Estate', value: 'comm_re' },
-      { label: 'Property Appraisal', value: 'prop_appraise' },
+      { label: 'Property Management', value: 'property_mgmt' },
+      { label: 'Real Estate Development', value: 're_development' },
+      { label: 'Commercial Real Estate', value: 'commercial_re' },
+      { label: 'Property Appraisal', value: 'appraisal' },
+      { label: 'Leasing & Rental', value: 'leasing' },
     ],
   },
-  tech_it: {
+  {
     label: 'Technology & IT',
-    options: [
+    value: 'tech',
+    subcategories: [
       { label: 'Software Development', value: 'software_dev' },
       { label: 'IT Support', value: 'it_support' },
-      { label: 'Systems Administration', value: 'sys_admin' },
+      { label: 'Systems Administration', value: 'sysadmin' },
       { label: 'Data Science & Analytics', value: 'data_science' },
-      { label: 'Cybersecurity', value: 'cybersec' },
+      { label: 'Cybersecurity', value: 'cybersecurity' },
     ],
   },
-};
+  {
+    label: 'Healthcare & Medicine',
+    value: 'healthcare',
+    subcategories: [
+      { label: 'Medical Practice', value: 'medical' },
+      { label: 'Nursing', value: 'nursing' },
+      { label: 'Allied Health', value: 'allied_health' },
+      { label: 'Mental Health', value: 'mental_health' },
+      { label: 'Pharmacy', value: 'pharmacy' },
+    ],
+  },
+  {
+    label: 'Education & Training',
+    value: 'education',
+    subcategories: [
+      { label: 'K-12 Education', value: 'k12' },
+      { label: 'Higher Education', value: 'higher_ed' },
+      { label: 'Professional Training', value: 'prof_training' },
+      { label: 'Special Education', value: 'special_ed' },
+      { label: 'Educational Administration', value: 'ed_admin' },
+    ],
+  },
+  {
+    label: 'Creative & Design',
+    value: 'creative',
+    subcategories: [
+      { label: 'Graphic Design', value: 'graphic_design' },
+      { label: 'UX/UI Design', value: 'ux_ui' },
+      { label: 'Art & Illustration', value: 'art' },
+      { label: 'Writing & Content', value: 'writing' },
+      { label: 'Photography', value: 'photography' },
+    ],
+  },
+];
 
-const OccupationSelect = ({ value, onValueChange, error }) => {
-  const [otherValue, setOtherValue] = useState('');
-  const [showOtherInput, setShowOtherInput] = useState(false);
+export const OccupationSelect: React.FC<Props> = ({ onSelect }) => {
+  const [selectedCategory, setSelectedCategory] = React.useState('');
+  const [selectedCategoryLabel, setSelectedCategoryLabel] = React.useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = React.useState('');
+  const [
+    selectedSubcategoryLabel,
+    setSelectedSubcategoryLabel,
+  ] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [otherOccupation, setOtherOccupation] = React.useState('');
+  const [filteredCategories, setFilteredCategories] = React.useState<
+    OccupationCategory[]
+  >(occupationCategories);
 
-  const handleValueChange = (newValue: string) => {
-    if (newValue === 'other') {
-      setShowOtherInput(true);
+  React.useEffect(() => {
+    if (searchQuery) {
+      const filtered = occupationCategories.filter(category => {
+        const matchingSubcategories = category.subcategories.filter(sub =>
+          sub.label.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        return (
+          matchingSubcategories.length > 0 ||
+          category.label.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      });
+      setFilteredCategories(filtered);
     } else {
-      setShowOtherInput(false);
-      onValueChange(newValue);
+      setFilteredCategories(occupationCategories);
     }
-  };
+  }, [searchQuery]);
 
-  const handleOtherValueChange = (text: string) => {
-    setOtherValue(text);
-    if (text) {
-      onValueChange(`other_${text.toLowerCase().replace(/\s+/g, '_')}`);
+  const handleValueChange = (rawValue: any) => {
+    // Parse the JSON value if it's a string
+    const value =
+      typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue;
+
+    if (value.type === 'prefer_not_to_say') {
+      setSelectedCategory('prefer_not_to_say');
+      setSelectedCategoryLabel('Prefer not to say');
+      setSelectedSubcategory('');
+      setSelectedSubcategoryLabel('');
+      setOtherOccupation('');
+      onSelect?.({
+        categoryValue: 'prefer_not_to_say',
+        displayValue: 'Prefer not to say',
+      });
+      return;
+    }
+
+    if (value.type === 'other') {
+      setSelectedCategory('other');
+      setSelectedCategoryLabel('Other');
+      setSelectedSubcategory('');
+      setSelectedSubcategoryLabel('');
+      onSelect?.({
+        categoryValue: 'other',
+        other: otherOccupation,
+        displayValue: otherOccupation || 'Other',
+      });
+      return;
+    }
+
+    // Handle category and subcategory selection
+    const category = occupationCategories.find(
+      cat => cat.value === value.categoryValue
+    );
+    if (!category) return;
+
+    setSelectedCategory(category.value);
+    setSelectedCategoryLabel(category.label);
+
+    const subcategory = category.subcategories.find(
+      sub => sub.value === value.subcategoryValue
+    );
+    if (subcategory) {
+      setSelectedSubcategory(subcategory.value);
+      setSelectedSubcategoryLabel(subcategory.label);
+      onSelect?.({
+        categoryValue: category.value,
+        subcategoryValue: subcategory.value,
+        displayValue: `${category.label} - ${subcategory.label}`,
+      });
     }
   };
 
   return (
-    <View className="w-full space-y-2">
-      <Text className="text-sm font-medium text-foreground">
-        Select your occupation
-      </Text>
+    <View className="w-full max-w-md">
+      <View className="space-y-4">
+        <Select onValueChange={handleValueChange}>
+          <SelectTrigger>
+            <SelectValue
+              placeholder="Select occupation"
+              defaultValue={
+                selectedCategory === 'other' && otherOccupation
+                  ? otherOccupation
+                  : selectedSubcategoryLabel ||
+                    selectedCategoryLabel ||
+                    undefined
+              }
+            />
+          </SelectTrigger>
 
-      <Select value={value} onValueChange={handleValueChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select occupation" />
-        </SelectTrigger>
+          <SelectContent>
+            {/* Search Input */}
+            <View className="px-3 py-2 border-b border-gray-200">
+              <View className="relative">
+                <View className="absolute left-2 top-2.5">
+                  <Search size={16} color="#9CA3AF" />
+                </View>
+                <TextInput
+                  className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md"
+                  placeholder="Search occupations..."
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                />
+              </View>
+            </View>
 
-        <SelectContent>
-          {Object.entries(occupationCategories).map(([key, category]) => (
-            <SelectGroup key={key}>
-              <SelectLabel>{category.label}</SelectLabel>
-              {category.options.map(option => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-              <SelectSeparator />
+            {/* Categories and Subcategories */}
+            {filteredCategories.map(category => (
+              <SelectGroup key={category.value}>
+                <SelectLabel>{category.label}</SelectLabel>
+                {category.subcategories.map(subcategory => (
+                  <SelectItem
+                    key={`${category.value}-${subcategory.value}`}
+                    value={JSON.stringify({
+                      type: 'occupation',
+                      categoryValue: category.value,
+                      subcategoryValue: subcategory.value,
+                    })}
+                  >
+                    <Text className="text-sm text-gray-900">
+                      {subcategory.label}
+                    </Text>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            ))}
+
+            {/* Other Option */}
+            <SelectGroup>
+              <SelectItem value={JSON.stringify({ type: 'other' })}>
+                <Text className="text-sm text-gray-900">Other</Text>
+              </SelectItem>
+              {selectedCategory === 'other' && (
+                <View className="px-4 py-2">
+                  <TextInput
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Enter your occupation"
+                    value={otherOccupation}
+                    onChangeText={setOtherOccupation}
+                  />
+                </View>
+              )}
             </SelectGroup>
-          ))}
 
-          {/* Additional options group */}
-          <SelectGroup>
-            <SelectItem value="other">Other</SelectItem>
-            <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+            {/* Prefer not to say */}
+            <SelectGroup>
+              <SelectItem value={JSON.stringify({ type: 'prefer_not_to_say' })}>
+                <Text className="text-sm text-gray-900">Prefer not to say</Text>
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-      {showOtherInput && (
-        <Input
-          value={otherValue}
-          onChangeText={handleOtherValueChange}
-          placeholder="Enter your occupation"
-          className="mt-2"
-        />
-      )}
-
-      {error && <Text className="text-sm text-destructive">{error}</Text>}
+        {selectedCategory && selectedCategory !== 'prefer_not_to_say' && (
+          <View className="px-2 py-1">
+            <Text className="text-sm text-gray-600">
+              Selected:{' '}
+              {selectedCategory === 'other'
+                ? otherOccupation
+                : `${selectedCategoryLabel}${
+                    selectedSubcategoryLabel
+                      ? ` - ${selectedSubcategoryLabel}`
+                      : ''
+                  }`}
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 };
