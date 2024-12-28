@@ -44,17 +44,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Auth state change listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, _newSession) => {
       console.log('Auth state changed:', {
         event,
-        userId: session?.user?.id,
-        userEmail: session?.user?.email,
-        sessionExists: !!session,
+        userId: _newSession?.user?.id,
+        userEmail: _newSession?.user?.email,
+        sessionExists: !!_newSession,
+        userMetadata: _newSession?.user?.user_metadata,
       });
 
-      if (session) {
+      if (_newSession) {
         // setSession(session);
-        await checkProfileCompletion(session);
+        await checkProfileCompletion(_newSession);
       } else {
         setSession(null);
         setHasCompletedProfile(false);

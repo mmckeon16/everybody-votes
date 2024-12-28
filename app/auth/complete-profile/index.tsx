@@ -100,18 +100,19 @@ export default function CompleteProfile() {
         throw new Error('No authenticated user found');
       }
 
-      console.log('Starting profile submission...');
-
       const result = await mutateAsync({
         profileData,
         userId: session.user.id,
       });
 
-      console.log('Profile data submitted, result:', result);
+      // Update user metadata to mark profile as completed;
+      // This is a workaround to get the profile status to update
+      // because the auth state change listener doesn't trigger when we set it from the backend
+      const { data, error } = await supabase.auth.updateUser({
+        data: { completed_profile: true },
+      });
 
-      // Force refresh the profile status
-      console.log('Refreshing profile status...');
-      // await refreshProfileStatus();
+      if (error) throw error;
 
       console.log('Profile status refreshed, attempting navigation...');
 
@@ -119,6 +120,7 @@ export default function CompleteProfile() {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Try both navigation methods
+      // why is this needed?
       try {
         await router.push('/auth/celebrate');
       } catch (navError) {
@@ -138,6 +140,7 @@ export default function CompleteProfile() {
         text1: 'Error',
         text2: err instanceof Error ? err.message : 'Failed to submit profile',
       });
+      router.push('/');
     }
   };
   const renderStep = () => {
