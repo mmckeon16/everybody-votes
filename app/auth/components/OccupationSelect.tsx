@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { View, TextInput, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import { Input } from '~/components/ui/input';
 import { Search } from 'lucide-react-native';
 import {
   Select,
@@ -10,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Separator } from '~/components/ui/separator';
+import { StepProps } from '../../types';
 
 // Define types for our occupation data
 type OccupationSubcategory = {
@@ -23,14 +26,22 @@ type OccupationCategory = {
   subcategories: OccupationSubcategory[];
 };
 
-type Props = {
-  onSelect?: (value: {
-    categoryValue: string;
-    subcategoryValue?: string;
-    other?: string;
-    displayValue: string;
-  }) => void;
-};
+// type Props = {
+//   onSelect?: (value: {
+//     categoryValue: string;
+//     subcategoryValue?: string;
+//     other?: string;
+//     displayValue: string;
+//   }) => void;
+// };
+
+const businessCat = [
+  { label: 'Business Owner', value: 'business_owner' },
+  { label: 'Franchise Owner', value: 'franchise_owner' },
+  { label: 'Startup Founder', value: 'startup_founder' },
+  { label: 'Small Business Operator', value: 'small_business_operator' },
+  { label: 'Independent Contractor', value: 'independent_contractor' },
+];
 
 const occupationCategories: OccupationCategory[] = [
   {
@@ -141,7 +152,10 @@ const occupationCategories: OccupationCategory[] = [
   },
 ];
 
-export const OccupationSelect: React.FC<Props> = ({ onSelect }) => {
+export const OccupationSelect: React.FC<StepProps> = ({
+  setProfileData,
+  profileData,
+}) => {
   const [selectedCategory, setSelectedCategory] = React.useState('');
   const [selectedCategoryLabel, setSelectedCategoryLabel] = React.useState('');
   const [selectedSubcategory, setSelectedSubcategory] = React.useState('');
@@ -174,6 +188,7 @@ export const OccupationSelect: React.FC<Props> = ({ onSelect }) => {
 
   const handleValueChange = (rawValue: any) => {
     // Parse the JSON value if it's a string
+    console.log('handle changeee', rawValue);
     const value =
       typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue;
 
@@ -229,28 +244,30 @@ export const OccupationSelect: React.FC<Props> = ({ onSelect }) => {
   return (
     <View className="w-full max-w-md">
       <View className="space-y-4">
-        <Select onValueChange={handleValueChange}>
+        <Select
+          className="web:w-full"
+          // onValueChange={handleValueChange}
+          onValueChange={({ value }) => {
+            setProfileData({
+              ...profileData,
+              occupation: value,
+            });
+          }}
+        >
           <SelectTrigger>
             <SelectValue
+              className="text-foreground text-sm native:text-lg"
               placeholder="Select occupation"
-              defaultValue={
-                selectedCategory === 'other' && otherOccupation
-                  ? otherOccupation
-                  : selectedSubcategoryLabel ||
-                    selectedCategoryLabel ||
-                    undefined
-              }
             />
           </SelectTrigger>
-
-          <SelectContent>
+          <SelectContent className="max-h-96">
             {/* Search Input */}
             <View className="px-3 py-2 border-b border-gray-200">
               <View className="relative">
                 <View className="absolute left-2 top-2.5">
                   <Search size={16} color="#9CA3AF" />
                 </View>
-                <TextInput
+                <Input
                   className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md"
                   placeholder="Search occupations..."
                   value={searchQuery}
@@ -258,31 +275,34 @@ export const OccupationSelect: React.FC<Props> = ({ onSelect }) => {
                 />
               </View>
             </View>
-
-            {/* Categories and Subcategories */}
             {filteredCategories.map(category => (
               <SelectGroup key={category.value}>
+                <Separator />
                 <SelectLabel>{category.label}</SelectLabel>
-                {category.subcategories.map(subcategory => (
-                  <SelectItem
-                    key={`${category.value}-${subcategory.value}`}
-                    value={JSON.stringify({
-                      type: 'occupation',
-                      categoryValue: category.value,
-                      subcategoryValue: subcategory.value,
-                    })}
-                  >
-                    <Text className="text-sm text-gray-900">
-                      {subcategory.label}
-                    </Text>
-                  </SelectItem>
-                ))}
+                <Separator />
+                {category.subcategories.map(subcategory => {
+                  return (
+                    <View key={`${category.value}-${subcategory.value}`}>
+                      <SelectItem
+                        label={subcategory.label}
+                        value={subcategory.value}
+                        className="h-7 bg-blue text-black"
+                      >
+                        <Text className="text-black flex-1">
+                          {subcategory.label}
+                        </Text>
+                      </SelectItem>
+                    </View>
+                  );
+                })}
               </SelectGroup>
             ))}
-
             {/* Other Option */}
             <SelectGroup>
-              <SelectItem value={JSON.stringify({ type: 'other' })}>
+              <SelectItem
+                label="Other"
+                value={JSON.stringify({ type: 'other' })}
+              >
                 <Text className="text-sm text-gray-900">Other</Text>
               </SelectItem>
               {selectedCategory === 'other' && (
@@ -296,10 +316,12 @@ export const OccupationSelect: React.FC<Props> = ({ onSelect }) => {
                 </View>
               )}
             </SelectGroup>
-
-            {/* Prefer not to say */}
+            {/* Prefer not to say*/}
             <SelectGroup>
-              <SelectItem value={JSON.stringify({ type: 'prefer_not_to_say' })}>
+              <SelectItem
+                label="Prefer not to say"
+                value={JSON.stringify({ type: 'prefer_not_to_say' })}
+              >
                 <Text className="text-sm text-gray-900">Prefer not to say</Text>
               </SelectItem>
             </SelectGroup>

@@ -19,12 +19,12 @@ import { ProfileData } from '../../types';
 import Toast from 'react-native-toast-message';
 
 const STEPS = {
-  AGE: 6,
+  AGE: 1,
   GENDER: 2,
   LOCATION: 3,
   POLITICS: 4,
   RACE: 5,
-  OCCUPATION: 1,
+  OCCUPATION: 6,
   SOCIOECONOMIC: 7,
 };
 

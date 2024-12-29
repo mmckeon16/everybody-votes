@@ -12,17 +12,10 @@ const Occupation: React.FC<StepProps> = ({ setProfileData, profileData }) => {
       <Label nativeID="occupation">
         <Text>Occupation</Text>
       </Label>
-
       <OccupationSelect
         id="occupation"
-        value={profileData.occupation}
-        onSelect={({ value }) => {
-          setProfileData({
-            ...profileData,
-            occupation: value,
-          });
-        }}
-        // error={/* optional error message */}
+        profileData={profileData}
+        setProfileData={setProfileData}
       />
     </View>
   );
