@@ -81,6 +81,17 @@ export const demographics = [
   },
 ];
 
+export const ageMapping = {
+  '<18': Array.from({ length: 17 }, (_, i) => i + 1),
+  '18-25': Array.from({ length: 8 }, (_, i) => i + 18),
+  '26-35': Array.from({ length: 10 }, (_, i) => i + 26),
+  '36-45': Array.from({ length: 10 }, (_, i) => i + 36),
+  '46-55': Array.from({ length: 10 }, (_, i) => i + 46),
+  '56-65': Array.from({ length: 10 }, (_, i) => i + 56),
+  '66-75': Array.from({ length: 10 }, (_, i) => i + 66),
+  '75+': Array.from({ length: 41 }, (_, i) => i + 75), // Going up to age 115 for the 75+ category
+};
+
 export default {
   demographics,
 };

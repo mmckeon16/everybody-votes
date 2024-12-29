@@ -12,8 +12,7 @@ import {
   AccordionTrigger,
 } from '~/components/ui/accordion';
 import { Checkbox } from '~/components/ui/checkbox';
-import { demographics } from '../constants';
-import ScrollingText from './ScrollingText';
+import { demographics, ageMapping } from '../constants';
 
 interface FilterModalProps {
   filteredDemographics: object;
@@ -121,8 +120,16 @@ const FilterModal: React.FC<FilterModalProps> = ({
               <Button
                 variant="outline"
                 onPress={() => {
-                  setModalVisible(!modalVisible);
+                  // Override age so that we can query for individual values stored in db
+                  if (userSelectedDemographics.age) {
+                    let newAges: number[] = [];
+                    userSelectedDemographics?.age?.map((selected: string) => {
+                      newAges = [...newAges, ...ageMapping[selected]];
+                    });
+                    userSelectedDemographics.age = newAges;
+                  }
                   setFilteredDemographics(userSelectedDemographics);
+                  setModalVisible(!modalVisible);
                 }}
                 className="mt-6"
               >

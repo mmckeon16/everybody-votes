@@ -131,7 +131,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
           <View key={item.optionText} style={styles.legendItem}>
             <View style={[styles.colorBox, { backgroundColor: item.color }]} />
             <Text style={styles.legendText}>
-              {item.text} ({item.percentage}%)
+              {item.text} ({Math.round(item.percentage * 10) / 10}%)
             </Text>
           </View>
         ))}
