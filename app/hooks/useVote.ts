@@ -26,12 +26,14 @@ export function useVote() {
           type: 'error',
           text1: 'Already Voted',
           text2: 'You have already voted on this question',
+          position: 'bottom',
         });
       } else {
         Toast.show({
           type: 'error',
           text1: 'Error',
           text2: error.message || 'Failed to submit vote',
+          position: 'bottom',
         });
       }
     },
@@ -40,6 +42,7 @@ export function useVote() {
         type: 'success',
         text1: 'Success',
         text2: 'Vote submitted successfully',
+        position: 'bottom',
       });
     },
   });

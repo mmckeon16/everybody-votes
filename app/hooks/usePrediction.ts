@@ -12,12 +12,14 @@ export function usePrediction() {
           type: 'error',
           text1: 'Already Predicted',
           text2: 'You have already made a prediction for this question',
+          position: 'bottom',
         });
       } else {
         Toast.show({
           type: 'error',
           text1: 'Error',
           text2: 'Failed to submit prediction',
+          position: 'bottom',
         });
       }
     },
@@ -26,6 +28,7 @@ export function usePrediction() {
         type: 'success',
         text1: 'Success',
         text2: 'Prediction submitted successfully',
+        position: 'bottom',
       });
     },
   });

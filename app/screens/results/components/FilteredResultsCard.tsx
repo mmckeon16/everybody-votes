@@ -15,7 +15,7 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
   filteredDemographics,
   activeQuestion,
 }) => {
-  const { data: filteredResults, isLoading, error } = useResults(
+  const { data: filteredResults, isLoading } = useResults(
     activeQuestion?.id,
     filteredDemographics
   );
@@ -23,7 +23,7 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
   console.log('Data from filtered....', filteredResults);
   console.log(filteredResults);
   const nullData = { question: null, totalVotes: null, results: null };
-  const { data: { question, totalVotes, results } = nullData } =
+  const { data: { question, totalVotes, results, error } = nullData } =
     filteredResults || {};
 
   if (isLoading) {

@@ -18,7 +18,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import HeaderActions from './components/HeaderActions';
-import Toast from 'react-native-toast-message';
+import Toast from '~/components/ui/toast';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
