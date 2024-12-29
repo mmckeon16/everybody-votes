@@ -124,6 +124,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   if (userSelectedDemographics.age) {
                     let newAges: number[] = [];
                     userSelectedDemographics?.age?.map((selected: string) => {
+                      console.log('ageMapping', ageMapping);
+                      console.log('selected', selected);
                       newAges = [...newAges, ...ageMapping[selected]];
                     });
                     userSelectedDemographics.age = newAges;

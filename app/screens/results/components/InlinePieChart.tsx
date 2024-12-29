@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '~/components/ui/text';
+import DemographicPills from './Pills';
 
 import Svg, { Circle, G } from 'react-native-svg';
 import Animated, {
@@ -24,7 +25,7 @@ interface DonutChartProps {
   size?: number;
   strokeWidth?: number;
   totalVotes?: number;
-  filters?: string;
+  filters?: object;
 }
 
 const AnimatedDonutChart: React.FC<DonutChartProps> = ({
@@ -80,10 +81,10 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   return (
     <View style={styles.wrapper}>
       {/* Left side: Information */}
-      <View>
-        <View style={styles.totalVotesContainer}>
-          <Text>{filters}</Text>
-          {/* <Text style={styles.totalVotesText}>votes</Text> */}
+      <View style={styles.infoContainer}>
+        <View style={styles.filtersContainer}>
+          <DemographicPills data={filters} />
+          {/* <Text style={styles.filtersText}>{filters}</Text> */}
         </View>
         <View style={styles.totalVotesContainer}>
           <Text style={styles.totalVotesNumber}>{totalVotes}</Text>
@@ -148,20 +149,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    width: '100%',
+  },
+  infoContainer: {
+    flex: 1,
+    marginRight: 16,
   },
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
+  },
+  filtersContainer: {
+    marginBottom: 8,
+  },
+  filtersText: {
+    flexWrap: 'wrap',
+    fontSize: 14,
+    color: '#64748b',
   },
   totalVotesContainer: {
     display: 'flex',
     flexDirection: 'row',
     gap: 8,
+    alignItems: 'center',
+    marginBottom: 8,
   },
   totalVotesText: {
     fontSize: 16,
     color: '#64748b',
-    marginBottom: 4,
   },
   totalVotesNumber: {
     fontSize: 24,
@@ -189,7 +205,7 @@ const styles = StyleSheet.create({
   legendLabel: {
     fontSize: 14,
     color: '#334155',
-    marginBottom: 2,
+    flexShrink: 1,
   },
   legendPercentage: {
     fontSize: 14,

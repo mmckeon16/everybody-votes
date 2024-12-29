@@ -3,8 +3,8 @@ import { View, ActivityIndicator } from 'react-native';
 import InlinePieChart from './InlinePieChart';
 import { useResults } from '../../../hooks/useResults';
 import { Text } from '~/components/ui/text';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
-import { addColorToResults, formatFilters } from '../../../lib/utils';
+import { Card, CardContent } from '~/components/ui/card';
+import { addColorToResults } from '../../../lib/utils';
 
 interface FilterResultsProps {
   filteredDemographics: object;
@@ -25,8 +25,6 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
   const nullData = { question: null, totalVotes: null, results: null };
   const { data: { question, totalVotes, results } = nullData } =
     filteredResults || {};
-
-  const filters = formatFilters(filteredDemographics);
 
   if (isLoading) {
     return (
@@ -54,7 +52,7 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
               size={100}
               strokeWidth={25}
               totalVotes={totalVotes}
-              filters={filters}
+              filters={filteredDemographics}
             />
           </View>
         )}
