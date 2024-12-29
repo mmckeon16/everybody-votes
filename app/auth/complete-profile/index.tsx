@@ -42,6 +42,7 @@ export default function CompleteProfile() {
     politicalIdeology: '',
     occupation: '',
     state: '',
+    employmentStatus: '',
   });
   const { mutateAsync, isPending } = useOnboarding();
 
@@ -91,7 +92,10 @@ export default function CompleteProfile() {
       case STEPS.OCCUPATION:
         return profileData.occupation !== '';
       case STEPS.INCOME:
-        return profileData.incomeBracket !== '';
+        return (
+          profileData.incomeBracket !== '' &&
+          profileData.employmentStatus !== ''
+        );
       default:
         return false;
     }

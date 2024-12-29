@@ -1,15 +1,19 @@
-// TODO get this from db table or onboarding as we change/add more
-// import { countries } from '../../auth/constants';
+import {
+  races,
+  genders,
+  states,
+  citizenshipStatus,
+  allPoliticalParties,
+  employmentStatus,
+  incomes,
+  allPoliticalLeanings,
+} from '../../auth/constants';
 export const demographics = [
   {
     name: 'Gender',
     id: 'gender',
     selected: [],
-    options: [
-      { label: 'Male', value: 'male' },
-      { label: 'Female', value: 'female' },
-      { label: 'Non-binary', value: 'non-binary' },
-    ],
+    options: genders,
   },
   {
     name: 'Age',
@@ -27,53 +31,53 @@ export const demographics = [
     ],
   },
   {
-    name: 'Country of origin',
-    id: 'country_origin',
+    name: 'State',
+    id: 'state',
     selected: [],
-    // options: [...countries],
+    options: states,
+  },
+  {
+    name: 'Citizenship Status',
+    id: 'citizenship',
+    selected: [],
+    options: citizenshipStatus,
   },
   {
     name: 'Race/Ethnicity',
     id: 'race_ethnicity',
     selected: [],
-    options: [
-      { label: 'Asian', value: 'asian' },
-      { label: 'Black/African', value: 'black' },
-      { label: 'Hispanic/Latino', value: 'hispanic' },
-      { label: 'White/Caucasian', value: 'white' },
-      { label: 'Mixed', value: 'mixed' },
-    ],
+    options: races,
   },
   {
-    name: 'Politics',
-    id: 'political_affiliation',
+    name: 'Political Party',
+    id: 'political_party',
     selected: [],
-    options: [
-      { label: 'Conservative', value: 'conservative' },
-      { label: 'Liberal', value: 'liberal' },
-      { label: 'Moderate', value: 'moderate' },
-    ],
+    options: allPoliticalParties,
   },
-
   {
-    name: 'Occupation',
-    id: 'occupation',
+    name: 'Political Leaning',
+    id: 'political_leaning',
     selected: [],
-    options: [
-      { label: 'balls', value: 'balls' },
-      { label: 'penis', value: 'penis' },
-      { label: 'hi', value: 'hi' },
-    ],
+    options: allPoliticalLeanings,
   },
+  // {
+  //   name: 'Occupation',
+  //   id: 'occupation',
+  //   selected: [],
+  //   options: ,
+  // },
+  // TODO get from the expanded categories
   {
     name: 'Income bracket',
     id: 'income_bracket',
     selected: [],
-    options: [
-      { label: 'balls', value: 'balls' },
-      { label: 'penis', value: 'penis' },
-      { label: 'hi', value: 'hi' },
-    ],
+    options: incomes,
+  },
+  {
+    name: 'Employment Status',
+    id: 'employment',
+    selected: [],
+    options: employmentStatus,
   },
 ];
 

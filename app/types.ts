@@ -60,6 +60,7 @@ export interface ProfileData {
   politicalIdeology: string;
   occupation: string;
   citizenship: string;
+  employmentStatus: string;
 }
 
 export interface StepProps {

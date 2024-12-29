@@ -13,6 +13,7 @@ import {
 } from '~/components/ui/accordion';
 import { Checkbox } from '~/components/ui/checkbox';
 import { demographics } from '../constants';
+import ScrollingText from './ScrollingText';
 
 interface FilterModalProps {
   filteredDemographics: object;
@@ -72,81 +73,46 @@ const FilterModal: React.FC<FilterModalProps> = ({
                           flexGrow: 1,
                         }}
                       >
-                        {name === 'Country of origin'
-                          ? options?.map(option => (
-                              <View
-                                key={option}
-                                className="flex flex-row gap-2 w-2/5 px-2 truncate"
+                        {options?.map(({ label, value }) => {
+                          return (
+                            <View
+                              className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
+                              key={value}
+                            >
+                              <Checkbox
+                                id={value}
+                                checked={selected.includes(value)}
+                                onCheckedChange={() => {
+                                  let updatedData = data;
+                                  if (selected.includes(value)) {
+                                    const updatedSelected = data[
+                                      index
+                                    ]?.selected.filter(item => item !== value);
+                                    updatedData[index] = {
+                                      ...updatedData[index],
+                                      selected: updatedSelected,
+                                    };
+                                  } else {
+                                    updatedData[index]?.selected?.push(value);
+                                  }
+                                  setUserSelectedDemographics({
+                                    ...userSelectedDemographics,
+                                    [updatedData[index].id]:
+                                      updatedData[index]?.selected,
+                                  });
+                                  setData([...updatedData]);
+                                }}
+                              />
+                              <Label
+                                nativeID={value}
+                                className="flex-1 flex-shrink"
+                                numberOfLines={1}
                               >
-                                <Checkbox
-                                  id={option}
-                                  checked={selected.includes(option)}
-                                  onCheckedChange={() => {
-                                    let updatedData = data;
-                                    if (selected.includes(option)) {
-                                      const updatedSelected = data[
-                                        index
-                                      ]?.selected.filter(
-                                        item => item !== option
-                                      );
-                                      updatedData[index] = {
-                                        ...updatedData[index],
-                                        selected: updatedSelected,
-                                      };
-                                    } else {
-                                      updatedData[index]?.selected?.push(
-                                        option
-                                      );
-                                    }
-                                    setData([...updatedData]);
-                                    setUserSelectedDemographics({
-                                      ...userSelectedDemographics,
-                                      [updatedData[index].id]:
-                                        updatedData[index]?.selected,
-                                    });
-                                  }}
-                                />
-                                <Label nativeID={option}>{option}</Label>
-                              </View>
-                            ))
-                          : options?.map(({ label, value }) => {
-                              return (
-                                <View
-                                  className="flex flex-row gap-2 w-1/3 px-2"
-                                  key={value}
-                                >
-                                  <Checkbox
-                                    id={value}
-                                    checked={selected.includes(value)}
-                                    onCheckedChange={() => {
-                                      let updatedData = data;
-                                      if (selected.includes(value)) {
-                                        const updatedSelected = data[
-                                          index
-                                        ]?.selected.filter(
-                                          item => item !== value
-                                        );
-                                        updatedData[index] = {
-                                          ...updatedData[index],
-                                          selected: updatedSelected,
-                                        };
-                                      } else {
-                                        updatedData[index]?.selected?.push(
-                                          value
-                                        );
-                                      }
-                                      setUserSelectedDemographics({
-                                        ...userSelectedDemographics,
-                                        [updatedData[index].id]:
-                                          updatedData[index]?.selected,
-                                      });
-                                      setData([...updatedData]);
-                                    }}
-                                  />
-                                  <Label nativeID={value}>{label}</Label>
-                                </View>
-                              );
-                            })}
+                                {label}
+                              </Label>
+                            </View>
+                          );
+                        })}
                       </ScrollView>
                     </AccordionContent>
                   </AccordionItem>

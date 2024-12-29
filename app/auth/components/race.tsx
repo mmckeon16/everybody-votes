@@ -12,7 +12,7 @@ import {
 import { Text } from '~/components/ui/text';
 import { Label } from '~/components/ui/label';
 import { StepProps } from '../../types';
-import { demographics } from '../constants';
+import { races } from '../constants';
 
 const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
@@ -41,7 +41,7 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
             <SelectLabel>
               <Text>Race/Ethnicity</Text>
             </SelectLabel>
-            {demographics.map(demographic => (
+            {races.map(demographic => (
               <SelectItem
                 label={demographic.label}
                 value={demographic.value}

@@ -1,4 +1,4 @@
-export const demographics = [
+export const races = [
   { label: 'American Indian or Alaska Native', value: 'native-american' },
   { label: 'Asian', value: 'asian' },
   { label: 'Black or African American', value: 'black' },
