@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Search } from 'lucide-react-native';
+import Entypo from '@expo/vector-icons/Entypo';
 import {
   Select,
   SelectContent,
@@ -14,12 +15,18 @@ import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
 import { Label } from '~/components/ui/label';
 import { StepProps } from '../../types';
-import { states, citizenshipStatus } from '../constants';
+import {
+  states,
+  mainCitizenshipStatus,
+  otherCitizenshipStatus,
+} from '../constants';
 
 const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   const [state, setState] = useState(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filteredStates, setFilteredStates] = React.useState<Array>(states);
+  const [showOtherStatus, setShowOtherStatus] = useState(false);
+
   React.useEffect(() => {
     if (searchQuery) {
       const filtered = states.filter(state => {
@@ -106,7 +113,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
               <SelectLabel>
                 <Text>Citizenship Status</Text>
               </SelectLabel>
-              {citizenshipStatus.map(status => (
+              {mainCitizenshipStatus.map(status => (
                 <SelectItem
                   label={status.label}
                   value={status.value}
@@ -116,6 +123,52 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
             </SelectGroup>
           </SelectContent>
         </Select>
+        <TouchableOpacity
+          className="flex flex-row gap-3 justify-start items-center"
+          onPress={() => setShowOtherStatus(!showOtherStatus)}
+        >
+          <Text>See more</Text>
+          {showOtherStatus ? (
+            <Entypo name="chevron-thin-up" size={16} color="black" />
+          ) : (
+            <Entypo name="chevron-thin-down" size={16} color="black" />
+          )}
+        </TouchableOpacity>
+        {showOtherStatus && (
+          <View className="flex flex-col gap-3">
+            <Select
+              id="party"
+              className="web:w-full"
+              onValueChange={({ value }) => {
+                setProfileData({
+                  ...profileData,
+                  citizenship: value,
+                });
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  className="text-foreground text-sm native:text-lg"
+                  placeholder="Other Statuses"
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>
+                    <Text>Other Statuses</Text>
+                  </SelectLabel>
+                  {otherCitizenshipStatus.map(citizenshipStatus => (
+                    <SelectItem
+                      label={citizenshipStatus.label}
+                      value={citizenshipStatus.value}
+                      key={citizenshipStatus.value}
+                    />
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </View>
+        )}
       </View>
     </View>
   );

@@ -80,10 +80,13 @@ export const states = [
   { label: 'Not in US', value: 'not-in-us' },
 ];
 
-export const citizenshipStatus = [
+export const mainCitizenshipStatus = [
   { label: 'Natural born US Citizen', value: 'natural-born-citizen' },
   { label: 'Foreign born US Citizen', value: 'foreign-born-citizen' },
   { label: 'Not a US Citizen', value: 'non-citizen' },
+];
+
+export const otherCitizenshipStatus = [
   { label: 'Permanent Resident', value: 'permanent-resident' },
   { label: 'Temporary Work Visa holder', value: 'work-visa' },
   { label: 'Student Visa holder', value: 'student-visa' },
@@ -91,6 +94,11 @@ export const citizenshipStatus = [
   { label: 'Asylum seeker/Refugee', value: 'asylum-refugee' },
   { label: 'Other valid immigration status', value: 'other-status' },
   { label: 'Prefer not to answer', value: 'prefer-not-to-say' },
+];
+
+export const allCitizenshipStatus = [
+  ...mainCitizenshipStatus,
+  ...otherCitizenshipStatus,
 ];
 
 export const majorPoliticalParties = [

@@ -2,7 +2,7 @@ import {
   races,
   genders,
   states,
-  citizenshipStatus,
+  allCitizenshipStatus,
   allPoliticalParties,
   employmentStatus,
   incomes,
@@ -40,7 +40,7 @@ export const demographics = [
     name: 'Citizenship Status',
     id: 'citizenship',
     selected: [],
-    options: citizenshipStatus,
+    options: allCitizenshipStatus,
   },
   {
     name: 'Race/Ethnicity',
