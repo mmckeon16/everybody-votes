@@ -24,7 +24,8 @@ const Income: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         <Select
           id="income"
           className="web:w-full"
-          onValueChange={value => {
+          onValueChange={({ value }) => {
+            console.log('value', value);
             setProfileData({ ...profileData, incomeBracket: value });
           }}
         >
@@ -51,19 +52,20 @@ const Income: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         <Select
           id="employment"
           className="web:w-full"
-          onValueChange={value => {
+          onValueChange={({ value }) => {
+            console.log('value', value);
             setProfileData({ ...profileData, employmentStatus: value });
           }}
         >
           <SelectTrigger>
             <SelectValue
               className="text-foreground text-sm native:text-lg"
-              placeholder="Employment Statu"
+              placeholder="Employment Status"
             />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Employment Statu</SelectLabel>
+              <SelectLabel>Employment Status</SelectLabel>
               {employmentStatus.map(({ value, label }) => (
                 <SelectItem label={label} value={value} key={value} />
               ))}

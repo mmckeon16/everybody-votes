@@ -29,7 +29,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
 
   React.useEffect(() => {
     if (searchQuery) {
-      const filtered = states.filter(state => {
+      const filtered = states.filter((state) => {
         return state.label.toLowerCase().includes(searchQuery.toLowerCase());
       });
       setFilteredStates(filtered);
@@ -48,6 +48,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           id="state"
           className="web:w-full"
           onValueChange={({ value }) => {
+            console.log('SETTING THE STATE value', value);
             setState(value);
             setProfileData({ ...profileData, state: value });
           }}
@@ -77,7 +78,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
               <SelectLabel>
                 <Text>US State</Text>
               </SelectLabel>
-              {filteredStates.map(state => (
+              {filteredStates.map((state) => (
                 <SelectItem
                   label={state.label}
                   value={state.value}
@@ -113,7 +114,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
               <SelectLabel>
                 <Text>Citizenship Status</Text>
               </SelectLabel>
-              {mainCitizenshipStatus.map(status => (
+              {mainCitizenshipStatus.map((status) => (
                 <SelectItem
                   label={status.label}
                   value={status.value}
@@ -157,7 +158,7 @@ const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
                   <SelectLabel>
                     <Text>Other Statuses</Text>
                   </SelectLabel>
-                  {otherCitizenshipStatus.map(citizenshipStatus => (
+                  {otherCitizenshipStatus.map((citizenshipStatus) => (
                     <SelectItem
                       label={citizenshipStatus.label}
                       value={citizenshipStatus.value}

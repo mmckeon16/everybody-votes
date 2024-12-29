@@ -10,12 +10,14 @@ create table demographics (
   user_id uuid references auth.users(id) not null unique,
   age integer not null,
   gender text not null,
-  country_residence text not null,
+  state text not null,
   race_ethnicity text not null,
   income_bracket text not null,
-  political_affiliation text not null,
   occupation text not null,
-  country_origin text not null,
+  political_party text not null,
+  political_leaning text not null,
+  employment_status text not null,
+  citizenship_status text not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

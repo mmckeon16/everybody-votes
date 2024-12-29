@@ -11,12 +11,14 @@ interface OnboardingData {
   user_id: string;
   age: number;
   gender: string;
-  country_residence: string;
+  state: string;
   race_ethnicity: string;
   income_bracket: string;
-  political_affiliation: string;
+  political_party: string;
   occupation: string;
-  country_origin: string;
+  political_leaning: string;
+  employment_status: string;
+  citizenship_status: string;
 }
 
 serve(async (req) => {

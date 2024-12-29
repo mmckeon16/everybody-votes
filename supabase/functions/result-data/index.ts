@@ -32,7 +32,7 @@ Deno.serve(async (req: Request) => {
       'country_origin',
     ];
 
-    validDemographicFields.forEach(field => {
+    validDemographicFields.forEach((field) => {
       const values = url.searchParams.getAll(field);
       if (values.length > 0) {
         demographicFilters[field] = values;
@@ -58,47 +58,33 @@ Deno.serve(async (req: Request) => {
     if (questionError) throw questionError;
 
     // Get answers for this question's options with demographic filters
-    const optionIds = questionData.options.map(opt => opt.id);
+    const optionIds = questionData.options.map((opt) => opt.id);
 
     let answersQuery = supabase
-      .from('answers')
-      .select(
-        `
-        id,
-        user_id,
-        option_id,
-        demographics (
-          age,
-          gender,
-          country_residence,
-          race_ethnicity,
-          income_bracket,
-          political_affiliation,
-          occupation,
-          country_origin
-        )
-      `
-      )
+      .from('answers_with_demographics')
+      .select('*')
       .in('option_id', optionIds);
 
     // Add demographic filters to the query
-    if (Object.keys(demographicFilters).length > 0) {
-      // Build the filter conditions
-      const filterConditions = Object.entries(demographicFilters).map(
-        ([field, values]) => ({
-          [`demographics.${field}`]: values,
-        })
-      );
+    // if (Object.keys(demographicFilters).length > 0) {
+    //   // Build the filter conditions
+    //   const filterConditions = Object.entries(demographicFilters).map(
+    //     ([field, values]) => ({
+    //       [`demographics.${field}`]: values,
+    //     })
+    //   );
 
-      // Apply OR condition for multiple values of the same field
-      filterConditions.forEach(condition => {
-        answersQuery = answersQuery.or(
-          `${Object.keys(condition)[0]}.in.(${Object.values(condition)[0].join(
-            ','
-          )})`
-        );
-      });
-    }
+    //   // Apply OR condition for multiple values of the same field
+    //   filterConditions.forEach((condition) => {
+    //     answersQuery = answersQuery.or(
+    //       `${Object.keys(condition)[0]}.in.(${Object.values(condition)[0].join(
+    //         ','
+    //       )})`
+    //     );
+    //   });
+    // }
+
+    console.log('answersQuery', answersQuery.data);
 
     const { data: answers, error: answersError } = await answersQuery;
 
@@ -115,15 +101,15 @@ Deno.serve(async (req: Request) => {
       0
     );
 
-    const results = questionData.options.map(option => ({
+    const results = questionData.options.map((option) => ({
       optionId: option.id,
       optionText: option.text,
       votes: voteCounts[option.id] || 0,
       percentage:
         totalVotes > 0 ? ((voteCounts[option.id] || 0) / totalVotes) * 100 : 0,
       responses: answers
-        .filter(answer => answer.option_id === option.id)
-        .map(answer => ({
+        .filter((answer) => answer.option_id === option.id)
+        .map((answer) => ({
           userId: answer.user_id,
           demographics: answer.demographics,
         })),
