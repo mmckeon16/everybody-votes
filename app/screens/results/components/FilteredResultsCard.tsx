@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import PieChart from './PieChart';
+import InlinePieChart from './InlinePieChart';
 import { useResults } from '../../../hooks/useResults';
 import { Text } from '~/components/ui/text';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
-import NumberFlipper from './NumberFlipper';
-import { addColorToResults } from '../../../lib/utils';
+import { addColorToResults, formatFilters } from '../../../lib/utils';
 
 interface FilterResultsProps {
   filteredDemographics: object;
@@ -27,6 +26,8 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
   const { data: { question, totalVotes, results } = nullData } =
     filteredResults || {};
 
+  const filters = formatFilters(filteredDemographics);
+
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -43,32 +44,22 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
     );
   }
 
-  // TODO add in prediction
   return (
-    <View className="flex-column items-center overflow-hidden flex-1">
-      <Card className="max-w-3xl m-6">
-        <CardHeader className="items-center">
-          <CardTitle className="pb-2 text-center">{question?.text}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredResults && filteredResults.length === 2 && (
-            <View className="flex items-center flex-1">
-              <PieChart
-                data={addColorToResults(filteredResults)}
-                size={200}
-                strokeWidth={25}
-              >
-                <View className="flex justify-center">
-                  <Text>
-                    <NumberFlipper targetNumber={totalVotes} /> votes
-                  </Text>
-                </View>
-              </PieChart>
-            </View>
-          )}
-        </CardContent>
-      </Card>
-    </View>
+    <Card className="max-w-3xl m-6 w-full">
+      <CardContent className="pt-6">
+        {results && results.length === 2 && (
+          <View className="w-full flex justify-center">
+            <InlinePieChart
+              data={addColorToResults(results)}
+              size={100}
+              strokeWidth={25}
+              totalVotes={totalVotes}
+              filters={filters}
+            />
+          </View>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

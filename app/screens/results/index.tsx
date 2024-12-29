@@ -45,10 +45,12 @@ export default function Results() {
     );
   }
   return (
-    <View className="flex-column items-center overflow-hidden flex-1">
-      <Card className="max-w-3xl m-6">
+    <View className="flex items-center justify-center w-screen px-6">
+      <Card className="max-w-3xl m-6 w-full">
         <CardHeader className="items-center">
-          <CardTitle className="pb-2 text-center">{question?.text}</CardTitle>
+          <CardTitle className="pb-2 text-center w-full">
+            {question?.text}
+          </CardTitle>
           <CardDescription className="self-start ml-6">
             <FilterModal
               filteredDemographics={filteredDemographics}
@@ -58,7 +60,7 @@ export default function Results() {
         </CardHeader>
         <CardContent>
           {results && results.length === 2 && (
-            <View className="flex items-center flex-1">
+            <View className="w-full flex justify-center">
               <PieChart
                 data={addColorToResults(results)}
                 size={200}
@@ -76,10 +78,12 @@ export default function Results() {
       </Card>
       {console.log('filtered', filteredDemographics)}
       {filteredDemographics && (
+        // <View className="w-full">
         <FilteredResultsCard
           filteredDemographics={filteredDemographics}
           activeQuestion={activeQuestion}
         />
+        // </View>
       )}
     </View>
   );

@@ -23,22 +23,21 @@ interface DonutChartProps {
   data: [DataItem, DataItem];
   size?: number;
   strokeWidth?: number;
-  children?: React.ReactNode;
+  totalVotes?: number;
+  filters?: string;
 }
 
 const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   data,
-  size = 200,
-  strokeWidth = 25,
-  children,
+  size = 100,
+  strokeWidth = 15,
+  totalVotes,
+  filters = null,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
   const progress = useSharedValue(0);
-
-  // Calculate the size for the center content
-  const centerContentSize = Math.floor(radius * 1.4);
 
   useEffect(() => {
     if (data.length !== 2) {
@@ -80,26 +79,40 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
 
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.container, { width: size, height: size }]}>
-        <View
-          style={{
-            position: 'absolute',
-            width: centerContentSize,
-            height: centerContentSize,
-            left: (size - centerContentSize) / 2,
-            top: (size - centerContentSize) / 2,
-            zIndex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {children}
+      {/* Left side: Information */}
+      <View>
+        <View style={styles.totalVotesContainer}>
+          <Text>{filters}</Text>
+          {/* <Text style={styles.totalVotesText}>votes</Text> */}
         </View>
+        <View style={styles.totalVotesContainer}>
+          <Text style={styles.totalVotesNumber}>{totalVotes}</Text>
+          <Text style={styles.totalVotesText}>votes</Text>
+        </View>
+        <View style={styles.legendContainer}>
+          {data.map(item => (
+            <View key={item.optionText} style={styles.legendItem}>
+              <View
+                style={[styles.colorBox, { backgroundColor: item.color }]}
+              />
+              <View style={styles.legendTextContainer}>
+                <Text style={styles.legendLabel}>{item.optionText}</Text>
+                <Text style={styles.legendPercentage}>
+                  {Math.round(item.percentage * 10) / 10}%
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Right side: Chart */}
+      <View style={[styles.container, { width: size, height: size }]}>
         <Svg width={size} height={size}>
           <G rotation={90} origin={`${center}, ${center}`}>
             <AnimatedCircle
               cx={center}
-              key={`donut-segment-${data[0]?.optionText}`} // using text as unique identifier
+              key={`donut-segment-${data[0]?.optionText}`}
               cy={center}
               r={radius}
               stroke={data[0].color}
@@ -112,7 +125,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
             />
             <AnimatedCircle
               cx={center}
-              key={`donut-segment-${data[1]?.optionText}`} // using text as unique identifier
+              key={`donut-segment-${data[1]?.optionText}`}
               cy={center}
               r={radius}
               stroke={data[1].color}
@@ -126,38 +139,46 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
           </G>
         </Svg>
       </View>
-      <View style={styles.legendContainer}>
-        {data.map((item, index) => (
-          <View key={item.optionText} style={styles.legendItem}>
-            <View style={[styles.colorBox, { backgroundColor: item.color }]} />
-            <Text style={styles.legendText}>
-              {item.optionText} ({Math.round(item.percentage * 10) / 10}%)
-            </Text>
-          </View>
-        ))}
-      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   wrapper: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
+  },
+  totalVotesContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  totalVotesText: {
+    fontSize: 16,
+    color: '#64748b',
+    marginBottom: 4,
+  },
+  totalVotesNumber: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#1e293b',
   },
   legendContainer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 20,
+    gap: 4,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
+  },
+  legendTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
     gap: 8,
   },
   colorBox: {
@@ -165,9 +186,15 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 4,
   },
-  legendText: {
+  legendLabel: {
     fontSize: 14,
     color: '#334155',
+    marginBottom: 2,
+  },
+  legendPercentage: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#64748b',
   },
 });
 

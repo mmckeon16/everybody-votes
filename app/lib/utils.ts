@@ -152,8 +152,85 @@ function getTwoDistinctColors(): [string, string] {
   return [rgbToHex(color1), rgbToHex(color2)];
 }
 
+interface FilterObject {
+  age?: number[];
+  citizenship?: string[];
+  employment?: string[];
+  gender?: string[];
+  income_bracket?: string[];
+  political_leaning?: string[];
+  political_party?: string[];
+  race_ethnicity?: string[];
+  state?: string[];
+}
+
+type DisplayNameMapping = {
+  [K in keyof Omit<FilterObject, 'age'>]: string;
+};
+
+function formatFilters(filters: FilterObject): string {
+  if (!filters || Object.keys(filters).length === 0) {
+    return 'No filters applied';
+  }
+
+  const parts: string[] = [];
+
+  // Handle age ranges
+  if (filters.age && filters.age.length > 0) {
+    const ages = [...new Set(filters.age)].sort((a, b) => a - b);
+    const ranges: string[] = [];
+    let start = ages[0];
+    let prev = ages[0];
+
+    for (let i = 1; i <= ages.length; i++) {
+      if (i === ages.length || ages[i] !== prev + 1) {
+        ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
+        if (i < ages.length) {
+          start = ages[i];
+          prev = ages[i];
+        }
+      } else {
+        prev = ages[i];
+      }
+    }
+    parts.push(`Age: ${ranges.join(', ')}`);
+  }
+
+  // Map of filter keys to their display names
+  const displayNames: DisplayNameMapping = {
+    citizenship: 'Citizenship',
+    employment: 'Employment',
+    gender: 'Gender',
+    income_bracket: 'Income Bracket',
+    political_leaning: 'Political Leaning',
+    political_party: 'Political Party',
+    race_ethnicity: 'Race/Ethnicity',
+    state: 'State',
+  };
+
+  // Format all other filters
+  (Object.entries(filters) as [keyof FilterObject, string[]][])
+    .filter(([key]) => key !== 'age')
+    .forEach(([key, values]) => {
+      if (values && values.length > 0) {
+        const displayName = displayNames[key] || key;
+        const formattedValues = values
+          .map(value =>
+            value
+              .split('-')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')
+          )
+          .join(', ');
+        parts.push(`${displayName}: ${formattedValues}`);
+      }
+    });
+
+  return parts.join(' | ');
+}
 export {
   getTimeUntilExpiration,
   getTimeRemainingPercentage,
   addColorToResults,
+  formatFilters,
 };
