@@ -19,6 +19,10 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    // Get user ID from query params
+    const url = new URL(req.url);
+    const userId = url.searchParams.get('userId');
+
     console.log('Fetching active question...');
     const { data: activeQuestion, error } = await supabase
       .from('questions')
@@ -54,8 +58,32 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // If user is authenticated, get their answer
+    let user_vote = null;
+    console.log('userId', userId);
+    if (userId) {
+      const { data: answer, error: answerError } = await supabase
+        .from('answers')
+        .select('option_id')
+        .eq('user_id', userId)
+        .in(
+          'option_id',
+          activeQuestion.options.map((opt: any) => opt.id)
+        )
+        .maybeSingle();
+
+      console.log('this is the answer');
+      console.log(answer);
+
+      if (answerError) {
+        console.error('Error fetching user answer:', answerError);
+      } else if (answer) {
+        user_vote = answer.option_id;
+      }
+    }
+
     console.log('Successfully fetched active question:', activeQuestion);
-    return new Response(JSON.stringify(activeQuestion), {
+    return new Response(JSON.stringify({ ...activeQuestion, user_vote }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: any) {

@@ -30,6 +30,11 @@ serve(async (req: Request) => {
     if (checkError && checkError.code !== 'PGRST116') {
       throw checkError;
     }
+    console.log('In submit-vote');
+    console.log('existingVote', existingVote);
+    console.log('optionId', optionId);
+    console.log('userId', userId);
+    console.log('isDevelopment', isDevelopment);
 
     if (existingVote) {
       if (!isDevelopment) {

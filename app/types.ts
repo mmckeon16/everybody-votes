@@ -85,3 +85,13 @@ export interface ProviderButtonProps {
   IconComponent: React.FC<IconProps>;
   isSmall: boolean;
 }
+
+export interface ActiveQuestion {
+  id: string;
+  text: string;
+  options: Option[];
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  userVote?: string; // ID of the option the user selected
+}

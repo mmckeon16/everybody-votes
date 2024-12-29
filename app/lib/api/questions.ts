@@ -4,8 +4,13 @@ const baseUrl =
     : process.env.EXPO_PUBLIC_SUPABASE_URL + '/functions/v1';
 
 export const questionsApi = {
-  getActiveQuestion: async () => {
-    const response = await fetch(`${baseUrl}/active-question`, {
+  getActiveQuestion: async (userId?: string) => {
+    const url = new URL(`${baseUrl}/active-question`);
+    if (userId) {
+      url.searchParams.append('userId', userId);
+    }
+
+    const response = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
       },
@@ -16,6 +21,7 @@ export const questionsApi = {
       startDate: data.start_date,
       endDate: data.end_date,
       isActive: data.is_active,
+      userVote: data.user_vote,
     };
   },
 
