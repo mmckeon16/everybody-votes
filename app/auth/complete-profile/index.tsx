@@ -59,7 +59,7 @@ export default function CompleteProfile() {
           const metadata = user.user_metadata;
           //   metadata?.location?.country_code || prev.countryResidence,
           console.log(metadata);
-          setProfileData(prev => ({
+          setProfileData((prev) => ({
             ...prev,
             // Pre-fill data if available from social provider
             // countryResidence:
@@ -107,6 +107,13 @@ export default function CompleteProfile() {
         throw new Error('No authenticated user found');
       }
 
+      console.log('profileData', profileData);
+
+      await mutateAsync({
+        profileData,
+        userId: session.user.id,
+      });
+
       // Update user metadata to mark profile as completed;
       // This is a workaround to get the profile status to update
       // because the auth state change listener doesn't trigger when we set it from the backend
@@ -119,7 +126,7 @@ export default function CompleteProfile() {
       console.log('Profile status refreshed, attempting navigation...');
 
       // Add a small delay before navigation
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Try both navigation methods
       // why is this needed?

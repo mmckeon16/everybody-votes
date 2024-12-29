@@ -76,7 +76,7 @@ const getTimeRemainingPercentage = (
   );
 
   // Handle edge cases
-  if (percentagePassed <= 0) return 0;
+  if (percentagePassed <= 0) return 1;
   if (percentagePassed >= 100) return 100;
 
   return percentagePassed;
@@ -215,10 +215,10 @@ function formatFilters(filters: FilterObject): string {
       if (values && values.length > 0) {
         const displayName = displayNames[key] || key;
         const formattedValues = values
-          .map(value =>
+          .map((value) =>
             value
               .split('-')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ')
           )
           .join(', ');

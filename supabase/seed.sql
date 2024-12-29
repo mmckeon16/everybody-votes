@@ -19,12 +19,12 @@ VALUES
     ('123e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174000', 'Green');
 
 -- Then demographics
--- INSERT INTO public.demographics (user_id, age, gender, country_residence, race_ethnicity, income_bracket, political_affiliation, occupation, country_origin)
+-- INSERT INTO public.demographics (user_id, age, gender, state, race_ethnicity, income_bracket, political_party, political_leaning, employment_status, citizenship_status)
 -- VALUES
---     ('512de29f-cb74-4912-9b4a-c3569e03d7c1', 25, 'Male', 'USA', 'White', '50000-75000', 'Independent', 'Engineer', 'USA'),
---     ('f55c3cc2-915c-477b-94be-b9e9381facc6', 30, 'Female', 'Canada', 'Asian', '75000-100000', 'Liberal', 'Teacher', 'China'),
---     ('456e4567-e89b-12d3-a456-426614100002', 45, 'Male', 'UK', 'Black', '100000-150000', 'Conservative', 'Doctor', 'Nigeria'),
---     ('456e4567-e89b-12d3-a456-426614100003', 35, 'Other', 'Australia', 'Hispanic', '25000-50000', 'Independent', 'Artist', 'Mexico');
+--     ('512de29f-cb74-4912-9b4a-c3569e03d7c1', 25, 'male', 'CA', 'white', '50k-75k', 'democrat', 'liberal', 'employed', 'natural-born-citizen'),
+--     ('f55c3cc2-915c-477b-94be-b9e9381facc6', 30, 'female', 'NY', 'asian', '75k-100k', 'independent', 'moderate', 'self-employed', 'foreign-born-citizen'),
+--     ('456e4567-e89b-12d3-a456-426614100002', 45, 'male', 'TX', 'black', '100k-150k', 'republican', 'conservative', 'employed', 'natural-born-citizen'),
+--     ('456e4567-e89b-12d3-a456-426614100003', 35, 'non-binary', 'WA', 'hispanic', '25k-50k', 'green', 'progressive', 'part-time', 'permanent-resident');
 
 -- -- Finally, answers
 -- INSERT INTO public.answers (id, user_id, option_id, created_at)

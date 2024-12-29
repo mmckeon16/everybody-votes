@@ -18,12 +18,14 @@ export const onboardingApi = {
           user_id: userId,
           age: parseInt(profileData.age),
           gender: profileData.gender,
-          country_residence: profileData.countryResidence,
+          state: profileData.state,
           race_ethnicity: profileData.raceEthnicity,
           income_bracket: profileData.incomeBracket,
-          political_affiliation: profileData.politicalAffiliation,
+          political_party: profileData.politicalParty,
           occupation: profileData.occupation,
-          country_origin: profileData.countryOrigin,
+          political_leaning: profileData.politicalIdeology,
+          employment_status: profileData.employmentStatus,
+          citizenship_status: profileData.citizenship,
         },
       }),
     });
@@ -31,4 +33,4 @@ export const onboardingApi = {
   },
 };
 
-export default onboardingApi
+export default onboardingApi;
