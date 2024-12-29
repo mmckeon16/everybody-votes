@@ -7,7 +7,9 @@ import {
   employmentStatus,
   incomes,
   allPoliticalLeanings,
+  occupationCategories,
 } from '../../auth/constants';
+
 export const demographics = [
   {
     name: 'Gender',
@@ -60,13 +62,12 @@ export const demographics = [
     selected: [],
     options: allPoliticalLeanings,
   },
-  // {
-  //   name: 'Occupation',
-  //   id: 'occupation',
-  //   selected: [],
-  //   options: ,
-  // },
-  // TODO get from the expanded categories
+  {
+    name: 'Occupation',
+    id: 'occupation',
+    selected: [],
+    options: occupationCategories,
+  },
   {
     name: 'Income bracket',
     id: 'income_bracket',

@@ -1,3 +1,5 @@
+import { OccupationCategory } from '../types';
+
 export const races = [
   { label: 'American Indian or Alaska Native', value: 'native-american' },
   { label: 'Asian', value: 'asian' },
@@ -175,4 +177,113 @@ export const otherPoliticalLeanings = [
 export const allPoliticalLeanings = [
   ...mainPoliticalLeanings,
   ...otherPoliticalLeanings,
+];
+
+export const occupationCategories: OccupationCategory[] = [
+  {
+    label: 'Business & Entrepreneurship',
+    value: 'business',
+    subcategories: [
+      { label: 'Business Owner', value: 'business_owner' },
+      { label: 'Franchise Owner', value: 'franchise_owner' },
+      { label: 'Startup Founder', value: 'startup_founder' },
+      { label: 'Small Business Operator', value: 'small_business_operator' },
+      { label: 'Independent Contractor', value: 'independent_contractor' },
+    ],
+  },
+  {
+    label: 'Entertainment & Performing Arts',
+    value: 'entertainment',
+    subcategories: [
+      { label: 'Actor/Actress', value: 'actor' },
+      { label: 'Theater Performer', value: 'theater' },
+      { label: 'Voice Actor', value: 'voice_actor' },
+      { label: 'Stunt Performer', value: 'stunt' },
+      { label: 'TV/Film Production', value: 'tv_film' },
+      { label: 'Talent Agent', value: 'talent_agent' },
+      { label: 'Casting Professional', value: 'casting' },
+    ],
+  },
+  {
+    label: 'Military & Defense',
+    value: 'military',
+    subcategories: [
+      { label: 'Active Duty Military', value: 'active_duty' },
+      { label: 'Military Reserve', value: 'reserve' },
+      { label: 'Defense Contractor', value: 'defense_contractor' },
+      { label: 'Veterans Affairs', value: 'veterans_affairs' },
+      { label: 'Military Training', value: 'military_training' },
+      { label: 'Military Technology', value: 'military_tech' },
+      { label: 'Military Healthcare', value: 'military_healthcare' },
+    ],
+  },
+  {
+    label: 'Construction & Trades',
+    value: 'construction',
+    subcategories: [
+      { label: 'General Contracting', value: 'general_contracting' },
+      { label: 'Construction Management', value: 'construction_mgmt' },
+      { label: 'Carpentry', value: 'carpentry' },
+      { label: 'Electrical', value: 'electrical' },
+      { label: 'Plumbing', value: 'plumbing' },
+      { label: 'HVAC', value: 'hvac' },
+      { label: 'Masonry', value: 'masonry' },
+    ],
+  },
+  {
+    label: 'Real Estate & Property',
+    value: 'real_estate',
+    subcategories: [
+      { label: 'Real Estate Sales', value: 're_sales' },
+      { label: 'Property Management', value: 'property_mgmt' },
+      { label: 'Real Estate Development', value: 're_development' },
+      { label: 'Commercial Real Estate', value: 'commercial_re' },
+      { label: 'Property Appraisal', value: 'appraisal' },
+      { label: 'Leasing & Rental', value: 'leasing' },
+    ],
+  },
+  {
+    label: 'Technology & IT',
+    value: 'tech',
+    subcategories: [
+      { label: 'Software Development', value: 'software_dev' },
+      { label: 'IT Support', value: 'it_support' },
+      { label: 'Systems Administration', value: 'sysadmin' },
+      { label: 'Data Science & Analytics', value: 'data_science' },
+      { label: 'Cybersecurity', value: 'cybersecurity' },
+    ],
+  },
+  {
+    label: 'Healthcare & Medicine',
+    value: 'healthcare',
+    subcategories: [
+      { label: 'Medical Practice', value: 'medical' },
+      { label: 'Nursing', value: 'nursing' },
+      { label: 'Allied Health', value: 'allied_health' },
+      { label: 'Mental Health', value: 'mental_health' },
+      { label: 'Pharmacy', value: 'pharmacy' },
+    ],
+  },
+  {
+    label: 'Education & Training',
+    value: 'education',
+    subcategories: [
+      { label: 'K-12 Education', value: 'k12' },
+      { label: 'Higher Education', value: 'higher_ed' },
+      { label: 'Professional Training', value: 'prof_training' },
+      { label: 'Special Education', value: 'special_ed' },
+      { label: 'Educational Administration', value: 'ed_admin' },
+    ],
+  },
+  {
+    label: 'Creative & Design',
+    value: 'creative',
+    subcategories: [
+      { label: 'Graphic Design', value: 'graphic_design' },
+      { label: 'UX/UI Design', value: 'ux_ui' },
+      { label: 'Art & Illustration', value: 'art' },
+      { label: 'Writing & Content', value: 'writing' },
+      { label: 'Photography', value: 'photography' },
+    ],
+  },
 ];

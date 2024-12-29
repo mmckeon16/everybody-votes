@@ -95,3 +95,15 @@ export interface ActiveQuestion {
   isActive: boolean;
   userVote?: string; // ID of the option the user selected
 }
+
+// Define types for our occupation data
+export type OccupationSubcategory = {
+  label: string;
+  value: string;
+};
+
+export type OccupationCategory = {
+  label: string;
+  value: string;
+  subcategories: OccupationSubcategory[];
+};

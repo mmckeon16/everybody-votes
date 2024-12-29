@@ -57,8 +57,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 defaultValue={['item-1']}
                 className="w-full native:max-w-md"
               >
-                {data.map(({ name, options, selected = [] }, index) => (
-                  <AccordionItem value={name} key={name}>
+                {data.map(({ name, options, selected = [], id }, index) => (
+                  <AccordionItem value={name} key={id}>
                     <AccordionTrigger>
                       <Text>{name}</Text>
                     </AccordionTrigger>
@@ -72,46 +72,104 @@ const FilterModal: React.FC<FilterModalProps> = ({
                           flexGrow: 1,
                         }}
                       >
-                        {options?.map(({ label, value }) => {
-                          return (
-                            <View
-                              className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
-                              key={value}
-                            >
-                              <Checkbox
-                                id={value}
-                                checked={selected.includes(value)}
-                                onCheckedChange={() => {
-                                  let updatedData = data;
-                                  if (selected.includes(value)) {
-                                    const updatedSelected = data[
-                                      index
-                                    ]?.selected.filter(item => item !== value);
-                                    updatedData[index] = {
-                                      ...updatedData[index],
-                                      selected: updatedSelected,
-                                    };
-                                  } else {
-                                    updatedData[index]?.selected?.push(value);
-                                  }
-                                  setUserSelectedDemographics({
-                                    ...userSelectedDemographics,
-                                    [updatedData[index].id]:
-                                      updatedData[index]?.selected,
-                                  });
-                                  setData([...updatedData]);
-                                }}
-                              />
-                              <Label
-                                nativeID={value}
-                                className="flex-1 flex-shrink"
-                                numberOfLines={1}
-                              >
-                                {label}
-                              </Label>
-                            </View>
-                          );
-                        })}
+                        {id === 'occupation'
+                          ? options?.map(({ label, value, subcategories }) => {
+                              return (
+                                <View key={value}>
+                                  <Text>{label}</Text>
+                                  {subcategories?.map(subcategory => (
+                                    <View
+                                      className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
+                                      key={subcategory.value}
+                                    >
+                                      <Checkbox
+                                        id={subcategory.value}
+                                        checked={selected.includes(
+                                          subcategory.value
+                                        )}
+                                        onCheckedChange={() => {
+                                          let updatedData = data;
+                                          if (
+                                            selected.includes(subcategory.value)
+                                          ) {
+                                            const updatedSelected = data[
+                                              index
+                                            ]?.selected.filter(
+                                              item => item !== value
+                                            );
+                                            updatedData[index] = {
+                                              ...updatedData[index],
+                                              selected: updatedSelected,
+                                            };
+                                          } else {
+                                            updatedData[index]?.selected?.push(
+                                              subcategory.value
+                                            );
+                                          }
+                                          setUserSelectedDemographics({
+                                            ...userSelectedDemographics,
+                                            [updatedData[index].id]:
+                                              updatedData[index]?.selected,
+                                          });
+                                          setData([...updatedData]);
+                                        }}
+                                      />
+                                      <Label
+                                        nativeID={subcategory.value}
+                                        className="flex-1 flex-shrink"
+                                        numberOfLines={1}
+                                      >
+                                        {subcategory.label}
+                                      </Label>
+                                    </View>
+                                  ))}
+                                </View>
+                              );
+                            })
+                          : options?.map(({ label, value }) => {
+                              return (
+                                <View
+                                  className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
+                                  key={value}
+                                >
+                                  <Checkbox
+                                    id={value}
+                                    checked={selected.includes(value)}
+                                    onCheckedChange={() => {
+                                      let updatedData = data;
+                                      if (selected.includes(value)) {
+                                        const updatedSelected = data[
+                                          index
+                                        ]?.selected.filter(
+                                          item => item !== value
+                                        );
+                                        updatedData[index] = {
+                                          ...updatedData[index],
+                                          selected: updatedSelected,
+                                        };
+                                      } else {
+                                        updatedData[index]?.selected?.push(
+                                          value
+                                        );
+                                      }
+                                      setUserSelectedDemographics({
+                                        ...userSelectedDemographics,
+                                        [updatedData[index].id]:
+                                          updatedData[index]?.selected,
+                                      });
+                                      setData([...updatedData]);
+                                    }}
+                                  />
+                                  <Label
+                                    nativeID={value}
+                                    className="flex-1 flex-shrink"
+                                    numberOfLines={1}
+                                  >
+                                    {label}
+                                  </Label>
+                                </View>
+                              );
+                            })}
                       </ScrollView>
                     </AccordionContent>
                   </AccordionItem>
