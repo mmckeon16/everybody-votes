@@ -14,10 +14,10 @@ export interface Question {
   id: string;
   text: string;
   options: Option[];
-  startDate: string;
-  endDate: string;
-  isActive: boolean;
-  totalVotes: number;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+  total_votes: number;
   results: OptionResult[];
 }
 

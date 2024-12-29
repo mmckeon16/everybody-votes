@@ -16,13 +16,14 @@ export const questionsApi = {
       },
     });
     const data = await response.json();
-    return {
-      ...data,
-      startDate: data.start_date,
-      endDate: data.end_date,
-      isActive: data.is_active,
-      userVote: data.user_vote,
-    };
+    return data;
+    // return {
+    //   ...data,
+    //   startDate: data.start_date,
+    //   endDate: data.end_date,
+    //   isActive: data.is_active,
+    //   userVote: data.user_vote,
+    // };
   },
 
   getQuestionHistory: async () => {
