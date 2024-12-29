@@ -11,118 +11,84 @@ import {
 } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
 import { Label } from '~/components/ui/label';
-import { Checkbox } from '~/components/ui/checkbox';
 import { StepProps } from '../../types';
-import { countries } from '../constants';
+import { states, citizenshipStatus } from '../constants';
 
 const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
-  const [checkedSameCountry, setCheckedSameCountry] = useState(true);
-  const [countryOfOrigin, setCountryOfOrigin] = useState('');
+  const [state, setState] = useState(null);
 
   return (
     <View className="flex flex-col gap-6">
       <View className="flex flex-col gap-3">
-        <Label nativeID="origin">
-          <Text>Country of Origin</Text>
+        <Label nativeID="state">
+          <Text>State of Residence</Text>
         </Label>
         <Select
-          id="origin"
+          id="state"
           className="web:w-full"
           onValueChange={({ value }) => {
-            const lowerCaseVal = value.toLowerCase();
-            setCountryOfOrigin(lowerCaseVal);
-            if (checkedSameCountry) {
-              // then also save
-              setProfileData({
-                ...profileData,
-                countryOrigin: lowerCaseVal,
-                countryResidence: lowerCaseVal,
-              });
-            } else {
-              setProfileData({ ...profileData, countryOrigin: lowerCaseVal });
-            }
+            setState(value);
+            setProfileData({ ...profileData, state: value });
           }}
         >
           <SelectTrigger>
             <SelectValue
               className="text-foreground text-sm native:text-lg"
-              placeholder="Country of origin"
+              placeholder="US State"
             />
-            {/* TODO add state if country is USA */}
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>
-                <Text>Country of origin</Text>
+                <Text>US State</Text>
               </SelectLabel>
-              {countries.map(country => (
-                <SelectItem label={country} value={country} key={country}>
-                  <Text>{country}</Text>
-                </SelectItem>
+              {states.map(state => (
+                <SelectItem
+                  label={state.label}
+                  value={state.value}
+                  key={state.value}
+                />
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       </View>
-      <View className="flex flex-row gap-4">
-        <Checkbox
-          id="country"
-          checked={checkedSameCountry}
-          // if unchecked then unset setProfileData
-          onCheckedChange={() => {
-            if (checkedSameCountry) {
-              // then they are unchecking the box
-              setProfileData({ ...profileData, countryResidence: '' });
-            } else {
-              console.log('checking', profileData);
-              setProfileData({
-                ...profileData,
-                countryResidence: countryOfOrigin,
-              });
-            }
-            setCheckedSameCountry(prev => !prev);
-          }}
-        />
-        <Label nativeID="country">
-          <Text>I'm currently living in my country of origin</Text>
+      <View className="flex flex-col gap-3">
+        <Label nativeID="citizen">
+          <Text>Citizenship Status</Text>
         </Label>
+        <Select
+          id="citizen"
+          className="web:w-full"
+          onValueChange={({ value }) => {
+            setProfileData({
+              ...profileData,
+              citizenship: value,
+            });
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue
+              className="text-foreground text-sm native:text-lg"
+              placeholder="Citizenship Status"
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>
+                <Text>Citizenship Status</Text>
+              </SelectLabel>
+              {citizenshipStatus.map(status => (
+                <SelectItem
+                  label={status.label}
+                  value={status.value}
+                  key={status.value}
+                />
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </View>
-      {!checkedSameCountry && (
-        <View className="flex flex-col gap-3">
-          <Label nativeID="residence">
-            <Text>Country of Residence</Text>
-          </Label>
-          <Select
-            id="residence"
-            className="web:w-full"
-            onValueChange={({ value }) => {
-              setProfileData({
-                ...profileData,
-                countryResidence: value.toLowerCase(),
-              });
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue
-                className="text-foreground text-sm native:text-lg"
-                placeholder="Country of Residence"
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>
-                  <Text>Country of Residence</Text>
-                </SelectLabel>
-                {countries.map(country => (
-                  <SelectItem label={country} value={country} key={country}>
-                    <Text>{country}</Text>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </View>
-      )}
     </View>
   );
 };

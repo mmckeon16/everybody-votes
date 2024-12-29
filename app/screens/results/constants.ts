@@ -1,5 +1,5 @@
 // TODO get this from db table or onboarding as we change/add more
-import { countries } from '../../auth/constants';
+// import { countries } from '../../auth/constants';
 export const demographics = [
   {
     name: 'Gender',
@@ -30,7 +30,7 @@ export const demographics = [
     name: 'Country of origin',
     id: 'country_origin',
     selected: [],
-    options: [...countries],
+    // options: [...countries],
   },
   {
     name: 'Race/Ethnicity',

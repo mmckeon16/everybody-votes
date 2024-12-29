@@ -13,8 +13,7 @@ import Location from '../components/location';
 import Race from '../components/race';
 import Politics from '../components/politics';
 import Occupation from '../components/occupation';
-import SocioEconomic from '../components/socioEconomic';
-
+import Income from '../components/income';
 import { ProfileData } from '../../types';
 import Toast from 'react-native-toast-message';
 
@@ -25,23 +24,24 @@ const STEPS = {
   POLITICS: 4,
   RACE: 5,
   OCCUPATION: 6,
-  SOCIOECONOMIC: 7,
+  INCOME: 7,
 };
 
 export default function CompleteProfile() {
-  const { session, refreshProfileStatus } = useAuth();
+  const { session } = useAuth();
   const router = useRouter();
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
   const [profileData, setProfileData] = useState<ProfileData>({
     age: '',
     gender: '',
-    countryResidence: '',
+    citizenship: '',
     raceEthnicity: '',
     incomeBracket: '',
-    politicalAffiliation: '',
+    politicalParty: '',
+    politicalIdeology: '',
     occupation: '',
-    countryOrigin: '',
+    state: '',
   });
   const { mutateAsync, isPending } = useOnboarding();
 
@@ -56,12 +56,13 @@ export default function CompleteProfile() {
         if (user) {
           // Get user metadata from social provider
           const metadata = user.user_metadata;
-
+          //   metadata?.location?.country_code || prev.countryResidence,
+          console.log(metadata);
           setProfileData(prev => ({
             ...prev,
             // Pre-fill data if available from social provider
-            countryResidence:
-              metadata?.location?.country_code || prev.countryResidence,
+            // countryResidence:
+            //   metadata?.location?.country_code || prev.countryResidence,
             occupation: metadata?.occupation || prev.occupation,
             // Add any other fields that might come from social login
           }));
@@ -79,17 +80,17 @@ export default function CompleteProfile() {
       case STEPS.GENDER:
         return profileData.gender !== '';
       case STEPS.LOCATION:
-        return (
-          profileData.countryResidence !== '' &&
-          profileData.countryOrigin !== ''
-        );
+        return profileData.citizenship !== '' && profileData.state !== '';
       case STEPS.RACE:
         return profileData.raceEthnicity !== '';
       case STEPS.POLITICS:
-        return profileData.politicalAffiliation !== '';
+        return (
+          profileData.politicalParty !== '' &&
+          profileData.politicalIdeology !== ''
+        );
       case STEPS.OCCUPATION:
         return profileData.occupation !== '';
-      case STEPS.SOCIOECONOMIC:
+      case STEPS.INCOME:
         return profileData.incomeBracket !== '';
       default:
         return false;
@@ -101,11 +102,6 @@ export default function CompleteProfile() {
       if (!session?.user?.id) {
         throw new Error('No authenticated user found');
       }
-
-      const result = await mutateAsync({
-        profileData,
-        userId: session.user.id,
-      });
 
       // Update user metadata to mark profile as completed;
       // This is a workaround to get the profile status to update
@@ -174,12 +170,9 @@ export default function CompleteProfile() {
             setProfileData={setProfileData}
           />
         );
-      case STEPS.SOCIOECONOMIC:
+      case STEPS.INCOME:
         return (
-          <SocioEconomic
-            profileData={profileData}
-            setProfileData={setProfileData}
-          />
+          <Income profileData={profileData} setProfileData={setProfileData} />
         );
       default:
         return <View />; // Return empty view as fallback

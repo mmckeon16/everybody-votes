@@ -43,12 +43,10 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
             </SelectLabel>
             {demographics.map(demographic => (
               <SelectItem
-                label={demographic}
-                value={demographic}
-                key={demographic}
-              >
-                <Text>{demographic}</Text>
-              </SelectItem>
+                label={demographic.label}
+                value={demographic.value}
+                key={demographic.value}
+              />
             ))}
           </SelectGroup>
         </SelectContent>

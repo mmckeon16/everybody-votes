@@ -12,6 +12,7 @@ import {
 import { Text } from '~/components/ui/text';
 import { Label } from '~/components/ui/label';
 import { StepProps } from '../../types';
+import { genders } from '../constants';
 
 const Gender: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   return (
@@ -37,18 +38,13 @@ const Gender: React.FC<StepProps> = ({ setProfileData, profileData }) => {
             <SelectLabel>
               <Text>Gender</Text>
             </SelectLabel>
-            <SelectItem label="Male" value="male">
-              <Text>Male</Text>
-            </SelectItem>
-            <SelectItem label="Female" value="female">
-              <Text>Female</Text>
-            </SelectItem>
-            <SelectItem label="Non-binary" value="non-binary">
-              <Text>Non-binary</Text>
-            </SelectItem>
-            <SelectItem label="Prefer not to say" value="prefer-not-to-say">
-              <Text>Prefer not to say</Text>
-            </SelectItem>
+            {genders.map(gender => (
+              <SelectItem
+                label={gender.label}
+                value={gender.value}
+                key={gender.value}
+              />
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>

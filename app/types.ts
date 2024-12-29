@@ -53,12 +53,13 @@ export interface AggregatedResults {
 export interface ProfileData {
   age: string;
   gender: string;
-  countryResidence: string;
+  state: string;
   raceEthnicity: string;
   incomeBracket: string;
-  politicalAffiliation: string;
+  politicalParty: string;
+  politicalIdeology: string;
   occupation: string;
-  countryOrigin: string;
+  citizenship: string;
 }
 
 export interface StepProps {

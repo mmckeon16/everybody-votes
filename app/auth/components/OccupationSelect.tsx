@@ -158,7 +158,6 @@ export const OccupationSelect: React.FC<StepProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = React.useState('');
   const [selectedCategoryLabel, setSelectedCategoryLabel] = React.useState('');
-  const [selectedSubcategory, setSelectedSubcategory] = React.useState('');
   const [
     selectedSubcategoryLabel,
     setSelectedSubcategoryLabel,
@@ -186,67 +185,11 @@ export const OccupationSelect: React.FC<StepProps> = ({
     }
   }, [searchQuery]);
 
-  const handleValueChange = (rawValue: any) => {
-    // Parse the JSON value if it's a string
-    console.log('handle changeee', rawValue);
-    const value =
-      typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue;
-
-    if (value.type === 'prefer_not_to_say') {
-      setSelectedCategory('prefer_not_to_say');
-      setSelectedCategoryLabel('Prefer not to say');
-      setSelectedSubcategory('');
-      setSelectedSubcategoryLabel('');
-      setOtherOccupation('');
-      onSelect?.({
-        categoryValue: 'prefer_not_to_say',
-        displayValue: 'Prefer not to say',
-      });
-      return;
-    }
-
-    if (value.type === 'other') {
-      setSelectedCategory('other');
-      setSelectedCategoryLabel('Other');
-      setSelectedSubcategory('');
-      setSelectedSubcategoryLabel('');
-      onSelect?.({
-        categoryValue: 'other',
-        other: otherOccupation,
-        displayValue: otherOccupation || 'Other',
-      });
-      return;
-    }
-
-    // Handle category and subcategory selection
-    const category = occupationCategories.find(
-      cat => cat.value === value.categoryValue
-    );
-    if (!category) return;
-
-    setSelectedCategory(category.value);
-    setSelectedCategoryLabel(category.label);
-
-    const subcategory = category.subcategories.find(
-      sub => sub.value === value.subcategoryValue
-    );
-    if (subcategory) {
-      setSelectedSubcategory(subcategory.value);
-      setSelectedSubcategoryLabel(subcategory.label);
-      onSelect?.({
-        categoryValue: category.value,
-        subcategoryValue: subcategory.value,
-        displayValue: `${category.label} - ${subcategory.label}`,
-      });
-    }
-  };
-
   return (
     <View className="w-full max-w-md">
       <View className="space-y-4">
         <Select
           className="web:w-full"
-          // onValueChange={handleValueChange}
           onValueChange={({ value }) => {
             setProfileData({
               ...profileData,
@@ -287,11 +230,7 @@ export const OccupationSelect: React.FC<StepProps> = ({
                         label={subcategory.label}
                         value={subcategory.value}
                         className="h-7 bg-blue text-black"
-                      >
-                        <Text className="text-black flex-1">
-                          {subcategory.label}
-                        </Text>
-                      </SelectItem>
+                      />
                     </View>
                   );
                 })}
@@ -299,12 +238,7 @@ export const OccupationSelect: React.FC<StepProps> = ({
             ))}
             {/* Other Option */}
             <SelectGroup>
-              <SelectItem
-                label="Other"
-                value={JSON.stringify({ type: 'other' })}
-              >
-                <Text className="text-sm text-gray-900">Other</Text>
-              </SelectItem>
+              <SelectItem label="Other" value="other" />
               {selectedCategory === 'other' && (
                 <View className="px-4 py-2">
                   <TextInput
@@ -318,12 +252,7 @@ export const OccupationSelect: React.FC<StepProps> = ({
             </SelectGroup>
             {/* Prefer not to say*/}
             <SelectGroup>
-              <SelectItem
-                label="Prefer not to say"
-                value={JSON.stringify({ type: 'prefer_not_to_say' })}
-              >
-                <Text className="text-sm text-gray-900">Prefer not to say</Text>
-              </SelectItem>
+              <SelectItem label="Prefer not to say" value="prefer_not_to_say" />
             </SelectGroup>
           </SelectContent>
         </Select>
