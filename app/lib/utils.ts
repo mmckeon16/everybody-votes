@@ -71,15 +71,15 @@ const getTimeRemainingPercentage = (
   const timeElapsed: number = now.getTime() - startDate.getTime();
 
   // Calculate percentage remaining and round to nearest integer
-  const percentageRemaining: number = Math.round(
-    100 - (timeElapsed / totalDuration) * 100
+  const percentagePassed: number = Math.round(
+    (timeElapsed / totalDuration) * 100
   );
 
   // Handle edge cases
-  if (percentageRemaining <= 0) return 0;
-  if (percentageRemaining >= 100) return 100;
+  if (percentagePassed <= 0) return 0;
+  if (percentagePassed >= 100) return 100;
 
-  return percentageRemaining;
+  return percentagePassed;
 };
 
 function addColorToResults<T>(results: T[]): (T & { color: string })[] {
