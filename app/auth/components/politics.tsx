@@ -66,7 +66,7 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           className="flex flex-row gap-3 justify-start items-center"
           onPress={() => setShowOtherParties(!showOtherParties)}
         >
-          <Text>I don't see my party</Text>
+          <Text>See more</Text>
           {showOtherParties ? (
             <Entypo name="chevron-thin-up" size={16} color="black" />
           ) : (
@@ -75,9 +75,6 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         </TouchableOpacity>
         {showOtherParties && (
           <View className="flex flex-col gap-3">
-            <Label nativeID="party">
-              <Text>Other Parties</Text>
-            </Label>
             <Select
               id="party"
               className="web:w-full"
@@ -153,7 +150,7 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           className="flex flex-row gap-3 justify-start items-center"
           onPress={() => setShowOtherLeanings(!showOtherLeanings)}
         >
-          <Text>I don't see my political leanings</Text>
+          <Text>See more</Text>
           {showOtherLeanings ? (
             <Entypo name="chevron-thin-up" size={16} color="black" />
           ) : (
@@ -162,9 +159,6 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         </TouchableOpacity>
         {showOtherLeanings && (
           <View className="flex flex-col gap-3">
-            <Label nativeID="leaning">
-              <Text>Other Political Leanings</Text>
-            </Label>
             <Select
               id="leaning"
               className="web:w-full"

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { Input } from '~/components/ui/input';
 import { Search } from 'lucide-react-native';
 import {
@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Text } from '~/components/ui/text';
 import { Separator } from '~/components/ui/separator';
 import { StepProps } from '../../types';
 
