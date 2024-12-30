@@ -8,6 +8,7 @@ export function useResults(questionId: string, demographicsFilter?: object) {
 
   return useQuery({
     queryKey,
+    enabled: !!questionId,
     queryFn: () =>
       resultsApi.getResultsForQuestion(questionId, demographicsFilter),
   });

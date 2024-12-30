@@ -40,7 +40,7 @@ export const demographics = [
   },
   {
     name: 'Citizenship Status',
-    id: 'citizenship',
+    id: 'citizenship_status',
     selected: [],
     options: allCitizenshipStatus,
   },
@@ -76,7 +76,7 @@ export const demographics = [
   },
   {
     name: 'Employment Status',
-    id: 'employment',
+    id: 'employment_status',
     selected: [],
     options: employmentStatus,
   },

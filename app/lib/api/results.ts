@@ -22,11 +22,14 @@ export const resultsApi = {
 
     // Add demographic filters to query params if they exist
     if (demographicFilters) {
+      console.log('demographicFilters', demographicFilters);
       Object.entries(demographicFilters).forEach(([key, value]) => {
         if (value) {
+          console.log('key', key);
+          console.log('value', value);
           // Handle both single values and arrays
           if (Array.isArray(value)) {
-            value.forEach(v => url.searchParams.append(key, v));
+            value.forEach((v) => url.searchParams.append(key, v));
           } else {
             url.searchParams.append(key, value);
           }

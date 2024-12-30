@@ -79,7 +79,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                               return (
                                 <View key={value}>
                                   <Text>{label}</Text>
-                                  {subcategories?.map(subcategory => (
+                                  {subcategories?.map((subcategory) => (
                                     <View
                                       className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
                                       key={subcategory.value}
@@ -91,7 +91,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                         )}
                                         onCheckedChange={() => {
                                           setUserSelectedDemographics(
-                                            prevState => {
+                                            (prevState) => {
                                               const updatedData = {
                                                 ...prevState,
                                               };
@@ -103,7 +103,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                                 updatedData[id] = updatedData[
                                                   id
                                                 ].filter(
-                                                  item =>
+                                                  (item) =>
                                                     item !== subcategory.value
                                                 );
                                               } else {
@@ -142,20 +142,24 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                     id={value}
                                     checked={selected?.includes(value)}
                                     onCheckedChange={() => {
-                                      setUserSelectedDemographics(prevState => {
-                                        const updatedData = { ...prevState };
-                                        if (updatedData[id]?.includes(value)) {
-                                          updatedData[id] = updatedData[
-                                            id
-                                          ].filter(item => item !== value);
-                                        } else {
-                                          updatedData[id] = [
-                                            ...(updatedData[id] || []),
-                                            value,
-                                          ];
+                                      setUserSelectedDemographics(
+                                        (prevState) => {
+                                          const updatedData = { ...prevState };
+                                          if (
+                                            updatedData[id]?.includes(value)
+                                          ) {
+                                            updatedData[id] = updatedData[
+                                              id
+                                            ].filter((item) => item !== value);
+                                          } else {
+                                            updatedData[id] = [
+                                              ...(updatedData[id] || []),
+                                              value,
+                                            ];
+                                          }
+                                          return updatedData;
                                         }
-                                        return updatedData;
-                                      });
+                                      );
                                     }}
                                   />
                                   <Label
@@ -176,16 +180,20 @@ const FilterModal: React.FC<FilterModalProps> = ({
               <Button
                 variant="outline"
                 onPress={() => {
-                  // Override age so that we can query for individual values stored in db
-                  if (userSelectedDemographics?.age?.length > 0) {
-                    let newAges: number[] = [];
-                    userSelectedDemographics?.age?.map((selected: string) => {
-                      console.log('ageMapping', ageMapping);
-                      console.log('selected', selected);
-                      newAges = [...newAges, ...ageMapping[selected]];
-                    });
-                    userSelectedDemographics.age = newAges;
-                  }
+                  // // Override age so that we can query for individual values stored in db
+                  // if (userSelectedDemographics.age) {
+                  //   console.log(
+                  //     'userSelectedDemographics AGES',
+                  //     userSelectedDemographics.age
+                  //   );
+                  //   let newAges: number[] = [];
+                  //   userSelectedDemographics?.age?.map((selected: string) => {
+                  //     console.log('ageMapping', ageMapping);
+                  //     console.log('selected', selected);
+                  //     newAges = [...newAges, ...ageMapping[selected]];
+                  //   });
+                  //   userSelectedDemographics.age = newAges;
+                  // }
                   setFilteredDemographics(userSelectedDemographics);
                   setModalVisible(!modalVisible);
                 }}
