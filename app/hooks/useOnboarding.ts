@@ -30,6 +30,8 @@ export function useOnboarding() {
         type: 'error',
         text1: 'Error',
         text2: error.message || 'Failed to submit profile',
+        position: 'bottom',
+
       });
     },
     onSuccess: () => {
@@ -38,6 +40,8 @@ export function useOnboarding() {
         type: 'success',
         text1: 'Success',
         text2: 'Profile submitted successfully',
+        position: 'bottom',
+
       });
     },
   });

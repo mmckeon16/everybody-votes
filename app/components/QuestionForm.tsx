@@ -48,11 +48,16 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         </CardHeader>
         <CardContent>
           <View className="flex-column justify-around gap-3">
-            {options.map((option) => (
+            {options.map(option => (
               <Button
                 key={option.id}
                 onPress={() => setSelectedOption(option)}
-                className="css-146c3p1 web:scroll-m-20 border-b border-border pb-2 text-3xl text-foreground font-semibold tracking-tight first:mt-0 web:select-text"
+                className={`border-b border-border pb-2 text-3xl font-semibold tracking-tight first:mt-0 web:select-text
+                ${
+                  selectedOption?.id === option.id
+                    ? 'bg-sky-600	text-gray-700'
+                    : 'text-foreground'
+                }`}
               >
                 <Text>{option.text}</Text>
               </Button>

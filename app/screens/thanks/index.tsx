@@ -27,10 +27,14 @@ export default function Thanks() {
       <Card className="w-full max-w-md p-2 rounded-2xl">
         <CardHeader>
           <CardTitle className="pb-2">Thanks for participating! </CardTitle>
-          <CardDescription>
-            Come back in {getTimeUntilExpiration(activeQuestion?.endDate)} to
-            see the results{' '}
-          </CardDescription>
+          {activeQuestion && (
+            <View>
+              <CardDescription>
+                Come back in {getTimeUntilExpiration(activeQuestion?.end_date)}{' '}
+                to see the results{' '}
+              </CardDescription>
+            </View>
+          )}
         </CardHeader>
         <CardContent className="flex-col gap-3">
           <Button
@@ -57,16 +61,6 @@ export default function Thanks() {
           resizeMode="cover"
         />
       </View>
-
-      {/* <LottieView
-        ref={confettiRef}
-        source={require('../../../assets/lottie/celebrate.json')}
-        autoPlay={true}
-        loop={false}
-        style={{ width: 200, height: 200 }} // Explicit dimensions
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-full z-0 pointer-events-none"
-        resizeMode="cover"
-      /> */}
     </View>
   );
 }

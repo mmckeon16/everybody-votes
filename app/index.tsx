@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import { Button } from '~/components/ui/button';
-import { Card, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
+import {
+  Card,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '~/components/ui/card';
 import { Progress } from '~/components/ui/progress';
 import { Text } from '~/components/ui/text';
 import { SkeletonCard } from './components/SkeletonCard';
@@ -16,8 +22,15 @@ export default function Screen() {
   const router = useRouter();
   const { data: activeQuestion, isLoading } = useActiveQuestion();
 
-  // TODO add loading state
-  console.log('activeQuestion: ', activeQuestion);
+  const { user_vote, options } = activeQuestion || {};
+
+  let userVotedText = null;
+  if (user_vote) {
+    userVotedText =
+      options[0]?.id === user_vote ? options[0]?.text : options[1]?.text;
+  }
+
+  console.log(userVotedText);
 
   return (
     <View className="flex-1 items-center gap-5 p-6">
@@ -30,7 +43,7 @@ export default function Screen() {
               {activeQuestion?.text}
             </CardTitle>
           </CardHeader>
-          <CardFooter className="flex-col gap-3 pb-0">
+          <CardFooter className="flex-col gap-3 pb-4">
             <Progress
               value={getTimeRemainingPercentage(
                 activeQuestion?.start_date ?? '',
@@ -49,27 +62,43 @@ export default function Screen() {
               </Text>
             </View>
             <View />
-            <Button
-              variant="outline"
-              className="shadow shadow-foreground/5"
-              onPress={() => {
-                router.push('/screens/vote');
-              }}
-            >
-              <Text>Vote</Text>
-            </Button>
+            {userVotedText ? (
+              <Text>
+                You voted <Text className="text-sky-600">{userVotedText}</Text>
+              </Text>
+            ) : (
+              <Button
+                variant="outline"
+                className="shadow shadow-foreground/5"
+                onPress={() => {
+                  router.push('/screens/vote');
+                }}
+              >
+                <Text>Vote</Text>
+              </Button>
+            )}
           </CardFooter>
         </Card>
       )}
-      <Button
-        variant="outline"
-        className="shadow shadow-foreground/5"
-        onPress={() => {
-          router.push('/screens/results');
-        }}
-      >
-        <Text>Results</Text>
-      </Button>
+      <Card className="w-full max-w-sm p-2 rounded-2xl">
+        <CardHeader className="items-center">
+          <CardTitle className="pb-2 text-center">
+            View previous poll results
+          </CardTitle>
+          <CardDescription>TODO add question here</CardDescription>
+        </CardHeader>
+        <CardFooter className="flex-col gap-3 pb-4">
+          <Button
+            variant="outline"
+            className="shadow shadow-foreground/5"
+            onPress={() => {
+              router.push('/screens/results');
+            }}
+          >
+            <Text>Results</Text>
+          </Button>
+        </CardFooter>
+      </Card>
       <Button
         variant="outline"
         className="shadow shadow-foreground/5"
