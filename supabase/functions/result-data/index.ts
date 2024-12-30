@@ -63,7 +63,7 @@ Deno.serve(async (req: Request) => {
         'political_party',
         'political_leaning',
         'employment_status',
-        'citizenship',
+        'citizenship_status',
       ];
 
       validDemographicFields.forEach((field) => {
