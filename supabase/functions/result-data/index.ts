@@ -100,25 +100,21 @@ Deno.serve(async (req: Request) => {
         >((acc, [field, values]) => {
           // skip age filter since we already applied it
           if (field !== 'age') {
-            acc.push({ [`demographics.${field}`]: values });
+            acc.push({ [field]: values });
           }
           return acc;
         }, []);
 
         console.log('filterConditions', filterConditions);
 
-        // Apply OR condition for multiple values of the same field
+        // Apply filters using proper PostgREST syntax
         filterConditions.forEach((condition) => {
-          console.log(
-            `THIS IS THE FILTER ${Object.keys(condition)[0]}.in.(${Object.values(
-              condition
-            )[0].join(',')})`
-          );
-          answersQuery = answersQuery.or(
-            `${Object.keys(condition)[0]}.in.(${Object.values(
-              condition
-            )[0].join(',')})`
-          );
+          const field = Object.keys(condition)[0];
+          const values = Object.values(condition)[0];
+          let filterString = values
+            .map((value) => `${field}.eq.${value}`)
+            .join(',');
+          answersQuery = answersQuery.or(filterString);
         });
       }
     } else {
