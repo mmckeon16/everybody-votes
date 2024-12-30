@@ -56,16 +56,19 @@ Deno.serve(async (req: Request) => {
       const validDemographicFields = [
         'age',
         'gender',
-        'country_residence',
+        'state',
         'race_ethnicity',
         'income_bracket',
-        'political_affiliation',
         'occupation',
-        'country_origin',
+        'political_party',
+        'political_leaning',
+        'employment_status',
+        'citizenship',
       ];
 
       validDemographicFields.forEach((field) => {
         const values = url.searchParams.getAll(field);
+        console.log('values', values);
         if (values.length > 0) {
           demographicFilters[field] = values;
         }
@@ -95,6 +98,7 @@ Deno.serve(async (req: Request) => {
       // Add the rest of the demographic filters to the query
       if (Object.keys(demographicFilters).length > 0) {
         // Build the filter conditions
+        console.log('demographicFilters', demographicFilters);
         const filterConditions = Object.entries(demographicFilters).reduce<
           { [key: string]: string[] }[]
         >((acc, [field, values]) => {
