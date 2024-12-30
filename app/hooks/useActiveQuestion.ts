@@ -6,7 +6,7 @@ export function useActiveQuestion() {
   const { session } = useAuth();
 
   return useQuery({
-    queryKey: ['activeQuestion', session?.user?.id],
+    queryKey: ['activeQuestion'],
     queryFn: () => questionsApi.getActiveQuestion(session?.user?.id),
   });
 }

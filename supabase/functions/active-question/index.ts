@@ -72,9 +72,6 @@ Deno.serve(async (req: Request) => {
         )
         .maybeSingle();
 
-      console.log('this is the answer');
-      console.log(answer);
-
       if (answerError) {
         console.error('Error fetching user answer:', answerError);
       } else if (answer) {
