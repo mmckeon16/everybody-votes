@@ -13,6 +13,7 @@ import {
 import NumberFlipper from './components/NumberFlipper';
 import FilterModal from './components/FilterModal';
 import FilteredResultsCard from './components/FilteredResultsCard';
+import MyStats from './components/MyStats';
 import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
 import { addColorToResults } from '../../lib/utils';
 
@@ -88,7 +89,6 @@ export default function Results() {
             )}
           </CardContent>
         </Card>
-        {console.log('filtered', filteredDemographics)}
         {filteredDemographics && isPopulatedFilter && (
           <FilteredResultsCard
             filteredDemographics={filteredDemographics}
@@ -96,6 +96,7 @@ export default function Results() {
             setFilteredDemographics={setFilteredDemographics}
           />
         )}
+        <MyStats />
       </View>
     </ScrollView>
   );
