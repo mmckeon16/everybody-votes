@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '~/components/ui/text';
 import DemographicPills from './Pills';
-
 import Svg, { Circle, G } from 'react-native-svg';
 import Animated, {
   useAnimatedProps,
@@ -11,6 +10,7 @@ import Animated, {
   useDerivedValue,
   Easing,
 } from 'react-native-reanimated';
+import { DemographicKey } from '../../../types';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -26,6 +26,7 @@ interface DonutChartProps {
   strokeWidth?: number;
   totalVotes?: number;
   filters?: object;
+  setFilters: Function;
 }
 
 const AnimatedDonutChart: React.FC<DonutChartProps> = ({
@@ -34,6 +35,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   strokeWidth = 15,
   totalVotes,
   filters = null,
+  setFilters,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -57,6 +59,16 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       easing: Easing.bezier(0.16, 0, 0.4, 1),
     });
   }, [data]);
+
+  const handleRemove = (
+    category: DemographicKey,
+    originalValue: string | number
+  ) => {
+    setFilters(prev => ({
+      ...prev,
+      [category]: prev[category]?.filter(v => v !== originalValue),
+    }));
+  };
 
   const segment1Length = useDerivedValue(() => {
     return (data[0].percentage / 100) * circumference * progress.value;
@@ -83,7 +95,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       {/* Left side: Information */}
       <View style={styles.infoContainer}>
         <View style={styles.filtersContainer}>
-          <DemographicPills data={filters} />
+          <DemographicPills data={filters} onRemove={handleRemove} />
           {/* <Text style={styles.filtersText}>{filters}</Text> */}
         </View>
         <View style={styles.totalVotesContainer}>

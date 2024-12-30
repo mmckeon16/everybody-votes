@@ -30,7 +30,6 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 }) => {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
-  console.log(options);
   const handleSubmit = (): void => {
     if (selectedOption) {
       onSubmit(selectedOption);

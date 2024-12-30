@@ -107,3 +107,37 @@ export type OccupationCategory = {
   value: string;
   subcategories: OccupationSubcategory[];
 };
+
+export type DemographicKey =
+  | 'age'
+  | 'citizenship'
+  | 'employment'
+  | 'gender'
+  | 'income_bracket'
+  | 'political_leaning'
+  | 'political_party'
+  | 'race_ethnicity'
+  | 'state';
+
+interface DemographicData {
+  age?: number[];
+  citizenship?: string[];
+  employment?: string[];
+  gender?: string[];
+  income_bracket?: string[];
+  political_leaning?: string[];
+  political_party?: string[];
+  race_ethnicity?: string[];
+  state?: string[];
+}
+
+export interface PillData {
+  category: DemographicKey;
+  displayText: string;
+  originalValue: string | number;
+}
+
+export interface DemographicPillsProps {
+  data: DemographicData;
+  onRemove?: (category: DemographicKey, originalValue: string | number) => void;
+}

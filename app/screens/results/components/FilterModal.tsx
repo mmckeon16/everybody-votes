@@ -24,10 +24,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
   setFilteredDemographics,
 }) => {
   const [modalVisible, setModalVisible] = useState(false); // TODO use useRef
-  const [data, setData] = useState(demographics); // TODO use useRef
   const [userSelectedDemographics, setUserSelectedDemographics] = useState(
-    filteredDemographics
+    filteredDemographics ? filteredDemographics : []
   ); // TODO use useRef
+
+  console.log('filteredDemographics in modal: ', filteredDemographics);
+  console.log('user selectedin modal: ', userSelectedDemographics);
 
   return (
     <View>
@@ -57,7 +59,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 defaultValue={['item-1']}
                 className="w-full native:max-w-md"
               >
-                {data.map(({ name, options, selected = [], id }, index) => (
+                {demographics.map(({ name, options, id }, index) => (
                   <AccordionItem value={name} key={id}>
                     <AccordionTrigger>
                       <Text>{name}</Text>
@@ -74,6 +76,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
                       >
                         {id === 'occupation'
                           ? options?.map(({ label, value, subcategories }) => {
+                              const selected = userSelectedDemographics
+                                ? userSelectedDemographics[id]
+                                : null;
+
+                                // console.log(selected);
                               return (
                                 <View key={value}>
                                   <Text>{label}</Text>
@@ -84,34 +91,26 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                     >
                                       <Checkbox
                                         id={subcategory.value}
-                                        checked={selected.includes(
+                                        checked={selected?.includes(
                                           subcategory.value
                                         )}
                                         onCheckedChange={() => {
-                                          let updatedData = data;
+                                          let updatedData = userSelectedDemographics;
                                           if (
-                                            selected.includes(subcategory.value)
+                                            updatedData &&
+                                            updatedData[id]?.includes(
+                                              subcategory.value
+                                            )
                                           ) {
-                                            const updatedSelected = data[
-                                              index
-                                            ]?.selected.filter(
+                                            updatedData[id]?.filter(
                                               item => item !== value
                                             );
-                                            updatedData[index] = {
-                                              ...updatedData[index],
-                                              selected: updatedSelected,
-                                            };
                                           } else {
-                                            updatedData[index]?.selected?.push(
-                                              subcategory.value
-                                            );
+                                            (updatedData[id] ??= []).push(subcategory.value);
                                           }
-                                          setUserSelectedDemographics({
-                                            ...userSelectedDemographics,
-                                            [updatedData[index].id]:
-                                              updatedData[index]?.selected,
-                                          });
-                                          setData([...updatedData]);
+                                          setUserSelectedDemographics(
+                                            updatedData
+                                          );
                                         }}
                                       />
                                       <Label
@@ -127,6 +126,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
                               );
                             })
                           : options?.map(({ label, value }) => {
+                              const selected = userSelectedDemographics
+                                ? userSelectedDemographics[id]
+                                : null;
+
+                              // console.log('selected: ', selected);
                               return (
                                 <View
                                   className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
@@ -134,30 +138,24 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                 >
                                   <Checkbox
                                     id={value}
-                                    checked={selected.includes(value)}
+                                    checked={selected?.includes(value)}
                                     onCheckedChange={() => {
-                                      let updatedData = data;
-                                      if (selected.includes(value)) {
-                                        const updatedSelected = data[
-                                          index
-                                        ]?.selected.filter(
+                                      let updatedData = userSelectedDemographics;
+                                      if (
+                                        updatedData &&
+                                        updatedData[id]?.includes(
+                                          value
+                                        )
+                                      ) {
+                                        updatedData[id]?.filter(
                                           item => item !== value
                                         );
-                                        updatedData[index] = {
-                                          ...updatedData[index],
-                                          selected: updatedSelected,
-                                        };
                                       } else {
-                                        updatedData[index]?.selected?.push(
-                                          value
-                                        );
+                                        (updatedData[id] ??= []).push(value);
                                       }
-                                      setUserSelectedDemographics({
-                                        ...userSelectedDemographics,
-                                        [updatedData[index].id]:
-                                          updatedData[index]?.selected,
-                                      });
-                                      setData([...updatedData]);
+                                      setUserSelectedDemographics(
+                                        updatedData
+                                      );
                                     }}
                                   />
                                   <Label
@@ -179,7 +177,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 variant="outline"
                 onPress={() => {
                   // Override age so that we can query for individual values stored in db
-                  if (userSelectedDemographics.age) {
+                  if (userSelectedDemographics?.age?.length > 0) {
                     let newAges: number[] = [];
                     userSelectedDemographics?.age?.map((selected: string) => {
                       console.log('ageMapping', ageMapping);

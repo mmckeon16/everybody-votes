@@ -9,11 +9,13 @@ import { addColorToResults } from '../../../lib/utils';
 interface FilterResultsProps {
   filteredDemographics: object;
   activeQuestion: object;
+  setFilteredDemographics: Function;
 }
 
 const FilterResultsCard: React.FC<FilterResultsProps> = ({
   filteredDemographics,
   activeQuestion,
+  setFilteredDemographics,
 }) => {
   const { data: filteredResults, isLoading } = useResults(
     activeQuestion?.id,
@@ -53,6 +55,7 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
               strokeWidth={25}
               totalVotes={totalVotes}
               filters={filteredDemographics}
+              setFilters={setFilteredDemographics}
             />
           </View>
         )}

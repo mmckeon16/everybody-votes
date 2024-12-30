@@ -1,77 +1,66 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  DemographicKey,
+  PillData,
+  DemographicPillsProps,
+} from '../../../types';
 
-type DemographicKey =
-  | 'age'
-  | 'citizenship'
-  | 'employment'
-  | 'gender'
-  | 'income_bracket'
-  | 'political_leaning'
-  | 'political_party'
-  | 'race_ethnicity'
-  | 'state';
-
-interface DemographicData {
-  age?: number[];
-  citizenship?: string[];
-  employment?: string[];
-  gender?: string[];
-  income_bracket?: string[];
-  political_leaning?: string[];
-  political_party?: string[];
-  race_ethnicity?: string[];
-  state?: string[];
-}
-
-interface DemographicPillsProps {
-  data: DemographicData;
-}
-
-const formatAgeRanges = (ages: number[]): string[] => {
+const formatAgeRanges = (ages: number[]): PillData[] => {
   if (!ages || ages.length === 0) return [];
-
   const sortedAges = [...ages].sort((a, b) => a - b);
-  const ranges: string[] = [];
+  const ranges: PillData[] = [];
   let rangeStart = sortedAges[0];
   let prev = sortedAges[0];
 
   for (let i = 1; i <= sortedAges.length; i++) {
     const current = sortedAges[i];
     if (current !== prev + 1 || i === sortedAges.length) {
-      ranges.push(
-        prev === rangeStart ? `${rangeStart}` : `${rangeStart}-${prev}`
-      );
+      const displayText =
+        prev === rangeStart ? `${rangeStart}` : `${rangeStart}-${prev}`;
+      ranges.push({
+        category: 'age',
+        displayText,
+        originalValue: rangeStart, // We store the start of the range as the value
+      });
       rangeStart = current;
     }
     prev = current;
   }
-
   return ranges;
 };
 
 const formatValue = (
-  key: DemographicKey,
-  value: number[] | string[] | undefined
-): string[] => {
-  if (!value || value.length === 0) return [];
+  category: DemographicKey,
+  values: number[] | string[] | undefined
+): PillData[] => {
+  if (!values || values.length === 0) return [];
 
-  switch (key) {
+  switch (category) {
     case 'age':
-      return formatAgeRanges(value as number[]);
+      return formatAgeRanges(values as number[]);
     case 'state':
-      return value as string[];
+      return (values as string[]).map(value => ({
+        category,
+        displayText: value,
+        originalValue: value,
+      }));
     default:
-      return (value as string[]).map(v =>
-        v
+      return (values as string[]).map(value => ({
+        category,
+        displayText: value
           .split('-')
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ')
-      );
+          .join(' '),
+        originalValue: value,
+      }));
   }
 };
 
-const DemographicPills: React.FC<DemographicPillsProps> = ({ data }) => {
+const DemographicPills: React.FC<DemographicPillsProps> = ({
+  data,
+  onRemove,
+}) => {
   if (!data || typeof data !== 'object') {
     return null;
   }
@@ -79,17 +68,29 @@ const DemographicPills: React.FC<DemographicPillsProps> = ({ data }) => {
   const allPills = (Object.entries(data) as [
     DemographicKey,
     string[] | number[]
-  ][]).reduce<string[]>((acc, [key, values]) => {
-    const formattedValues = formatValue(key, values);
+  ][]).reduce<PillData[]>((acc, [category, values]) => {
+    const formattedValues = formatValue(category, values);
     return [...acc, ...formattedValues];
   }, []);
 
   return (
     <View>
       <View style={styles.pillsContainer}>
-        {allPills.map((value, index) => (
-          <View key={index} style={styles.pill}>
-            <Text style={styles.pillText}>{value}</Text>
+        {allPills.map((pill, index) => (
+          <View
+            key={`${pill.category}-${pill.originalValue}-${index}`}
+            style={styles.pill}
+          >
+            <Text style={styles.pillText}>{pill.displayText}</Text>
+            {onRemove && (
+              <TouchableOpacity
+                onPress={() => onRemove(pill.category, pill.originalValue)}
+                style={styles.removeButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.removeButtonText}>×</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ))}
       </View>
@@ -108,28 +109,25 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 6,
     paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   pillText: {
     fontSize: 14,
     color: '#333',
+    marginRight: 4,
+  },
+  removeButton: {
+    marginLeft: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeButtonText: {
+    fontSize: 18,
+    color: '#666',
+    lineHeight: 18,
+    marginTop: -2,
   },
 });
 
 export default DemographicPills;
-
-// Usage example:
-/*
-const demographicData: DemographicData = {
-  age: [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65],
-  citizenship: ['natural-born-citizen'],
-  employment: ['retired'],
-  gender: ['male'],
-  income_bracket: ['under-25k'],
-  political_leaning: ['conservative'],
-  political_party: ['democrat'],
-  race_ethnicity: ['native-american'],
-  state: ['AL', 'NJ'],
-};
-
-<DemographicPills data={demographicData} />
-*/

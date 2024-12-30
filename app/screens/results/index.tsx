@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { ScrollView, View, ActivityIndicator } from 'react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
@@ -29,6 +29,13 @@ export default function Results() {
   const { data: { question, totalVotes, results } = nullData } =
     totalResults || {};
 
+  let isPopulatedFilter = null;
+  if (filteredDemographics) {
+    isPopulatedFilter = Object.values(filteredDemographics).some(
+      arr => arr.length > 0
+    );
+  }
+
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -45,46 +52,51 @@ export default function Results() {
     );
   }
   return (
-    <View className="flex items-center justify-center w-screen px-6">
-      <Card className="max-w-3xl m-6 w-full">
-        <CardHeader className="items-center">
-          <CardTitle className="pb-2 text-center w-full">
-            {question?.text}
-          </CardTitle>
-          <CardDescription className="self-start ml-6">
-            <FilterModal
-              filteredDemographics={filteredDemographics}
-              setFilteredDemographics={setFilteredDemographics}
-            />
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {results && results.length === 2 && (
-            <View className="w-full flex justify-center">
-              <PieChart
-                data={addColorToResults(results)}
-                size={200}
-                strokeWidth={25}
-              >
-                <View className="flex justify-center">
-                  <Text>
-                    <NumberFlipper targetNumber={totalVotes} /> votes
-                  </Text>
-                </View>
-              </PieChart>
-            </View>
-          )}
-        </CardContent>
-      </Card>
-      {console.log('filtered', filteredDemographics)}
-      {filteredDemographics && (
-        // <View className="w-full">
-        <FilteredResultsCard
-          filteredDemographics={filteredDemographics}
-          activeQuestion={activeQuestion}
-        />
-        // </View>
-      )}
-    </View>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      className="flex-1 w-full"
+      showsVerticalScrollIndicator={false}
+    >
+      <View className="flex-1 items-center px-6 py-4">
+        <Card className="max-w-3xl m-6 w-full">
+          <CardHeader className="items-center">
+            <CardTitle className="pb-2 text-center w-full">
+              {question?.text}
+            </CardTitle>
+            <CardDescription className="self-start ml-6">
+              <FilterModal
+                filteredDemographics={filteredDemographics}
+                setFilteredDemographics={setFilteredDemographics}
+              />
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {results && results.length === 2 && (
+              <View className="w-full flex justify-center">
+                <PieChart
+                  data={addColorToResults(results)}
+                  size={200}
+                  strokeWidth={25}
+                >
+                  <View className="flex justify-center">
+                    <Text>
+                      <NumberFlipper targetNumber={totalVotes} /> votes
+                    </Text>
+                  </View>
+                </PieChart>
+              </View>
+            )}
+          </CardContent>
+        </Card>
+        {console.log('filtered', filteredDemographics)}
+        {filteredDemographics && isPopulatedFilter && (
+          <FilteredResultsCard
+            filteredDemographics={filteredDemographics}
+            activeQuestion={activeQuestion}
+            setFilteredDemographics={setFilteredDemographics}
+          />
+        )}
+      </View>
+    </ScrollView>
   );
 }
