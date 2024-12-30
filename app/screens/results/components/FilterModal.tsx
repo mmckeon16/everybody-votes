@@ -28,9 +28,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
     filteredDemographics ? filteredDemographics : []
   ); // TODO use useRef
 
-  console.log('filteredDemographics in modal: ', filteredDemographics);
-  console.log('user selectedin modal: ', userSelectedDemographics);
-
   return (
     <View>
       <Modal
@@ -79,8 +76,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
                               const selected = userSelectedDemographics
                                 ? userSelectedDemographics[id]
                                 : null;
-
-                                // console.log(selected);
                               return (
                                 <View key={value}>
                                   <Text>{label}</Text>
@@ -95,21 +90,30 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                           subcategory.value
                                         )}
                                         onCheckedChange={() => {
-                                          let updatedData = userSelectedDemographics;
-                                          if (
-                                            updatedData &&
-                                            updatedData[id]?.includes(
-                                              subcategory.value
-                                            )
-                                          ) {
-                                            updatedData[id]?.filter(
-                                              item => item !== value
-                                            );
-                                          } else {
-                                            (updatedData[id] ??= []).push(subcategory.value);
-                                          }
                                           setUserSelectedDemographics(
-                                            updatedData
+                                            prevState => {
+                                              const updatedData = {
+                                                ...prevState,
+                                              };
+                                              if (
+                                                updatedData[id]?.includes(
+                                                  subcategory.value
+                                                )
+                                              ) {
+                                                updatedData[id] = updatedData[
+                                                  id
+                                                ].filter(
+                                                  item =>
+                                                    item !== subcategory.value
+                                                );
+                                              } else {
+                                                updatedData[id] = [
+                                                  ...(updatedData[id] || []),
+                                                  subcategory.value,
+                                                ];
+                                              }
+                                              return updatedData;
+                                            }
                                           );
                                         }}
                                       />
@@ -129,8 +133,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
                               const selected = userSelectedDemographics
                                 ? userSelectedDemographics[id]
                                 : null;
-
-                              // console.log('selected: ', selected);
                               return (
                                 <View
                                   className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
@@ -140,22 +142,20 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                     id={value}
                                     checked={selected?.includes(value)}
                                     onCheckedChange={() => {
-                                      let updatedData = userSelectedDemographics;
-                                      if (
-                                        updatedData &&
-                                        updatedData[id]?.includes(
-                                          value
-                                        )
-                                      ) {
-                                        updatedData[id]?.filter(
-                                          item => item !== value
-                                        );
-                                      } else {
-                                        (updatedData[id] ??= []).push(value);
-                                      }
-                                      setUserSelectedDemographics(
-                                        updatedData
-                                      );
+                                      setUserSelectedDemographics(prevState => {
+                                        const updatedData = { ...prevState };
+                                        if (updatedData[id]?.includes(value)) {
+                                          updatedData[id] = updatedData[
+                                            id
+                                          ].filter(item => item !== value);
+                                        } else {
+                                          updatedData[id] = [
+                                            ...(updatedData[id] || []),
+                                            value,
+                                          ];
+                                        }
+                                        return updatedData;
+                                      });
                                     }}
                                   />
                                   <Label
@@ -199,7 +199,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
       </Modal>
       <Button
         variant="outline"
-        onPress={() => setModalVisible(true)}
+        onPress={() => {
+          setUserSelectedDemographics(filteredDemographics);
+          setModalVisible(true);
+        }}
         className="flex flex-row gap-2 w-auto px-3"
       >
         <Ionicons name="filter" size={16} color="black" />
