@@ -27,29 +27,25 @@ const MyStats: React.FC<MyStatsProps> = ({}) => {
   const preditingRef = useRef<LottieView>(null);
 
   const handleLoad = () => {
-    // votingRef.current?.play();
     lottieRef.current?.play(25, 125);
   };
 
   return (
-    <Card className="max-w-3xl m-6 w-full">
-      {/* <CardHeader className="items-center">
-        <CardTitle>My stats</CardTitle>
-        <CardDescription></CardDescription>
-      </CardHeader> */}
-      <CardContent className="pt-6 w-full">
-        <View className="flex flex-row gap-3">
-          <View className="flex-1 gap-6">
-            <Text className="flex-wrap text-center	">
-              You voted with <Text className="text-sky-500">20%</Text> of the
-              population
-            </Text>
-            <View className="flex justify-center items-center">
-              {/* <FontAwesome name="group" size={44} color="black" /> */}
-              <FontAwesome6 name="person-shelter" size={44} color="black" />
-            </View>
+    <View className="flex flex-row gap-3 w-full">
+      <Card className="flex-1 max-w-3xl">
+        <CardContent className="pt-6">
+          <View className="flex flex-row gap-3">
+            <View className="flex-1 gap-6">
+              <Text className="flex-wrap text-center	">
+                You voted with <Text className="text-sky-500">20%</Text> of the
+                population
+              </Text>
+              <View className="flex justify-center items-center">
+                {/* <FontAwesome name="group" size={44} color="black" /> */}
+                <FontAwesome6 name="person-shelter" size={44} color="black" />
+              </View>
 
-            {/* <LottieView
+              {/* <LottieView
               ref={votingRef}
               source={ppl}
               autoPlay={true}
@@ -59,19 +55,24 @@ const MyStats: React.FC<MyStatsProps> = ({}) => {
                 handleLoad();
               }}
             /> */}
-          </View>
-          <Separator orientation="vertical" />
-          <View className="flex-1 gap-6">
-            <Text className="flex-wrap text-center	">
-              You predicted <Text className="text-sky-500">No</Text> would be
-              the majority answer
-            </Text>
-            <View className="flex justify-center items-center">
-              <FontAwesome5 name="sad-cry" size={44} color="black" />
-              {/* <Ionicons name="happy-outline" size={44} color="black" /> */}
             </View>
+          </View>
+        </CardContent>
+      </Card>
+      <Card className="max-w-3xl flex-1 ">
+        <CardContent className="pt-6">
+          <View className="flex flex-row gap-3">
+            <View className="flex-1 gap-6">
+              <Text className="flex-wrap text-center	">
+                You predicted <Text className="text-sky-500">No</Text> would be
+                the majority answer
+              </Text>
+              <View className="flex justify-center items-center">
+                <FontAwesome5 name="sad-cry" size={44} color="black" />
+                {/* <Ionicons name="happy-outline" size={44} color="black" /> */}
+              </View>
 
-            {/* <View className="w-full aspect-video">
+              {/* <View className="w-full aspect-video">
               <LottieView
                 ref={preditingRef}
                 source={happy}
@@ -80,10 +81,11 @@ const MyStats: React.FC<MyStatsProps> = ({}) => {
                 style={{ flex: 1, aspectRatio: 1 }}
               />
             </View> */}
+            </View>
           </View>
-        </View>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </View>
   );
 };
 
