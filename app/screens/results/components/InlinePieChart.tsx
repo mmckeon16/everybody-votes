@@ -102,6 +102,10 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
           <Text style={styles.totalVotesNumber}>{totalVotes}</Text>
           <Text style={styles.totalVotesText}>votes</Text>
         </View>
+        <View style={styles.totalVotesContainer}>
+          <Text style={styles.totalVotesNumber}>percent%</Text>
+          <Text style={styles.totalVotesText}>of total</Text>
+        </View>
         <View style={styles.legendContainer}>
           {data.map(item => (
             <View key={item.optionText} style={styles.legendItem}>
