@@ -3,10 +3,9 @@ import { View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
 import { supabase } from '../lib/supabase';
 import LoginProviderButton from './components/LoginProviderButton';
+import OnboardingAd from './components/OnboardingOverlay';
 import { IconProps } from '../types';
 import {
   Card,
@@ -60,8 +59,10 @@ export default function Login() {
   };
 
   return (
-    <View className="flex items-center justify-center p-4 h-full">
+    <View className="flex items-center justify-center p-4 h-full bg-midnight">
       <Card className="w-full max-w-sm p-2 rounded-2xl">
+        <OnboardingAd />
+        <Separator className="mx-5 w-auto" />
         <CardHeader className="items-center pb-3">
           <CardTitle className="pb-2 text-center">Log in </CardTitle>
           <CardDescription>
@@ -93,16 +94,6 @@ export default function Login() {
               isSmall={true}
             />
           </View>
-          <Separator />
-          <Text>Don't have an account?</Text>
-          <Button
-            variant="outline"
-            onPress={() => {
-              router.replace('/auth/signup');
-            }}
-          >
-            Sign up
-          </Button>
         </CardContent>
       </Card>
     </View>
