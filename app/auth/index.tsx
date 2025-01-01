@@ -3,10 +3,11 @@ import { View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 import { supabase } from '../lib/supabase';
 import LoginProviderButton from './components/LoginProviderButton';
 import { IconProps } from '../types';
-
 import {
   Card,
   CardContent,
@@ -14,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import { Separator } from '~/components/ui/separator';
 
 const FacebookIconButton: React.FC<IconProps> = ({ size, color }) => {
   return <Fontisto name="facebook" size={size} color={color} />;
@@ -62,9 +64,11 @@ export default function Login() {
       <Card className="w-full max-w-sm p-2 rounded-2xl">
         <CardHeader className="items-center pb-3">
           <CardTitle className="pb-2 text-center">Log in </CardTitle>
-          <CardDescription>Log in to make your voice heard</CardDescription>
+          <CardDescription>
+            To vote on important topics and see how your views align with others
+          </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <LoginProviderButton provider="google" providerDisplayName="Google" />
           <LoginProviderButton
             provider="apple"
@@ -89,6 +93,16 @@ export default function Login() {
               isSmall={true}
             />
           </View>
+          <Separator />
+          <Text>Don't have an account?</Text>
+          <Button
+            variant="outline"
+            onPress={() => {
+              router.replace('/auth/signup');
+            }}
+          >
+            Sign up
+          </Button>
         </CardContent>
       </Card>
     </View>

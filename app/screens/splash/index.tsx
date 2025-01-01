@@ -1,96 +1,77 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
-import { Users, Filter, TrendingUp, Award } from 'lucide-react-native';
-// import { LineChart, Line } from 'recharts';
+import { View, TouchableOpacity } from 'react-native';
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { Text } from '~/components/ui/text';
+import { Vote, ChartBar, Target, UserCircle2 } from 'lucide-react-native';
 
-const FeatureCard = ({ Icon, title, description }) => (
-  <View className="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
-    <View className="flex flex-row items-center mb-2">
-      <Icon size={24} color="#fff" style={{ marginRight: 12 }} />
-      <Text className="text-lg font-semibold text-white">{title}</Text>
-    </View>
-    <Text className="text-white/90 text-base">{description}</Text>
-  </View>
-);
-
-const PollAd = () => {
-  const sampleData = Array(24)
-    .fill()
-    .map((_, i) => ({
-      value: Math.sin(i / 3) * 30 + Math.cos(i / 6) * 20 + 50,
-      secondary: Math.cos(i / 4) * 25 + 60,
-    }));
-
+const OnboardingOverlay = ({ onSignUpClick }) => {
   return (
-    <View className="bg-gradient-to-br from-blue-600 to-purple-700 p-6 min-h-screen">
-      <View className="items-center mb-8">
-        <Text className="text-3xl font-bold text-white mb-2">
-          Everybody Polls
-        </Text>
-        <Text className="text-lg text-white/90">
-          Where Your Opinion Shapes the Conversation
-        </Text>
-      </View>
+    <View className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-white">
+        <CardHeader>
+          <CardTitle className="text-center">Join the Conversation!</CardTitle>
+        </CardHeader>
 
-      <View className="space-y-4">
-        <FeatureCard
-          Icon={Users}
-          title="Join Daily Polls"
-          description="Voice your opinion on trending topics and see how you compare to others"
-        />
+        <CardContent className="space-y-6">
+          <View className="flex-row space-x-4">
+            <Vote className="w-6 h-6 text-blue-500 mt-1" />
+            <View className="flex-1">
+              <Text className="font-semibold">Make Your Voice Heard</Text>
+              <Text className="text-gray-600">
+                Vote on important topics and see how your views align with
+                others
+              </Text>
+            </View>
+          </View>
 
-        <FeatureCard
-          Icon={Filter}
-          title="Deep Insights"
-          description="Filter results by age, location, and more to discover unique demographic patterns"
-        />
+          <View className="flex-row space-x-4">
+            <ChartBar className="w-6 h-6 text-blue-500 mt-1" />
+            <View className="flex-1">
+              <Text className="font-semibold">Explore Detailed Insights</Text>
+              <Text className="text-gray-600">
+                Filter results by age, location, occupation & more
+              </Text>
+            </View>
+          </View>
 
-        <FeatureCard
-          Icon={TrendingUp}
-          title="Predict & Win"
-          description="Test your intuition by predicting majority opinions and track your accuracy"
-        />
+          <View className="flex-row space-x-4">
+            <Target className="w-6 h-6 text-blue-500 mt-1" />
+            <View className="flex-1">
+              <Text className="font-semibold">Test Your Prediction Skills</Text>
+              <Text className="text-gray-600">
+                Predict majority opinions and track your accuracy
+              </Text>
+            </View>
+          </View>
 
-        <FeatureCard
-          Icon={Award}
-          title="Earn Points"
-          description="Build your reputation as a top predictor"
-        />
-      </View>
+          <View className="flex-row space-x-4">
+            <UserCircle2 className="w-6 h-6 text-blue-500 mt-1" />
+            <View className="flex-1">
+              <Text className="font-semibold">Privacy First</Text>
+              <Text className="text-gray-600">
+                Your data is only used for anonymous, aggregated insights
+              </Text>
+            </View>
+          </View>
 
-      {/* <View className="mt-6 bg-white/5 rounded-lg p-4 backdrop-blur-sm">
-        <LineChart 
-          width={320} 
-          height={100} 
-          data={sampleData} 
-          margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
-          className="w-full"
-        >
-          <Line 
-            type="monotone" 
-            dataKey="value" 
-            stroke="#fff" 
-            strokeWidth={2} 
-            dot={false} 
-          />
-          <Line 
-            type="monotone" 
-            dataKey="secondary" 
-            stroke="rgba(255,255,255,0.5)" 
-            strokeWidth={1.5} 
-            dot={false} 
-          />
-        </LineChart>
-      </View> */}
+          <View className="pt-4">
+            <TouchableOpacity
+              className="w-full bg-blue-500 active:bg-blue-600 py-4 rounded-lg"
+              onPress={onSignUpClick}
+            >
+              <Text className="text-white font-semibold text-center">
+                Sign Up & Start Voting
+              </Text>
+            </TouchableOpacity>
 
-      <Pressable
-        className="bg-white mt-6 py-4 px-8 rounded-full items-center active:opacity-80"
-        hoverStyle={{ opacity: 0.9 }}
-      >
-        <Text className="text-blue-600 text-lg font-bold">Signup now</Text>
-      </Pressable>
+            <Text className="text-center text-sm text-gray-500 mt-4">
+              Quick sign-up process
+            </Text>
+          </View>
+        </CardContent>
+      </Card>
     </View>
   );
 };
 
-export default PollAd;
+export default OnboardingOverlay;
