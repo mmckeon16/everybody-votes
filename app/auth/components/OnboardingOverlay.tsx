@@ -1,28 +1,9 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { View } from 'react-native';
+import { CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Vote, ChartBar, Target, UserCircle2 } from 'lucide-react-native';
-
-interface FeatureItemProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
-
-const FeatureItem: React.FC<FeatureItemProps> = ({
-  icon,
-  title,
-  description,
-}) => (
-  <View className="flex-row space-x-4">
-    <View className="mt-1">{icon}</View>
-    <View className="flex-1">
-      <Text className="font-semibold">{title}</Text>
-      <Text className="text-gray-600">{description}</Text>
-    </View>
-  </View>
-);
+import FeatureItem from './FeatureIcon';
 
 const OnboardingOverlay = () => {
   const features: FeatureItemProps[] = [

@@ -18,7 +18,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!hasCompletedProfile) {
-    return <Redirect href="/auth/complete-profile" />;
+    return <Redirect href="/auth/signup" />;
   }
 
   return <>{children}</>;

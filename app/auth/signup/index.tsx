@@ -1,112 +1,93 @@
-import React, { useState } from 'react';
-import { View, Platform } from 'react-native';
+import React from 'react';
 import { useRouter } from 'expo-router';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Fontisto from '@expo/vector-icons/Fontisto';
-import { supabase } from '../../lib/supabase';
-import LoginProviderButton from '../components/LoginProviderButton';
-import OnboardingOverlay from '../components/OnboardingOverlay';
-import { IconProps } from '../../types';
+import { View, ScrollView } from 'react-native';
+import { Text } from '~/components/ui/text';
+import { Lock, Users, PieChart } from 'lucide-react-native';
 import {
-  Card,
-  CardContent,
   CardDescription,
   CardHeader,
+  Card,
   CardTitle,
+  CardContent,
 } from '~/components/ui/card';
+import { Button } from '~/components/ui/button';
+import FeatureIcon from '../components/FeatureIcon';
 
-const FacebookIconButton: React.FC<IconProps> = ({ size, color }) => {
-  return <Fontisto name="facebook" size={size} color={color} />;
-};
-
-const AppleIconButton: React.FC<IconProps> = ({ size, color }) => {
-  return <AntDesign name="apple1" size={size} color={color} />;
-};
-
-export default function Login() {
+const PrivacyScreen = () => {
   const router = useRouter();
-  const [showOverlay, setShowOverlay] = useState(true); // TODO use useRef
 
-  const signInWithGoogle = async () => {
-    try {
-      console.log('Starting Google OAuth...');
-      console.log('test');
-
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: Platform.select({
-            web: `${window.location.origin}`,
-            default: 'everybody-votes://',
-          }),
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
-
-      console.log('OAuth response:', { data, error });
-      if (error) throw error;
-
-      if (Platform.OS !== 'web' && data?.url) {
-        await supabase.auth.getSession();
-        router.push('/auth/complete-profile');
-      }
-    } catch (error) {
-      console.error('Error signing in with Google:', error);
-    }
-  };
+  const features = [
+    {
+      icon: <Lock className=" text-lightBlue" />,
+      title: 'Your Privacy Matters',
+      description:
+        'We never sell or share your personal information. Your demographic details are only used to show voting patterns in aggregate.',
+    },
+    {
+      icon: <Users className="text-lightBlue" />,
+      title: 'See How Others Think',
+      description:
+        'Filter results by age, location, and other demographics to discover fascinating patterns in how different groups vote.',
+    },
+    {
+      icon: <PieChart className="text-lightBlue" />,
+      title: 'Predict The Majority',
+      description:
+        'Test your social intuition! Guess how the majority will vote and see how well you can predict group opinions.',
+    },
+  ];
 
   return (
-    <View className="flex-1 relative">
-      <View className="flex items-center justify-center p-4 h-full">
-        <Card className="w-full max-w-sm p-2 rounded-2xl">
-          <CardHeader className="items-center pb-3">
-            <CardTitle className="pb-2 text-center">Sign up </CardTitle>
-            <CardDescription>
-              Sign up to vote on important topics and see how your views align
-              with others
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <LoginProviderButton
-              provider="google"
-              providerDisplayName="Google"
-            />
-            <LoginProviderButton
-              provider="apple"
-              providerDisplayName="Apple"
-              IconComponent={AppleIconButton}
-            />
-            <View className="flex flex-row justify-center gap-5">
-              <LoginProviderButton
-                provider="facebook"
-                providerDisplayName="Facebook"
-                IconComponent={FacebookIconButton}
-                isSmall={true}
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: '#02245e',
+      }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16, // equivalent to p-4
+      }}
+    >
+      <Card className="w-full max-w-sm rounded-2xl">
+        <CardHeader>
+          <CardTitle>Welcome to Everybody Polls!</CardTitle>
+
+          <CardDescription>
+            Before you start voting, we'd love to learn a bit about you to make
+            your experience more meaningful.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <View className="space-y-6 mb-8">
+            {features.map((feature, index) => (
+              <FeatureIcon
+                key={index}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
               />
-              <LoginProviderButton
-                provider="twitter"
-                providerDisplayName="Twitter"
-                isSmall={true}
-              />
-              <LoginProviderButton
-                provider="github"
-                providerDisplayName="Github"
-                isSmall={true}
-              />
-            </View>
-          </CardContent>
-        </Card>
-      </View>
-      {showOverlay && (
-        <OnboardingOverlay
-          onSignUpClick={() => {
-            setShowOverlay(false);
-          }}
-        />
-      )}
-    </View>
+            ))}
+          </View>
+
+          <Text className="text-sm text-gray-500 mb-6">
+            By continuing, you acknowledge that we'll use your demographic
+            information only to show voting patterns and trends. We never sell
+            or share individual data.
+          </Text>
+
+          <Button
+            variant="primary"
+            className="bg-midnight text-white"
+            onPress={() => router.push('/auth/complete-profile')}
+          >
+            Continue to questions
+          </Button>
+        </CardContent>
+      </Card>
+    </ScrollView>
   );
-}
+};
+
+export default PrivacyScreen;

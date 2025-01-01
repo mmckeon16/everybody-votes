@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Platform } from 'react-native';
+import { View, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -59,7 +59,19 @@ export default function Login() {
   };
 
   return (
-    <View className="flex items-center justify-center p-4 h-full bg-midnight">
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: '#02245e',
+      }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16, // equivalent to p-4
+      }}
+    >
+      {' '}
       <Card className="w-full max-w-sm p-2 rounded-2xl">
         <OnboardingAd />
         <Separator className="mx-5 w-auto" />
@@ -96,6 +108,6 @@ export default function Login() {
           </View>
         </CardContent>
       </Card>
-    </View>
+    </ScrollView>
   );
 }
