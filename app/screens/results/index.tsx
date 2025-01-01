@@ -60,18 +60,18 @@ export default function Results() {
     >
       <View className="flex-1 items-center px-6 py-4">
         <Card className="max-w-3xl m-6 w-full">
-          <CardHeader className="items-center">
+          <CardHeader className="items-center px-4">
             <CardTitle className="pb-2 text-center w-full">
               {question?.text}
             </CardTitle>
-            <CardDescription className="self-start ml-6">
+            <CardDescription className="self-start">
               <FilterModal
                 filteredDemographics={filteredDemographics}
                 setFilteredDemographics={setFilteredDemographics}
               />
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             {results && results.length === 2 && (
               <View className="w-full flex justify-center">
                 <PieChart

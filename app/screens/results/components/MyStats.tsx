@@ -15,23 +15,11 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
-const ppl = require('../../../../assets/lottie/blue-ppl.json');
-const unique = require('../../../../assets/lottie/thumbprint.json');
-const happy = require('../../../../assets/lottie/celebrate-horn.json');
-const sad = require('../../../../assets/lottie/cry.json');
-
 interface MyStatsProps {}
 
 const MyStats: React.FC<MyStatsProps> = ({}) => {
-  const votingRef = useRef<LottieView>(null);
-  const preditingRef = useRef<LottieView>(null);
-
-  const handleLoad = () => {
-    lottieRef.current?.play(25, 125);
-  };
-
   return (
-    <View className="flex flex-row gap-3 w-full">
+    <View className="flex flex-row gap-3 w-full max-w-3xl">
       <Card className="flex-1 max-w-3xl h-full bg-[#4484f2]">
         <CardContent className="p-4 flex-1">
           <View className="flex flex-row gap-3">
@@ -42,20 +30,6 @@ const MyStats: React.FC<MyStatsProps> = ({}) => {
               <View className="flex ">
                 <FontAwesome6 name="person-shelter" size={44} color="white" />
               </View>
-
-              {/* <View className="flex justify-center items-center">
-              <LottieView
-                ref={votingRef}
-                source={ppl}
-                autoPlay={true}
-                loop={false}
-                style={{ width: 100, height: 100 }}
-                onAnimationLoaded={() => {
-                  handleLoad();
-                }}
-              />
-            </View> */}
-              {/* </View> */}
             </View>
           </View>
         </CardContent>
