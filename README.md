@@ -111,6 +111,26 @@ This command will move the starter code to the **app-example** directory and cre
 
 NOTE: we've done this, and removed the sample project code
 
+## Generating Builds
+
+### Android
+
+```bash
+npx eas build --platform android --profile preview
+```
+
+or
+
+```bash
+eas build --platform android
+```
+
+For locally testing the build
+
+```bash
+eas build --profile development --platform android --local
+```
+
 ## Learn more
 
 To learn more about developing your project, look at the following resources:

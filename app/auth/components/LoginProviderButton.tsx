@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ProviderButtonProps } from '../../types';
+import { router } from 'expo-router';
 
 const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   provider,
@@ -37,7 +38,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
       if (Platform.OS !== 'web' && data?.url) {
         await supabase.auth.getSession();
-        router.push('/auth/complete-profile');
+        // router.push('/auth/complete-profile');
       }
     } catch (error) {
       console.error(`Error signing in with ${providerDisplayName}:`, error);
