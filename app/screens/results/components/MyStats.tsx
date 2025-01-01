@@ -32,20 +32,23 @@ const MyStats: React.FC<MyStatsProps> = ({}) => {
 
   return (
     <View className="flex flex-row gap-3 w-full">
-      <Card className="flex-1 max-w-3xl">
-        <CardContent className="pt-6">
-          <View className="flex flex-row gap-3">
-            <View className="flex-1 gap-6">
+      <Card className="flex-1 max-w-3xl h-full">
+        <CardContent className="p-4 flex-1">
+          {/* <View className="flex flex-row gap-3"> */}
+          <View className="flex flex-col gap-2 justify-between flex-1	h-full">
+            <Text className="flex-wrap text-xs">You voted with</Text>
+            <Text className="text-[#04671E] text-5xl font-semibold">80%</Text>
+            {/* <View className="flex-1 gap-6">
               <Text className="flex-wrap text-center	">
                 You voted with <Text className="text-sky-500">20%</Text> of the
                 population
               </Text>
               <View className="flex justify-center items-center">
-                {/* <FontAwesome name="group" size={44} color="black" /> */}
-                <FontAwesome6 name="person-shelter" size={44} color="black" />
-              </View>
+                {/* <FontAwesome name="group" size={44} color="black" /> }
+                <FontAwesome6 name="person-shelter" size={44} color="black" /> */}
+            {/* </View> */}
 
-              {/* <LottieView
+            {/* <LottieView
               ref={votingRef}
               source={ppl}
               autoPlay={true}
@@ -55,23 +58,23 @@ const MyStats: React.FC<MyStatsProps> = ({}) => {
                 handleLoad();
               }}
             /> */}
-            </View>
+            {/* </View> */}
           </View>
         </CardContent>
       </Card>
       <Card className="max-w-3xl flex-1 ">
-        <CardContent className="pt-6">
+        <CardContent className="p-4 flex-1">
           <View className="flex flex-row gap-3">
-            <View className="flex-1 gap-6">
-              <Text className="flex-wrap text-center	">
-                You predicted <Text className="text-sky-500">No</Text> would be
-                the majority answer
+            <View className="flex-1 gap-2">
+              <Text className="flex-wrap text-xs">
+                You predicted the majority would vote
               </Text>
-              <View className="flex justify-center items-center">
+              <Text className="text-[#5814f5] text-5xl font-semibold">No</Text>
+              {/* <Text>would be the majority answer</Text> */}
+              {/* <View className="flex justify-center items-center">
                 <FontAwesome5 name="sad-cry" size={44} color="black" />
-                {/* <Ionicons name="happy-outline" size={44} color="black" /> */}
-              </View>
-
+                {/* <Ionicons name="happy-outline" size={44} color="black" /> }
+              </View> */}
               {/* <View className="w-full aspect-video">
               <LottieView
                 ref={preditingRef}

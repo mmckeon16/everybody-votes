@@ -1,0 +1,18 @@
+<svg viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Layer -->
+  <circle cx="54" cy="54" r="54" fill="#2563eb"/>
+  
+  <!-- Foreground Layer (in safe zone) -->
+  <g transform="translate(18, 18)">
+    <!-- Ballot paper -->
+    <rect x="12" y="6" width="48" height="60" fill="white" rx="6"/>
+    
+    <!-- Ballot lines -->
+    <line x1="20" y1="22" x2="52" y2="22" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="20" y1="36" x2="52" y2="36" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="20" y1="50" x2="52" y2="50" stroke="#64748b" stroke-width="1.5"/>
+    
+    <!-- Checkmark -->
+    <path d="M24 32 L32 40 L48 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -83,7 +83,7 @@ const getTimeRemainingPercentage = (
 };
 
 function addColorToResults<T>(results: T[]): (T & { color: string })[] {
-  const colors = returnSetColors();
+  const colors = returnSetColors(); //getTwoDistinctColors();
 
   return results.map((result, index) => ({
     ...result,
@@ -113,7 +113,7 @@ function getRandomRGB(): RGB {
 }
 
 function returnSetColors(): [string, string] {
-  return ['#0284c7', '#034780'];
+  return ['#4484f2', '#02245e'];
 }
 
 function getTwoDistinctColors(): [string, string] {
@@ -215,10 +215,10 @@ function formatFilters(filters: FilterObject): string {
       if (values && values.length > 0) {
         const displayName = displayNames[key] || key;
         const formattedValues = values
-          .map((value) =>
+          .map(value =>
             value
               .split('-')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ')
           )
           .join(', ');
