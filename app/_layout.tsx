@@ -142,6 +142,13 @@ export default function RootLayout() {
                 headerRight: () => <HeaderActions />,
               }}
             />
+            <Stack.Screen
+              name="screens/splash/index"
+              options={{
+                headerShown: false, // This will hide the header for the splash screen
+                title: 'Everybody polls',
+              }}
+            />
             {/* <Stack.Screen
               name="auth/signup"
                options={{
