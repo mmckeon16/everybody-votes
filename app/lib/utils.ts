@@ -113,7 +113,7 @@ function getRandomRGB(): RGB {
 }
 
 function returnSetColors(): [string, string] {
-  return ['#4484f2', '#02245e'];
+  return ['#246EF0', '#02245e'];
 }
 
 function getTwoDistinctColors(): [string, string] {

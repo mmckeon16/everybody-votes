@@ -18,7 +18,7 @@ export default function Celebrate() {
   const voteRef = useRef<LottieView>(null);
 
   return (
-    <View className="flex-col items-center overflow-hidden p-8 mt-2 h-full">
+    <View className="flex-col items-center overflow-hidden p-8 h-full bg-blueBg">
       <Card className="w-full max-w-md p-2 rounded-2xl">
         <CardHeader>
           <CardTitle className="pb-2">

@@ -20,7 +20,7 @@ interface MyStatsProps {}
 const MyStats: React.FC<MyStatsProps> = ({}) => {
   return (
     <View className="flex flex-row gap-3 w-full max-w-3xl">
-      <Card className="flex-1 max-w-3xl h-full bg-[#4484f2]">
+      <Card className="flex-1 max-w-3xl h-full bg-lightBlue">
         <CardContent className="p-4 flex-1">
           <View className="flex flex-row gap-3">
             <View className="flex-1 gap-2">
@@ -34,7 +34,7 @@ const MyStats: React.FC<MyStatsProps> = ({}) => {
           </View>
         </CardContent>
       </Card>
-      <Card className="max-w-3xl flex-1 bg-[#02245e]">
+      <Card className="max-w-3xl flex-1 bg-midnight">
         <CardContent className="p-4 flex-1">
           <View className="flex flex-col gap-2 justify-between flex-1	h-full">
             <View className="flex-1 justify-between	 gap-2">

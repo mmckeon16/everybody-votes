@@ -45,7 +45,7 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
   }
 
   return (
-    <Card className="max-w-3xl m-6 w-full">
+    <Card className="max-w-3xl mx-6 w-full">
       <CardContent className="pt-6">
         {results && results.length === 2 && (
           <View className="w-full flex justify-center">

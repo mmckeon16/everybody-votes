@@ -55,11 +55,11 @@ export default function Results() {
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
-      className="flex-1 w-full"
+      className="flex-1 w-full bg-blueBg"
       showsVerticalScrollIndicator={false}
     >
-      <View className="flex-1 items-center px-6 py-4">
-        <Card className="max-w-3xl m-6 w-full">
+      <View className="flex-1 items-center px-6 py-4 gap-4">
+        <Card className="max-w-3xl mx-6 w-full">
           <CardHeader className="items-center px-4">
             <CardTitle className="pb-2 text-center w-full">
               {question?.text}

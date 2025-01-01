@@ -35,7 +35,7 @@ export default function Screen() {
 
   useEffect(() => {
     async function prepare() {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       if (!isLoading) {
         setAppIsReady(true);
         SplashScreen.hideAsync();
@@ -58,7 +58,7 @@ export default function Screen() {
     return null;
   } else {
     return (
-      <View className="flex-1 items-center gap-5 p-6">
+      <View className="flex-1 items-center gap-5 p-6 bg-blueBg">
         {isLoading ? (
           <SkeletonCard />
         ) : (
@@ -75,10 +75,10 @@ export default function Screen() {
                   activeQuestion?.end_date ?? ''
                 )}
                 className="h-2"
-                indicatorClassName="bg-sky-600"
+                indicatorClassName="bg-lightBlue"
               />
               <View className="flex-row items-center overflow-hidden">
-                <Text className="text-sm font-bold text-sky-600">
+                <Text className="text-sm font-bold text-lightBlue">
                   {getTimeUntilExpiration(activeQuestion?.end_date ?? '')}
                 </Text>
                 <Text className="text-sm text-muted-foreground">
@@ -90,7 +90,9 @@ export default function Screen() {
               {userVotedText ? (
                 <Text>
                   You voted{' '}
-                  <Text className="text-sky-600">{userVotedText}</Text>
+                  <Text className="text-lightBlue font-bold">
+                    {userVotedText}
+                  </Text>
                 </Text>
               ) : (
                 <Button
@@ -125,15 +127,6 @@ export default function Screen() {
             </Button>
           </CardFooter>
         </Card>
-        <Button
-          variant="outline"
-          className="shadow shadow-foreground/5"
-          onPress={() => {
-            router.push('/auth/complete-profile');
-          }}
-        >
-          <Text>signup flow</Text>
-        </Button>
       </View>
     );
   }

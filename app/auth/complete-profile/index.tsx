@@ -59,7 +59,7 @@ export default function CompleteProfile() {
           const metadata = user.user_metadata;
           //   metadata?.location?.country_code || prev.countryResidence,
           console.log(metadata);
-          setProfileData((prev) => ({
+          setProfileData(prev => ({
             ...prev,
             // Pre-fill data if available from social provider
             // countryResidence:
@@ -126,7 +126,7 @@ export default function CompleteProfile() {
       console.log('Profile status refreshed, attempting navigation...');
 
       // Add a small delay before navigation
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Try both navigation methods
       // why is this needed?
@@ -234,7 +234,7 @@ export default function CompleteProfile() {
       <Progress
         value={(currentStep / Object.keys(STEPS).length) * 100}
         className="h-2 my-8"
-        indicatorClassName="bg-sky-600"
+        indicatorClassName="bg-lightBlue"
       />
       {error && <Text>{error}</Text>}
       {renderStep()}

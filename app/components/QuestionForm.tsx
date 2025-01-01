@@ -54,7 +54,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
                 className={`border-b border-border pb-2 text-3xl font-semibold tracking-tight first:mt-0 web:select-text
                 ${
                   selectedOption?.id === option.id
-                    ? 'bg-sky-600	text-gray-700'
+                    ? 'bg-lightBlue	text-white'
                     : 'text-foreground'
                 }`}
               >
