@@ -130,9 +130,12 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
         {data.map((item, index) => (
           <View key={item.optionText} style={styles.legendItem}>
             <View style={[styles.colorBox, { backgroundColor: item.color }]} />
-            <Text style={styles.legendText}>
-              {item.optionText} ({Math.round(item.percentage * 10) / 10}%)
-            </Text>
+            <View className="flex flex-row items-center gap-2">
+              <Text className="text-xl font-semibold">{item.optionText}</Text>
+              <Text className="text-gray-500 ml-1">
+                {Math.round(item.percentage * 10) / 10}%
+              </Text>
+            </View>
           </View>
         ))}
       </View>
@@ -164,10 +167,6 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 4,
-  },
-  legendText: {
-    fontSize: 14,
-    color: '#334155',
   },
 });
 

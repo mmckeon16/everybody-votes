@@ -18,13 +18,21 @@ const MyStats: React.FC<MyStatsProps> = ({
   isCorrectPrediction,
   userVotedPerc,
   userVotedMajority,
-  userVotedColor = 'bg-lightBlue',
-  userPredictedColor = 'bg-midnight',
+  userVotedColor = '#246EF0', // bg-lightBlue
+  userPredictedColor = '#02245e', // bg-midnight
 }) => {
+  console.log('isCorrectPrediction: ', isCorrectPrediction);
+  console.log('userVotedPerc: ', userVotedPerc);
+  console.log('userVotedMajority: ', userVotedMajority);
+  console.log('userVotedColor: ', userVotedColor);
+
   const iconSize = 40;
   return (
     <View className="flex flex-row gap-3 w-full max-w-3xl">
-      <Card className={`flex-1 max-w-3xl h-full ${userVotedColor}`}>
+      <Card
+        className="flex-1 max-w-3xl h-full"
+        style={{ backgroundColor: userVotedColor }}
+      >
         <CardContent className="p-4 flex-1">
           <View className="flex flex-row gap-3">
             <View className="flex-1 gap-2">
@@ -50,7 +58,10 @@ const MyStats: React.FC<MyStatsProps> = ({
           </View>
         </CardContent>
       </Card>
-      <Card className={`max-w-3xl flex-1 ${userPredictedColor}`}>
+      <Card
+        style={{ backgroundColor: userPredictedColor }}
+        className="max-w-3xl flex-1"
+      >
         <CardContent className="p-4 flex-1">
           <View className="flex flex-col gap-2 justify-between flex-1	h-full">
             <View className="flex-1 justify-between	 gap-2">

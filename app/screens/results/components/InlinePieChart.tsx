@@ -98,15 +98,24 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       <View style={styles.infoContainer}>
         <View style={styles.filtersContainer}>
           <DemographicPills data={filters} onRemove={handleRemove} />
-          {/* <Text style={styles.filtersText}>{filters}</Text> */}
         </View>
-        <View style={styles.totalVotesContainer}>
-          <Text style={styles.totalVotesNumber}>{totalVotes}</Text>
-          <Text style={styles.totalVotesText}>votes</Text>
-        </View>
-        <View style={styles.totalVotesContainer}>
-          <Text style={styles.totalVotesNumber}>percent%</Text>
-          <Text style={styles.totalVotesText}>of total</Text>
+        <View className="flex flex-row flex-1 w-full items-center gap-2 flex-wrap">
+          <View className="text-gray-500 flex flex-row items-center">
+            <Text className="text-xl font-semibold">{totalFilteredVotes} </Text>
+            {totalFilteredVotes === 1 ? (
+              <Text className="text-gray-500">vote</Text>
+            ) : (
+              <Text className="text-gray-500">votes</Text>
+            )}
+          </View>
+          {totalVotes && totalFilteredVotes ? (
+            <View className="text-gray-500 flex flex-row items-center">
+              <Text className="text-l font-semibold text-gray-900">
+                {Math.round((totalFilteredVotes / totalVotes) * 100)}%
+              </Text>
+              <Text className="text-gray-500 ml-1">of total</Text>
+            </View>
+          ) : null}
         </View>
         <View style={styles.legendContainer}>
           {data.map(item => (
@@ -114,9 +123,9 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
               <View
                 style={[styles.colorBox, { backgroundColor: item.color }]}
               />
-              <View style={styles.legendTextContainer}>
-                <Text style={styles.legendLabel}>{item.optionText}</Text>
-                <Text style={styles.legendPercentage}>
+              <View className="flex flex-row items-center gap-2">
+                <Text className="text-xl font-semibold">{item.optionText}</Text>
+                <Text className="text-gray-500 ml-1">
                   {Math.round(item.percentage * 10) / 10}%
                 </Text>
               </View>
@@ -181,27 +190,6 @@ const styles = StyleSheet.create({
   filtersContainer: {
     marginBottom: 8,
   },
-  filtersText: {
-    flexWrap: 'wrap',
-    fontSize: 14,
-    color: '#64748b',
-  },
-  totalVotesContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  totalVotesText: {
-    fontSize: 16,
-    color: '#64748b',
-  },
-  totalVotesNumber: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#1e293b',
-  },
   legendContainer: {
     gap: 4,
   },
@@ -210,25 +198,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  legendTextContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 8,
-  },
   colorBox: {
     width: 16,
     height: 16,
     borderRadius: 4,
-  },
-  legendLabel: {
-    fontSize: 14,
-    color: '#334155',
-    flexShrink: 1,
-  },
-  legendPercentage: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#64748b',
   },
 });
 

@@ -82,13 +82,15 @@ const getTimeRemainingPercentage = (
   return percentagePassed;
 };
 
-function addColorToResults<T>(results: T[]): (T & { color: string })[] {
+function addColorToResults<T>(results: T[]): (T & { color: string })[] | null {
   const colors = returnSetColors(); //getTwoDistinctColors();
 
-  return results.map((result, index) => ({
-    ...result,
-    color: colors[index % colors.length], // Use modulo to cycle through colors
-  }));
+  if (results) {
+    return results.map((result, index) => ({
+      ...result,
+      color: colors[index % colors.length], // Use modulo to cycle through colors
+    }));
+  } else return null;
 }
 
 function getColorDistance(color1: RGB, color2: RGB): number {
@@ -228,9 +230,72 @@ function formatFilters(filters: FilterObject): string {
 
   return parts.join(' | ');
 }
+
+interface VoteOption {
+  color: string;
+  optionId: string;
+  optionText: string;
+  percentage: number;
+  votes: number;
+}
+
+interface VoteData {
+  totalVotes: number;
+  user_prediction: string;
+  user_vote: string;
+}
+
+interface VoteAnalysis {
+  isCorrectPrediction: boolean;
+  userVotedPerc: string;
+  userVotedMajority: boolean;
+  userVotedColor: string;
+  userPredictedColor: string;
+}
+
+function analyzeVoteData(
+  options: VoteOption[],
+  voteData: VoteData
+): VoteAnalysis {
+  // Find the majority option
+  const majorityOption = options.reduce((prev, current) =>
+    prev.votes > current.votes ? prev : current
+  );
+
+  // Find user's voted and predicted options
+  const userVotedOption = options.find(
+    opt => opt.optionId === voteData.user_vote
+  );
+  const userPredictedOption = options.find(
+    opt => opt.optionId === voteData.user_prediction
+  );
+
+  if (!userVotedOption || !userPredictedOption) {
+    throw new Error('Invalid vote or prediction ID');
+  }
+
+  return {
+    // True if user predicted the majority outcome
+    isCorrectPrediction: voteData.user_prediction === majorityOption.optionId,
+
+    // Percentage for the option the user voted for
+    userVotedPerc: `${userVotedOption.percentage.toFixed(1)}%`,
+
+    // True if user voted with the majority
+    userVotedMajority: voteData.user_vote === majorityOption.optionId,
+
+    // Color of the option the user voted for
+    userVotedColor: userVotedOption.color,
+
+    // Color of the option the user predicted
+    userPredictedColor: userPredictedOption.color,
+  };
+}
+
 export {
   getTimeUntilExpiration,
   getTimeRemainingPercentage,
   addColorToResults,
   formatFilters,
+  analyzeVoteData,
 };

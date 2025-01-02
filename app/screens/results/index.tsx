@@ -15,7 +15,7 @@ import FilterModal from './components/FilterModal';
 import FilteredResultsCard from './components/FilteredResultsCard';
 import MyStats from './components/MyStats';
 import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
-import { addColorToResults } from '../../lib/utils';
+import { addColorToResults, analyzeVoteData } from '../../lib/utils';
 
 export default function Results() {
   const [filteredDemographics, setFilteredDemographics] = useState(null);
@@ -27,8 +27,15 @@ export default function Results() {
   console.log('Data from totalResults....');
   console.log(totalResults);
   const nullData = { question: null, totalVotes: null, results: null };
-  const { data: { question, totalVotes, results } = nullData } =
-    totalResults || {};
+  const {
+    data: {
+      question,
+      totalVotes,
+      results,
+      user_vote,
+      user_prediction,
+    } = nullData,
+  } = totalResults || {};
 
   let isPopulatedFilter = null;
   if (filteredDemographics) {
@@ -52,6 +59,13 @@ export default function Results() {
       </View>
     );
   }
+
+  const coloredResults = addColorToResults(results);
+  let myStats = null;
+  if (coloredResults && user_vote && user_prediction) {
+    myStats = analyzeVoteData(coloredResults, totalResults?.data);
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -72,13 +86,9 @@ export default function Results() {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-4">
-            {results && results.length === 2 && (
+            {coloredResults && coloredResults.length === 2 && (
               <View className="w-full flex justify-center">
-                <PieChart
-                  data={addColorToResults(results)}
-                  size={200}
-                  strokeWidth={25}
-                >
+                <PieChart data={coloredResults} size={200} strokeWidth={25}>
                   <View className="flex justify-center">
                     <Text>
                       <NumberFlipper targetNumber={totalVotes} /> votes
@@ -94,16 +104,18 @@ export default function Results() {
             filteredDemographics={filteredDemographics}
             activeQuestion={activeQuestion}
             setFilteredDemographics={setFilteredDemographics}
-            totalVotes={results?.data?.totalVotes}
+            totalVotes={totalVotes}
           />
         )}
-        <MyStats
-          isCorrectPrediction={true}
-          userVotedPerc="20%"
-          userVotedMajority={false}
-          userVotedColor="bg-midnight"
-          userPredictedColor="bg-lightBlue"
-        />
+        {myStats && (
+          <MyStats
+            isCorrectPrediction={myStats?.isCorrectPrediction}
+            userVotedPerc={myStats?.userVotedPerc}
+            userVotedMajority={myStats?.userVotedMajority}
+            // userVotedColor={myStats?.userVotedColor}
+            // userPredictedColor={myStats?.userPredictedColor}
+          />
+        )}
       </View>
     </ScrollView>
   );
