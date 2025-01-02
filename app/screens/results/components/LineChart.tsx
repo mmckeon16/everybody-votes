@@ -2,7 +2,8 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
-import { CheckCircle, Target } from 'lucide-react-native';
+import UserStatsBadge from './UserStatsBadge';
+import MediaQuery, { Breakpoints } from '~/components/ui/MediaQuery';
 
 interface PollOption {
   optionId: string;
@@ -55,67 +56,31 @@ const LineChart: React.FC<LineChartProps> = ({
         <View className="space-y-4">
           {results.map(result => (
             <View key={result.optionId} className="space-y-2">
+              <MediaQuery {...Breakpoints.xs}>
+                <View className="w-fit">
+                  <UserStatsBadge
+                    optionId={result.optionId}
+                    user_prediction={user_prediction}
+                    user_vote={user_vote}
+                    myStats={myStats}
+                  />
+                </View>
+              </MediaQuery>
               <View className="flex-row justify-between items-center flex-wrap">
                 <View className="flex-row items-center flex-wrap">
                   <Text className="text-lg font-medium">
                     {result.optionText}
                   </Text>
-                  {result.optionId === user_vote &&
-                  result.optionId === user_prediction ? (
-                    <View className="flex-row items-center bg-gradient-to-r from-green-100 to-blue-100 rounded-full px-2 py-1 ml-2">
-                      <View className="flex-row items-center">
-                        <CheckCircle
-                          className="w-4 h-4"
-                          color={myStats?.userVotedColor || '#16a34a'}
-                        />
-                        <Target
-                          className="w-4 h-4 ml-1"
-                          color={myStats?.userPredictedColor || '#2563eb'}
-                        />
-                      </View>
-                      <Text
-                        className="ml-1"
-                        style={{
-                          color: myStats?.userVotedColor || '#16a34a',
-                        }}
-                      >
-                        Your Vote & Prediction
-                      </Text>
+                  <MediaQuery {...Breakpoints.xs} not>
+                    <View className=" ml-2">
+                      <UserStatsBadge
+                        optionId={result.optionId}
+                        user_prediction={user_prediction}
+                        user_vote={user_vote}
+                        myStats={myStats}
+                      />
                     </View>
-                  ) : (
-                    <>
-                      {result.optionId === user_vote && (
-                        <View className="flex-row items-center bg-green-100 rounded-full px-2 py-1 ml-2">
-                          <CheckCircle
-                            className="w-4 h-4 mr-1"
-                            color={myStats?.userVotedColor || '#16a34a'}
-                          />
-                          <Text
-                            style={{
-                              color: myStats?.userVotedColor || '#16a34a',
-                            }}
-                          >
-                            Your Vote
-                          </Text>
-                        </View>
-                      )}
-                      {result.optionId === user_prediction && (
-                        <View className="flex-row items-center bg-blue-100 rounded-full px-2 py-1 ml-2">
-                          <Target
-                            className="w-4 h-4 mr-1"
-                            color={myStats?.userPredictedColor || '#2563eb'}
-                          />
-                          <Text
-                            style={{
-                              color: myStats?.userPredictedColor || '#2563eb',
-                            }}
-                          >
-                            Your Prediction
-                          </Text>
-                        </View>
-                      )}
-                    </>
-                  )}
+                  </MediaQuery>
                 </View>
                 <Text className="text-lg font-semibold">
                   {result.percentage.toFixed(1)}%
