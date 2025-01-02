@@ -49,7 +49,7 @@ export default function Thanks() {
         </CardContent>
       </Card>
 
-      <View className="pt-7 self-center flex-1">
+      {/* <View className="pt-7 self-center flex-1">
         <LottieView
           ref={voteRef}
           source={require('../../../assets/lottie/celebrate.json')}
@@ -60,7 +60,7 @@ export default function Thanks() {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-full z-0 pointer-events-none"
           resizeMode="cover"
         />
-      </View>
+      </View> */}
     </View>
   );
 }

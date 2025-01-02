@@ -18,18 +18,18 @@ export default function Vote() {
   console.log('data: ', activeQuestion);
 
   const handleSubmit = async (selectedOption: Option) => {
-    if (!session?.user?.id && !selectedOption) return;
+    if (!session?.user?.id || !selectedOption || !activeQuestion?.id) return;
 
     try {
       await mutateAsync({
         optionId: selectedOption.id || '',
         userId: session?.user?.id || '',
+        questionId: activeQuestion.id,
       });
 
       // Only navigate on successful submission
       router.push('/screens/predict');
     } catch (error) {
-      // Error is now handled by the mutation's onError
       console.error('Vote submission failed:', error);
     }
   };

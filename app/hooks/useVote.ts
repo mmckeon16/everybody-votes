@@ -7,11 +7,13 @@ export function useVote() {
     mutationFn: async ({
       optionId,
       userId,
+      questionId,
     }: {
       optionId: string;
       userId: string;
+      questionId: string;
     }) => {
-      const response = await votingApi.submitVote(optionId, userId);
+      const response = await votingApi.submitVote(optionId, userId, questionId);
 
       // Check if the response contains an error
       if (response.error) {

@@ -16,16 +16,18 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { optionId, userId } = await req.json();
+    const { optionId, userId, questionId } = await req.json();
     const isDevelopment = isDevelopmentEnvironment();
 
-    // Check for existing vote
+    // Check for existing vote on this question
     const { data: existingVote, error: checkError } = await supabaseClient
       .from('answers')
-      .select('id')
+      .select('id, options!inner(question_id)')
       .eq('user_id', userId)
-      .eq('option_id', optionId)
+      .eq('options.question_id', questionId)
       .single();
+
+    console.log('existingVote', existingVote);
 
     if (checkError && checkError.code !== 'PGRST116') {
       throw checkError;

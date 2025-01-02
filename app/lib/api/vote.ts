@@ -4,7 +4,7 @@ const baseUrl =
     : process.env.EXPO_PUBLIC_SUPABASE_URL + '/functions/v1';
 
 export const votingApi = {
-  submitVote: async (optionId: string, userId: string) => {
+  submitVote: async (optionId: string, userId: string, questionId: string) => {
     const response = await fetch(`${baseUrl}/submit-vote`, {
       method: 'POST',
       headers: {
@@ -14,6 +14,7 @@ export const votingApi = {
       body: JSON.stringify({
         userId,
         optionId,
+        questionId,
       }),
     });
     return response.json();
