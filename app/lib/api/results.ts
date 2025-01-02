@@ -21,7 +21,7 @@ export const resultsApi = {
   ) => {
     const url = new URL(`${baseUrl}/result-data/${questionId}`);
     // Add userId to query params if it exists
-    if (userId) {
+    if (userId && !demographicFilters) {
       url.searchParams.append('userId', userId);
     }
 
