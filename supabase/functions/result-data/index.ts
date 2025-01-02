@@ -85,6 +85,7 @@ Deno.serve(async (req: Request) => {
       }
 
       console.log('user_vote', user_vote);
+      console.log('user_prediction', user_prediction);
 
       // Get demographic filters from query params
       const demographicFilters: Record<string, string[]> = {};

@@ -35,7 +35,7 @@ export default function Screen() {
 
   useEffect(() => {
     async function prepare() {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       if (!isLoading) {
         setAppIsReady(true);
         SplashScreen.hideAsync();
@@ -54,80 +54,76 @@ export default function Screen() {
 
   console.log(userVotedText);
 
-  if (!appIsReady) {
-    return null;
-  } else {
-    return (
-      <View className="flex-1 items-center gap-5 p-6 bg-blueBg">
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <Card className="w-full max-w-sm p-2 rounded-2xl">
-            <CardHeader className="items-center">
-              <CardTitle className="pb-2 text-center">
-                {activeQuestion?.text}
-              </CardTitle>
-            </CardHeader>
-            <CardFooter className="flex-col gap-3 pb-4">
-              <Progress
-                value={getTimeRemainingPercentage(
-                  activeQuestion?.start_date ?? '',
-                  activeQuestion?.end_date ?? ''
-                )}
-                className="h-2"
-                indicatorClassName="bg-lightBlue"
-              />
-              <View className="flex-row items-center overflow-hidden">
-                <Text className="text-sm font-bold text-lightBlue">
-                  {getTimeUntilExpiration(activeQuestion?.end_date ?? '')}
-                </Text>
-                <Text className="text-sm text-muted-foreground">
-                  {' '}
-                  until this poll closes
-                </Text>
-              </View>
-              <View />
-              {userVotedText ? (
-                <Text>
-                  You voted{' '}
-                  <Text className="text-lightBlue font-bold">
-                    {userVotedText}
-                  </Text>
-                </Text>
-              ) : (
-                <Button
-                  variant="outline"
-                  className="shadow shadow-foreground/5"
-                  onPress={() => {
-                    router.push('/screens/vote');
-                  }}
-                >
-                  <Text>Vote</Text>
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        )}
+  return (
+    <View className="flex-1 items-center gap-5 p-6 bg-blueBg">
+      {!appIsReady ? (
+        <SkeletonCard />
+      ) : (
         <Card className="w-full max-w-sm p-2 rounded-2xl">
           <CardHeader className="items-center">
             <CardTitle className="pb-2 text-center">
-              View previous poll results
+              {activeQuestion?.text}
             </CardTitle>
-            <CardDescription>TODO add question here</CardDescription>
           </CardHeader>
           <CardFooter className="flex-col gap-3 pb-4">
-            <Button
-              variant="outline"
-              className="shadow shadow-foreground/5"
-              onPress={() => {
-                router.push('/screens/results');
-              }}
-            >
-              <Text>Results</Text>
-            </Button>
+            <Progress
+              value={getTimeRemainingPercentage(
+                activeQuestion?.start_date ?? '',
+                activeQuestion?.end_date ?? ''
+              )}
+              className="h-2"
+              indicatorClassName="bg-lightBlue"
+            />
+            <View className="flex-row items-center overflow-hidden">
+              <Text className="text-sm font-bold text-lightBlue">
+                {getTimeUntilExpiration(activeQuestion?.end_date ?? '')}
+              </Text>
+              <Text className="text-sm text-muted-foreground">
+                {' '}
+                until this poll closes
+              </Text>
+            </View>
+            <View />
+            {userVotedText ? (
+              <Text>
+                You voted{' '}
+                <Text className="text-lightBlue font-bold">
+                  {userVotedText}
+                </Text>
+              </Text>
+            ) : (
+              <Button
+                variant="outline"
+                className="shadow shadow-foreground/5"
+                onPress={() => {
+                  router.push('/screens/vote');
+                }}
+              >
+                <Text>Vote</Text>
+              </Button>
+            )}
           </CardFooter>
         </Card>
-      </View>
-    );
-  }
+      )}
+      <Card className="w-full max-w-sm p-2 rounded-2xl">
+        <CardHeader className="items-center">
+          <CardTitle className="pb-2 text-center">
+            View previous poll results
+          </CardTitle>
+          <CardDescription>TODO add question here</CardDescription>
+        </CardHeader>
+        <CardFooter className="flex-col gap-3 pb-4">
+          <Button
+            variant="outline"
+            className="shadow shadow-foreground/5"
+            onPress={() => {
+              router.push('/screens/results');
+            }}
+          >
+            <Text>Results</Text>
+          </Button>
+        </CardFooter>
+      </Card>
+    </View>
+  );
 }
