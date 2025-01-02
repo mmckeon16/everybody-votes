@@ -25,6 +25,7 @@ interface DonutChartProps {
   size?: number;
   strokeWidth?: number;
   totalVotes?: number;
+  totalFilteredVotes?: number;
   filters?: object;
   setFilters: Function;
 }
@@ -34,6 +35,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   size = 100,
   strokeWidth = 15,
   totalVotes,
+  totalFilteredVotes,
   filters = null,
   setFilters,
 }) => {

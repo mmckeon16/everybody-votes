@@ -10,12 +10,14 @@ interface FilterResultsProps {
   filteredDemographics: object;
   activeQuestion: object;
   setFilteredDemographics: Function;
+  totalVotes: number;
 }
 
 const FilterResultsCard: React.FC<FilterResultsProps> = ({
   filteredDemographics,
   activeQuestion,
   setFilteredDemographics,
+  totalVotes,
 }) => {
   const { data: filteredResults, isLoading } = useResults(
     activeQuestion?.id,
@@ -25,8 +27,9 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
   console.log('Data from filtered....', filteredResults);
   console.log(filteredResults);
   const nullData = { question: null, totalVotes: null, results: null };
-  const { data: { question, totalVotes, results, error } = nullData } =
-    filteredResults || {};
+  const {
+    data: { totalVotes: totalFilteredVotes, results, error } = nullData,
+  } = filteredResults || {};
 
   if (isLoading) {
     return (
@@ -53,6 +56,7 @@ const FilterResultsCard: React.FC<FilterResultsProps> = ({
               data={addColorToResults(results)}
               size={100}
               strokeWidth={25}
+              totalFilteredVotes={totalFilteredVotes}
               totalVotes={totalVotes}
               filters={filteredDemographics}
               setFilters={setFilteredDemographics}

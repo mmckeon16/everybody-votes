@@ -1,57 +1,75 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { View } from 'react-native';
-import LottieView from 'lottie-react-native';
 import { Text } from '~/components/ui/text';
-import {
-  Card,
-  CardContent,
-  CardTitle,
-  CardDescription,
-  CardHeader,
-} from '~/components/ui/card';
-import { Separator } from '~/components/ui/separator';
+import { Card, CardContent } from '~/components/ui/card';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
-interface MyStatsProps {}
+interface MyStatsProps {
+  isCorrectPrediction: boolean;
+  userVotedPerc: string;
+  userVotedMajority: boolean;
+  userVotedColor: string;
+  userPredictedColor: string;
+}
 
-const MyStats: React.FC<MyStatsProps> = ({}) => {
+const MyStats: React.FC<MyStatsProps> = ({
+  isCorrectPrediction,
+  userVotedPerc,
+  userVotedMajority,
+  userVotedColor = 'bg-lightBlue',
+  userPredictedColor = 'bg-midnight',
+}) => {
+  const iconSize = 40;
   return (
     <View className="flex flex-row gap-3 w-full max-w-3xl">
-      <Card className="flex-1 max-w-3xl h-full bg-lightBlue">
+      <Card className={`flex-1 max-w-3xl h-full ${userVotedColor}`}>
         <CardContent className="p-4 flex-1">
           <View className="flex flex-row gap-3">
             <View className="flex-1 gap-2">
               <Text className="flex-wrap text-white	">
-                You voted with 20% of the population
+                You voted with {userVotedPerc} of the population
               </Text>
               <View className="flex ">
-                <FontAwesome6 name="person-shelter" size={44} color="white" />
+                {userVotedMajority ? (
+                  <FontAwesome6
+                    name="people-group"
+                    size={iconSize}
+                    color="white"
+                  />
+                ) : (
+                  <FontAwesome6
+                    name="person-shelter"
+                    size={iconSize}
+                    color="white"
+                  />
+                )}
               </View>
             </View>
           </View>
         </CardContent>
       </Card>
-      <Card className="max-w-3xl flex-1 bg-midnight">
+      <Card className={`max-w-3xl flex-1 ${userPredictedColor}`}>
         <CardContent className="p-4 flex-1">
           <View className="flex flex-col gap-2 justify-between flex-1	h-full">
             <View className="flex-1 justify-between	 gap-2">
-              <Text className="flex-wrap text-white">You predicted wrong</Text>
+              <Text className="flex-wrap text-white">
+                {isCorrectPrediction
+                  ? 'Your prediction was spot on'
+                  : 'You predicted wrong'}
+              </Text>
               <View className="flex">
-                <FontAwesome5 name="sad-cry" size={44} color="white" />
-                {/* <Ionicons name="happy-outline" size={44} color="black" /> */}
+                {isCorrectPrediction ? (
+                  <Ionicons
+                    name="happy-outline"
+                    size={iconSize}
+                    color="white"
+                  />
+                ) : (
+                  <FontAwesome5 name="sad-cry" size={iconSize} color="white" />
+                )}
               </View>
-              {/* <View className="w-full aspect-video justify-self-start	">
-                <LottieView
-                  ref={preditingRef}
-                  source={happy}
-                  autoPlay={true}
-                  loop={false}
-                  style={{ flex: 1, aspectRatio: 1 }}
-                />
-              </View> */}
             </View>
           </View>
         </CardContent>

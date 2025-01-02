@@ -94,9 +94,16 @@ export default function Results() {
             filteredDemographics={filteredDemographics}
             activeQuestion={activeQuestion}
             setFilteredDemographics={setFilteredDemographics}
+            totalVotes={results?.data?.totalVotes}
           />
         )}
-        <MyStats />
+        <MyStats
+          isCorrectPrediction={true}
+          userVotedPerc="20%"
+          userVotedMajority={false}
+          userVotedColor="bg-midnight"
+          userPredictedColor="bg-lightBlue"
+        />
       </View>
     </ScrollView>
   );
