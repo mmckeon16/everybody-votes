@@ -4,8 +4,27 @@ import Toast from 'react-native-toast-message';
 
 export function usePrediction() {
   return useMutation({
-    mutationFn: ({ optionId, userId }: { optionId: string; userId: string }) =>
-      predictionsApi.submitPrediction(optionId, userId),
+    mutationFn: async ({
+      optionId,
+      userId,
+      questionId,
+    }: {
+      optionId: string;
+      userId: string;
+      questionId: string;
+    }) => {
+      const response = await predictionsApi.submitPrediction(
+        optionId,
+        userId,
+        questionId
+      );
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      return response.data;
+    },
     onError: (error: Error) => {
       if (error.message.includes('already made a prediction')) {
         Toast.show({

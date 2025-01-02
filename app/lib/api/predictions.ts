@@ -4,7 +4,11 @@ const baseUrl =
     : process.env.EXPO_PUBLIC_SUPABASE_URL + '/functions/v1';
 
 export const predictionsApi = {
-  submitPrediction: async (optionId: string, userId: string) => {
+  submitPrediction: async (
+    optionId: string,
+    userId: string,
+    questionId: string
+  ) => {
     const response = await fetch(`${baseUrl}/submit-prediction`, {
       method: 'POST',
       headers: {
@@ -14,6 +18,7 @@ export const predictionsApi = {
       body: JSON.stringify({
         userId,
         optionId,
+        questionId,
       }),
     });
     return response.json();

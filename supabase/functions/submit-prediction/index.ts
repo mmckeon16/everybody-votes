@@ -14,18 +14,15 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { optionId, userId } = await req.json();
+    const { optionId, userId, questionId } = await req.json();
     const isDevelopment = isDevelopmentEnvironment();
 
-    console.log(
-      `Submitting prediction: optionId=${optionId}, userId=${userId}`
-    );
-    // Check for existing prediction
+    // Check for existing prediction on this question
     const { data: existingPrediction, error: checkError } = await supabaseClient
       .from('predictions')
-      .select('id')
+      .select('id, options!inner(question_id)')
       .eq('user_id', userId)
-      .eq('option_id', optionId)
+      .eq('options.question_id', questionId)
       .single();
 
     if (checkError && checkError.code !== 'PGRST116') {
@@ -34,7 +31,7 @@ serve(async (req: Request) => {
 
     if (existingPrediction) {
       if (!isDevelopment) {
-        throw new Error('User has already made a prediction for this option');
+        throw new Error('User has already made a prediction for this question');
       }
       // In development, delete the existing prediction
       await supabaseClient

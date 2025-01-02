@@ -14,12 +14,13 @@ export default function Predict() {
   const { session } = useAuth();
 
   const handleSubmit = async (selectedOption: Option) => {
-    if (!session?.user?.id || !selectedOption) return;
+    if (!session?.user?.id || !selectedOption || !activeQuestion?.id) return;
 
     try {
       await submitPrediction({
         optionId: selectedOption.id,
         userId: session.user.id,
+        questionId: activeQuestion.id,
       });
       router.push('/screens/thanks');
     } catch (error) {
