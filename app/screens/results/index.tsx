@@ -14,6 +14,7 @@ import NumberFlipper from './components/NumberFlipper';
 import FilterModal from './components/FilterModal';
 import FilteredResultsCard from './components/FilteredResultsCard';
 import MyStats from './components/MyStats';
+import LineChart from './components/LineChart';
 import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
 import { addColorToResults, analyzeVoteData } from '../../lib/utils';
 
@@ -73,17 +74,23 @@ export default function Results() {
       showsVerticalScrollIndicator={false}
     >
       <View className="flex-1 items-center px-6 py-4 gap-4">
+        {totalResults && (
+          <LineChart
+            question={question}
+            totalVotes={totalVotes}
+            results={coloredResults}
+            user_vote={user_vote}
+            user_prediction={user_prediction}
+            myStats={myStats}
+          />
+        )}
+
         <Card className="max-w-3xl mx-6 w-full">
-          <CardHeader className="items-center px-4">
-            <CardTitle className="pb-2 text-center w-full">
-              {question?.text}
-            </CardTitle>
-            <CardDescription className="self-start">
-              <FilterModal
-                filteredDemographics={filteredDemographics}
-                setFilteredDemographics={setFilteredDemographics}
-              />
-            </CardDescription>
+          <CardHeader className="px-4">
+            <FilterModal
+              filteredDemographics={filteredDemographics}
+              setFilteredDemographics={setFilteredDemographics}
+            />
           </CardHeader>
           <CardContent className="px-4">
             {coloredResults && coloredResults.length === 2 && (
@@ -112,8 +119,8 @@ export default function Results() {
             isCorrectPrediction={myStats?.isCorrectPrediction}
             userVotedPerc={myStats?.userVotedPerc}
             userVotedMajority={myStats?.userVotedMajority}
-            // userVotedColor={myStats?.userVotedColor}
-            // userPredictedColor={myStats?.userPredictedColor}
+            userVotedColor={myStats?.userVotedColor}
+            userPredictedColor={myStats?.userPredictedColor}
           />
         )}
       </View>

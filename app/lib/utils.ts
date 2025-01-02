@@ -83,7 +83,7 @@ const getTimeRemainingPercentage = (
 };
 
 function addColorToResults<T>(results: T[]): (T & { color: string })[] | null {
-  const colors = returnSetColors(); //getTwoDistinctColors();
+  const colors = returnSetColors(); //getTwoDistinctColors(); //
 
   if (results) {
     return results.map((result, index) => ({
