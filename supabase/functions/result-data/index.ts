@@ -17,8 +17,15 @@ Deno.serve(async (req: Request) => {
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/');
     const questionId = pathParts[pathParts.length - 1];
-
+    const userId = url.searchParams.get('userId');
+    console.log('userId', userId);
     console.log('Processing request for questionId:', questionId);
+
+    //Define the user_vote and user_prediction variables
+    //These will be used to store the user's vote and prediction if the userId was provided
+    //The userId is provided by the client if they are authenticated
+    let user_vote = null;
+    let user_prediction = null;
 
     // Get the question and its options
     const { data: questionData, error: questionError } = await supabase
@@ -47,9 +54,38 @@ Deno.serve(async (req: Request) => {
 
     //Now lets check if there are any filters
 
-    console.log('url searchParams', url.searchParams);
     if (url.searchParams.size !== 0) {
-      console.log('WE HAVE FILTERS!!!!!!!!!!!!');
+      console.log('userId', userId);
+      console.log('optionIds again', optionIds);
+      if (userId) {
+        const { data: answer, error: answerError } = await supabase
+          .from('answers')
+          .select('option_id')
+          .eq('user_id', userId)
+          .in('option_id', optionIds)
+          .maybeSingle();
+
+        const { data: prediction, error: predictionError } = await supabase
+          .from('predictions')
+          .select('option_id')
+          .eq('user_id', userId)
+          .in('option_id', optionIds)
+          .maybeSingle();
+
+        if (answerError) {
+          console.error('Error fetching user answer:', answerError);
+        } else if (answer) {
+          user_vote = answer.option_id;
+        }
+        if (predictionError) {
+          console.error('Error fetching user prediction:', predictionError);
+        } else if (prediction) {
+          user_prediction = prediction.option_id;
+        }
+      }
+
+      console.log('user_vote', user_vote);
+
       // Get demographic filters from query params
       const demographicFilters: Record<string, string[]> = {};
       //TODO: This needs to be updated to match the new demographics table, and we should just use the type of the demographics table
@@ -164,6 +200,8 @@ Deno.serve(async (req: Request) => {
         results,
         totalVotes,
         voteCounts,
+        user_vote: user_vote,
+        user_prediction: user_prediction,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -16,9 +16,14 @@ export const resultsApi = {
       political_affiliation?: string | string[];
       occupation?: string | string[];
       country_origin?: string | string[];
-    }
+    },
+    userId?: string
   ) => {
     const url = new URL(`${baseUrl}/result-data/${questionId}`);
+    // Add userId to query params if it exists
+    if (userId) {
+      url.searchParams.append('userId', userId);
+    }
 
     // Add demographic filters to query params if they exist
     if (demographicFilters) {
