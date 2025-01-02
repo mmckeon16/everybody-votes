@@ -55,38 +55,66 @@ const LineChart: React.FC<LineChartProps> = ({
         <View className="space-y-4">
           {results.map(result => (
             <View key={result.optionId} className="space-y-2">
-              <View className="flex-row justify-between items-center">
-                <View className="flex-row items-center space-x-2">
+              <View className="flex-row justify-between items-center flex-wrap">
+                <View className="flex-row items-center flex-wrap">
                   <Text className="text-lg font-medium">
                     {result.optionText}
                   </Text>
-                  {result.optionId === user_vote && (
-                    <View className="flex-row items-center bg-green-100 rounded-full px-2 py-1">
-                      <CheckCircle
-                        className="w-4 h-4 mr-1"
-                        color={myStats?.userVotedColor || '#16a34a'} // Default to green-600
-                      />
+                  {result.optionId === user_vote &&
+                  result.optionId === user_prediction ? (
+                    <View className="flex-row items-center bg-gradient-to-r from-green-100 to-blue-100 rounded-full px-2 py-1 ml-2">
+                      <View className="flex-row items-center">
+                        <CheckCircle
+                          className="w-4 h-4"
+                          color={myStats?.userVotedColor || '#16a34a'}
+                        />
+                        <Target
+                          className="w-4 h-4 ml-1"
+                          color={myStats?.userPredictedColor || '#2563eb'}
+                        />
+                      </View>
                       <Text
-                        style={{ color: myStats?.userVotedColor || '#16a34a' }}
-                      >
-                        Your Vote
-                      </Text>
-                    </View>
-                  )}
-                  {result.optionId === user_prediction && (
-                    <View className="flex-row items-center bg-blue-100 rounded-full px-2 py-1">
-                      <Target
-                        className="w-4 h-4 mr-1"
-                        color={myStats?.userPredictedColor || '#2563eb'} // Default to blue-600
-                      />
-                      <Text
+                        className="ml-1"
                         style={{
-                          color: myStats?.userPredictedColor || '#2563eb',
+                          color: myStats?.userVotedColor || '#16a34a',
                         }}
                       >
-                        Your Prediction
+                        Your Vote & Prediction
                       </Text>
                     </View>
+                  ) : (
+                    <>
+                      {result.optionId === user_vote && (
+                        <View className="flex-row items-center bg-green-100 rounded-full px-2 py-1 ml-2">
+                          <CheckCircle
+                            className="w-4 h-4 mr-1"
+                            color={myStats?.userVotedColor || '#16a34a'}
+                          />
+                          <Text
+                            style={{
+                              color: myStats?.userVotedColor || '#16a34a',
+                            }}
+                          >
+                            Your Vote
+                          </Text>
+                        </View>
+                      )}
+                      {result.optionId === user_prediction && (
+                        <View className="flex-row items-center bg-blue-100 rounded-full px-2 py-1 ml-2">
+                          <Target
+                            className="w-4 h-4 mr-1"
+                            color={myStats?.userPredictedColor || '#2563eb'}
+                          />
+                          <Text
+                            style={{
+                              color: myStats?.userPredictedColor || '#2563eb',
+                            }}
+                          >
+                            Your Prediction
+                          </Text>
+                        </View>
+                      )}
+                    </>
                   )}
                 </View>
                 <Text className="text-lg font-semibold">
