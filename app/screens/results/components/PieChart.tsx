@@ -126,7 +126,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
           </G>
         </Svg>
       </View>
-      <View style={styles.legendContainer}>
+      <View className="flex flex-col mt-2 gap-2">
         {data.map((item, index) => (
           <View key={item.optionText} style={styles.legendItem}>
             <View style={[styles.colorBox, { backgroundColor: item.color }]} />

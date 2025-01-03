@@ -3,17 +3,10 @@ import { ScrollView, View, ActivityIndicator } from 'react-native';
 import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '~/components/ui/card';
+import { Card, CardContent, CardHeader } from '~/components/ui/card';
 import NumberFlipper from './components/NumberFlipper';
 import FilterModal from './components/FilterModal';
 import FilteredResultsCard from './components/FilteredResultsCard';
-import MyStats from './components/MyStats';
 import LineChart from './components/LineChart';
 import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
 import { addColorToResults, analyzeVoteData } from '../../lib/utils';
@@ -45,7 +38,7 @@ export default function Results() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !totalResults) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
@@ -112,15 +105,6 @@ export default function Results() {
             activeQuestion={activeQuestion}
             setFilteredDemographics={setFilteredDemographics}
             totalVotes={totalVotes}
-          />
-        )}
-        {myStats && (
-          <MyStats
-            isCorrectPrediction={myStats?.isCorrectPrediction}
-            userVotedPerc={myStats?.userVotedPerc}
-            userVotedMajority={myStats?.userVotedMajority}
-            userVotedColor={myStats?.userVotedColor}
-            userPredictedColor={myStats?.userPredictedColor}
           />
         )}
       </View>

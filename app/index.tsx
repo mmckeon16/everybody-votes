@@ -35,7 +35,7 @@ export default function Screen() {
 
   useEffect(() => {
     async function prepare() {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       if (!isLoading) {
         setAppIsReady(true);
         SplashScreen.hideAsync();
@@ -52,7 +52,7 @@ export default function Screen() {
       options[0]?.id === user_vote ? options[0]?.text : options[1]?.text;
   }
 
-  console.log(userVotedText);
+  const hasEndDatePassed = new Date() > new Date(activeQuestion?.end_date);
 
   return (
     <View className="flex-1 items-center gap-5 p-6 bg-blueBg">
@@ -66,41 +66,55 @@ export default function Screen() {
             </CardTitle>
           </CardHeader>
           <CardFooter className="flex-col gap-3 pb-4">
-            <Progress
-              value={getTimeRemainingPercentage(
-                activeQuestion?.start_date ?? '',
-                activeQuestion?.end_date ?? ''
-              )}
-              className="h-2"
-              indicatorClassName="bg-lightBlue"
-            />
-            <View className="flex-row items-center overflow-hidden">
-              <Text className="text-sm font-bold text-lightBlue">
-                {getTimeUntilExpiration(activeQuestion?.end_date ?? '')}
-              </Text>
-              <Text className="text-sm text-muted-foreground">
-                {' '}
-                until this poll closes
-              </Text>
-            </View>
-            <View />
-            {userVotedText ? (
-              <Text>
-                You voted{' '}
-                <Text className="text-lightBlue font-bold">
-                  {userVotedText}
+            {hasEndDatePassed ? (
+              <View className="flex flex-col gap-2">
+                <Text className="text-center text-lg font-semibold text-lightBlue">
+                  This poll has ended
                 </Text>
-              </Text>
+                <Text className="text-center text-slate-600	">
+                  Come back soon to vote on the next question and view the
+                  results
+                </Text>
+              </View>
             ) : (
-              <Button
-                variant="outline"
-                className="shadow shadow-foreground/5"
-                onPress={() => {
-                  router.push('/screens/vote');
-                }}
-              >
-                <Text>Vote</Text>
-              </Button>
+              <View>
+                <Progress
+                  value={getTimeRemainingPercentage(
+                    activeQuestion?.start_date ?? '',
+                    activeQuestion?.end_date ?? ''
+                  )}
+                  className="h-2"
+                  indicatorClassName="bg-lightBlue"
+                />
+                <View className="flex-row items-center overflow-hidden">
+                  <Text className="text-sm font-bold text-lightBlue">
+                    {getTimeUntilExpiration(activeQuestion?.end_date ?? '')}
+                  </Text>
+                  <Text className="text-sm text-muted-foreground">
+                    {' '}
+                    until this poll closes
+                  </Text>
+                </View>
+                <View />
+                {userVotedText ? (
+                  <Text>
+                    You voted{' '}
+                    <Text className="text-lightBlue font-bold">
+                      {userVotedText}
+                    </Text>
+                  </Text>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="shadow shadow-foreground/5"
+                    onPress={() => {
+                      router.push('/screens/vote');
+                    }}
+                  >
+                    <Text>Vote</Text>
+                  </Button>
+                )}
+              </View>
             )}
           </CardFooter>
         </Card>
