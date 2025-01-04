@@ -6,13 +6,22 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "SENTRY_AUTH_TOKEN": "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"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "SENTRY_AUTH_TOKEN": "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"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "SENTRY_AUTH_TOKEN": "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"
+      }
     }
   },
   "submit": {

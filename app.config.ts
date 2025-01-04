@@ -6,9 +6,17 @@ export default {
     extra: {
       EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
       EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+      EXPO_PUBLIC_SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN,
+      SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
       eas: {
         projectId: '3812e77d-32fd-47d2-98a0-5b3426e1d1d1',
       },
+    },
+    updates: {
+      url: 'https://u.expo.dev/3812e77d-32fd-47d2-98a0-5b3426e1d1d1',
+    },
+    runtimeVersion: {
+      policy: 'appVersion',
     },
     splash: {
       image: './assets/test0icon.png', // Make sure this file exists
@@ -50,6 +58,29 @@ export default {
           imageWidth: 200,
         },
       ],
+      [
+        '@sentry/react-native/expo',
+        {
+          organization: 'collect-software',
+          project: 'everybody-polls',
+          // If you are using a self-hosted instance, update the value of the url property
+          // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
+          url: 'https://sentry.io/',
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+        },
+      ],
     ],
+    hooks: {
+      postPublish: [
+        {
+          file: 'sentry-expo/upload-sourcemaps',
+          config: {
+            organization: 'collect-software',
+            project: 'everybody-polls',
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+          },
+        },
+      ],
+    },
   },
 };
