@@ -17,16 +17,6 @@ import {
   getTimeRemainingPercentage,
 } from './lib/utils';
 import { useActiveQuestion } from './hooks/useActiveQuestion';
-import * as SplashScreen from 'expo-splash-screen';
-
-// Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
-
-// Set the animation options (optional)
-SplashScreen.setOptions({
-  duration: 1000,
-  fade: true,
-});
 
 export default function Screen() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -35,10 +25,10 @@ export default function Screen() {
 
   useEffect(() => {
     async function prepare() {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       if (!isLoading) {
         setAppIsReady(true);
-        SplashScreen.hideAsync();
+        // SplashScreen.hideAsync();
       }
     }
     prepare();
@@ -138,6 +128,13 @@ export default function Screen() {
           </Button>
         </CardFooter>
       </Card>
+      <Button
+        onPress={() => {
+          throw new Error('Hello, again, Sentry!');
+        }}
+      >
+        <Text>Throw error</Text>
+      </Button>
     </View>
   );
 }
