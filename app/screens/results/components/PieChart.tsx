@@ -69,13 +69,17 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   const animatedProps1 = useAnimatedProps(() => ({
     strokeDasharray: `${segment1Length.value} ${circumference}`,
     strokeDashoffset: 0,
-    transform: [{ rotate: '-90deg' }],
+    originX: center,
+    originY: center,
+    rotation: 180,
   }));
 
   const animatedProps2 = useAnimatedProps(() => ({
     strokeDasharray: `${segment2Length.value} ${circumference}`,
     strokeDashoffset: -circumference + segment2Length.value,
-    transform: [{ rotate: '90deg' }],
+    originX: center,
+    originY: center,
+    rotation: 180,
   }));
 
   return (
@@ -99,28 +103,24 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
           <G rotation={90} origin={`${center}, ${center}`}>
             <AnimatedCircle
               cx={center}
-              key={`donut-segment-${data[0]?.optionText}`} // using text as unique identifier
+              key={`donut-segment-${data[0]?.optionText}`}
               cy={center}
               r={radius}
               stroke={data[0].color}
               strokeWidth={strokeWidth}
               fill="none"
               animatedProps={animatedProps1}
-              originX={center}
-              originY={center}
               strokeLinecap="round"
             />
             <AnimatedCircle
               cx={center}
-              key={`donut-segment-${data[1]?.optionText}`} // using text as unique identifier
+              key={`donut-segment-${data[1]?.optionText}`}
               cy={center}
               r={radius}
               stroke={data[1].color}
               strokeWidth={strokeWidth}
               fill="none"
               animatedProps={animatedProps2}
-              originX={center}
-              originY={center}
               strokeLinecap="round"
             />
           </G>

@@ -83,13 +83,17 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   const animatedProps1 = useAnimatedProps(() => ({
     strokeDasharray: `${segment1Length.value} ${circumference}`,
     strokeDashoffset: 0,
-    transform: [{ rotate: '-90deg' }],
+    originX: center,
+    originY: center,
+    rotation: 180,
   }));
 
   const animatedProps2 = useAnimatedProps(() => ({
     strokeDasharray: `${segment2Length.value} ${circumference}`,
     strokeDashoffset: -circumference + segment2Length.value,
-    transform: [{ rotate: '90deg' }],
+    originX: center,
+    originY: center,
+    rotation: 180,
   }));
 
   return (
@@ -147,8 +151,6 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
               strokeWidth={strokeWidth}
               fill="none"
               animatedProps={animatedProps1}
-              originX={center}
-              originY={center}
               strokeLinecap="round"
             />
             <AnimatedCircle
@@ -160,8 +162,6 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
               strokeWidth={strokeWidth}
               fill="none"
               animatedProps={animatedProps2}
-              originX={center}
-              originY={center}
               strokeLinecap="round"
             />
           </G>
