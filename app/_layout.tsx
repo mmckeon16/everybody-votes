@@ -35,6 +35,7 @@ Sentry.init({
     // Pass integration
     navigationIntegration,
   ],
+  enabled: __DEV__,
   enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
 });
 

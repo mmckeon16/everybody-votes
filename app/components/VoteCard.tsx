@@ -35,7 +35,7 @@ export default function Screen() {
 
   const hasEndDatePassed = new Date() > new Date(activeQuestion?.end_date);
 
-  if (!error) {
+  if (error) {
     return (
       <View className="flex justify-center items-center w-full">
         <ErrorVoteCard />

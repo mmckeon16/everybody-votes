@@ -8,19 +8,28 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "SENTRY_AUTH_TOKEN": "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"
+        "SENTRY_AUTH_TOKEN": "SENTRY_AUTH_TOKEN",
+        "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY",
+        "EXPO_PUBLIC_SENTRY_DSN": "EXPO_PUBLIC_SENTRY_DSN"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "SENTRY_AUTH_TOKEN": "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"
+        "SENTRY_AUTH_TOKEN": "SENTRY_AUTH_TOKEN",
+        "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY",
+        "EXPO_PUBLIC_SENTRY_DSN": "EXPO_PUBLIC_SENTRY_DSN"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "SENTRY_AUTH_TOKEN": "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"
+        "SENTRY_AUTH_TOKEN": "SENTRY_AUTH_TOKEN",
+        "EXPO_PUBLIC_SUPABASE_URL": "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "EXPO_PUBLIC_SUPABASE_ANON_KEY",
+        "EXPO_PUBLIC_SENTRY_DSN": "EXPO_PUBLIC_SENTRY_DSN"
       }
     }
   },

@@ -22,6 +22,7 @@ export default function Screen() {
   }, [isLoading]);
 
   if (error) {
+    console.log('error', error);
     return (
       <View className="flex-1 p-6 bg-blueBg flex flex-col gap-3 items-center w-full">
         <ErrorVoteCard />
@@ -43,13 +44,6 @@ export default function Screen() {
           <PollResultsCard />
         </View>
       )}
-      <Button
-        onPress={() => {
-          throw new Error('Hello, again, Sentry!');
-        }}
-      >
-        <Text>Throw error</Text>
-      </Button>
     </View>
   );
 }
