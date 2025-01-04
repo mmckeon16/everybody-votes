@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import LottieView from 'lottie-react-native';
 import {
   Card,
   CardDescription,
@@ -11,11 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-const vote = require('../../../assets/lottie/vote.json');
 
 export default function Celebrate() {
   const router = useRouter();
-  const voteRef = useRef<LottieView>(null);
 
   return (
     <View className="flex-col items-center overflow-hidden p-8 h-full bg-blueBg">
@@ -49,18 +46,6 @@ export default function Celebrate() {
           </Button>
         </CardContent>
       </Card>
-
-      <View className="pt-7 self-center flex-1">
-        <LottieView
-          ref={voteRef}
-          source={vote}
-          autoPlay={true}
-          loop={false}
-          style={{ width: '100%', height: '100%' }} // Explicit dimensions
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-full z-0 pointer-events-none"
-          resizeMode="cover"
-        />
-      </View>
     </View>
   );
 }
