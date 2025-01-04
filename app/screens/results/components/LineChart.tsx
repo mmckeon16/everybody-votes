@@ -47,7 +47,7 @@ const LineChart: React.FC<LineChartProps> = ({
   myStats,
 }) => {
   return (
-    <Card className="w-full max-w-3xl bg-white">
+    <Card className="w-full max-w-3xl">
       <CardHeader>
         <CardTitle>{question.text}</CardTitle>
         <Text className="text-sm text-gray-500">{totalVotes} votes</Text>

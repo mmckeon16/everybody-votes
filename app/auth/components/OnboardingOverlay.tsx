@@ -31,7 +31,7 @@ const OnboardingOverlay = () => {
   ];
 
   return (
-    <View className="w-full max-w-md bg-white">
+    <View className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-center">Join the Conversation!</CardTitle>
       </CardHeader>

@@ -1,4 +1,4 @@
-import { VoteData, AggregatedResults, OptionPercentage, RGB } from '../types';
+import { RGB } from '../types';
 
 /**
  * Formats the time remaining until the given end date
@@ -6,7 +6,7 @@ import { VoteData, AggregatedResults, OptionPercentage, RGB } from '../types';
  * @returns {string} Formatted time remaining (e.g., "5 days and 3 hours", "3 hours" or "45 minutes")
  * @throws {Error} If invalid date string provided
  */
-const getTimeUntilExpiration = (endDateStr: string): string => {
+export const getTimeUntilExpiration = (endDateStr: string): string => {
   const endDate: Date = new Date(endDateStr);
   if (isNaN(endDate.getTime())) {
     console.log('Invalid date string provided');
@@ -48,7 +48,7 @@ const getTimeUntilExpiration = (endDateStr: string): string => {
  * @returns {number} Integer percentage of time remaining (0-100)
  * @throws {Error} If invalid date strings provided or if end date is before start date
  */
-const getTimeRemainingPercentage = (
+export const getTimeRemainingPercentage = (
   startDateStr: string,
   endDateStr: string
 ): number => {
@@ -82,7 +82,9 @@ const getTimeRemainingPercentage = (
   return percentagePassed;
 };
 
-function addColorToResults<T>(results: T[]): (T & { color: string })[] | null {
+export function addColorToResults<T>(
+  results: T[]
+): (T & { color: string })[] | null {
   const colors = returnSetColors(); //getTwoDistinctColors(); //
 
   if (results) {
@@ -93,7 +95,7 @@ function addColorToResults<T>(results: T[]): (T & { color: string })[] | null {
   } else return null;
 }
 
-function getColorDistance(color1: RGB, color2: RGB): number {
+export function getColorDistance(color1: RGB, color2: RGB): number {
   // Calculate Euclidean distance between colors in RGB space
   const rDiff = color1.r - color2.r;
   const gDiff = color1.g - color2.g;
@@ -114,11 +116,11 @@ function getRandomRGB(): RGB {
   };
 }
 
-function returnSetColors(): [string, string] {
+export function returnSetColors(): [string, string] {
   return ['#246EF0', '#02245e'];
 }
 
-function getTwoDistinctColors(): [string, string] {
+export function getTwoDistinctColors(): [string, string] {
   const MIN_DISTANCE = 100; // Minimum color difference threshold
   const BLACK: RGB = { r: 0, g: 0, b: 0 };
   const WHITE: RGB = { r: 255, g: 255, b: 255 };
@@ -170,7 +172,7 @@ type DisplayNameMapping = {
   [K in keyof Omit<FilterObject, 'age'>]: string;
 };
 
-function formatFilters(filters: FilterObject): string {
+export function formatFilters(filters: FilterObject): string {
   if (!filters || Object.keys(filters).length === 0) {
     return 'No filters applied';
   }
@@ -239,7 +241,7 @@ interface VoteOption {
   votes: number;
 }
 
-interface VoteData {
+interface VoteDataAnalysis {
   totalVotes: number;
   user_prediction: string;
   user_vote: string;
@@ -253,9 +255,9 @@ interface VoteAnalysis {
   userPredictedColor: string;
 }
 
-function analyzeVoteData(
+export function analyzeVoteData(
   options: VoteOption[],
-  voteData: VoteData
+  voteData: VoteDataAnalysis
 ): VoteAnalysis {
   // Find the majority option
   const majorityOption = options.reduce((prev, current) =>
@@ -292,7 +294,7 @@ function analyzeVoteData(
   };
 }
 
-export {
+export default {
   getTimeUntilExpiration,
   getTimeRemainingPercentage,
   addColorToResults,

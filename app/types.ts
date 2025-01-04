@@ -141,3 +141,5 @@ export interface DemographicPillsProps {
   data: DemographicData;
   onRemove?: (category: DemographicKey, originalValue: string | number) => void;
 }
+
+export default {};

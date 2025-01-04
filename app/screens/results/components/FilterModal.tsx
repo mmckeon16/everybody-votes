@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert, Modal, ScrollView, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useColorScheme } from '~/lib/useColorScheme';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { Label } from '~/components/ui/label';
@@ -27,6 +28,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [userSelectedDemographics, setUserSelectedDemographics] = useState(
     filteredDemographics ? filteredDemographics : []
   ); // TODO use useRef
+  const { isDarkColorScheme } = useColorScheme();
 
   return (
     <View>
@@ -41,14 +43,22 @@ const FilterModal: React.FC<FilterModalProps> = ({
       >
         <ScrollView>
           <View className="flex-1 items-center justify-center px-5 min-h-screen">
-            <View className="m-5 bg-white rounded-3xl p-8 items-center shadow-lg w-full">
+            <View
+              className={`m-5 rounded-3xl p-8 items-center shadow-lg w-full ${
+                isDarkColorScheme ? 'bg-black' : 'bg-white'
+              }`}
+            >
               <Button
                 size="icon"
                 variant="ghost"
                 className="self-end"
                 onPress={() => setModalVisible(false)}
               >
-                <AntDesign name="close" size={24} />
+                <AntDesign
+                  name="close"
+                  size={24}
+                  color={isDarkColorScheme ? 'white' : 'black'}
+                />
               </Button>
               <Accordion
                 type="multiple"
@@ -196,7 +206,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
         className="flex flex-row gap-2 w-auto px-3"
       >
         <View>
-          <Ionicons name="filter" size={16} color="black" />
+          <Ionicons
+            name="filter"
+            size={16}
+            color={isDarkColorScheme ? 'white' : 'black'}
+          />
         </View>
         <Text>Filter</Text>
       </Button>

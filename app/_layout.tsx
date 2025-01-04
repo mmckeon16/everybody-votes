@@ -46,6 +46,7 @@ export default function RootLayout() {
   React.useEffect(() => {
     (async () => {
       const theme = await AsyncStorage.getItem('theme');
+      console.log('them: ', theme);
       if (Platform.OS === 'web') {
         // Adds the background color to the html element to prevent white background on overscroll.
         document.documentElement.classList.add('bg-background');
@@ -56,12 +57,16 @@ export default function RootLayout() {
         return;
       }
       const colorTheme = theme === 'dark' ? 'dark' : 'light';
+      console.log('colorScheme: ', colorScheme);
+      console.log('colorTheme: ', colorTheme);
       if (colorTheme !== colorScheme) {
         setColorScheme(colorTheme);
         setAndroidNavigationBar(colorTheme);
         setIsColorSchemeLoaded(true);
         return;
       }
+      console.log('hereee');
+      setColorScheme(colorTheme);
       setAndroidNavigationBar(colorTheme);
       setIsColorSchemeLoaded(true);
     })().finally(() => {
@@ -115,7 +120,7 @@ export default function RootLayout() {
               }}
             />
             <Stack.Screen
-              name="screens/thanks/index"
+              name="screens/thanks"
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
@@ -136,26 +141,12 @@ export default function RootLayout() {
               }}
             />
             <Stack.Screen
-              name="auth/login"
+              name="screens/splash"
               options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-              }}
-            />
-            <Stack.Screen
-              name="screens/splash/index"
-              options={{
-                headerShown: false, // This will hide the header for the splash screen
+                headerShown: false,
                 title: 'Everybody polls',
               }}
             />
-            {/* <Stack.Screen
-              name="auth/signup"
-               options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-              }}
-            /> */}
           </Stack>
         </AuthProvider>
       </QueryClientProvider>

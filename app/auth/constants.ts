@@ -287,3 +287,15 @@ export const occupationCategories: OccupationCategory[] = [
     ],
   },
 ];
+
+export default {
+  races,
+  genders,
+  occupationCategories,
+  states,
+  allCitizenshipStatus,
+  allPoliticalLeanings,
+  allPoliticalParties,
+  incomes,
+  employmentStatus,
+};

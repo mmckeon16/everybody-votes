@@ -109,8 +109,8 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
             )}
           </View>
           {totalVotes && totalFilteredVotes ? (
-            <View className="text-gray-500 flex flex-row items-center">
-              <Text className="text-l font-semibold text-gray-900">
+            <View className="flex flex-row items-center">
+              <Text className="text-lg font-semibold">
                 {Math.round((totalFilteredVotes / totalVotes) * 100)}%
               </Text>
               <Text className="text-gray-500 ml-1">of total</Text>
