@@ -10,7 +10,7 @@ export function ThemeToggle() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
   return (
     <Pressable
-      onPress={() => {
+      onPressIn={() => {
         const newTheme = isDarkColorScheme ? 'light' : 'dark';
         setColorScheme(newTheme);
         setAndroidNavigationBar(newTheme);

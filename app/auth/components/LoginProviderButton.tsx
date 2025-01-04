@@ -49,28 +49,31 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     <Button onPress={signInWithProvider} size="icon">
       {IconComponent ? (
         <IconComponent
-          size={24}
+          size={20}
           color={colorScheme === 'dark' ? 'black' : 'white'}
         />
       ) : (
         <AntDesign
           name={provider}
-          size={24}
+          size={20}
           color={colorScheme === 'dark' ? 'black' : 'white'}
         />
       )}
     </Button>
   ) : (
-    <Button onPress={signInWithProvider} className="flex flex-row gap-2">
+    <Button
+      onPress={signInWithProvider}
+      className="flex flex-row gap-2 min-h-12 py-2"
+    >
       {IconComponent ? (
         <IconComponent
-          size={24}
+          size={20}
           color={colorScheme === 'dark' ? 'black' : 'white'}
         />
       ) : (
         <AntDesign
           name={provider}
-          size={24}
+          size={20}
           color={colorScheme === 'dark' ? 'black' : 'white'}
         />
       )}

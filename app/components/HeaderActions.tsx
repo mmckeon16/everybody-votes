@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '~/components/ui/button';
@@ -23,14 +23,14 @@ export default function HeaderActions() {
     <View className="flex-row items-center gap-2 pr-5">
       <ThemeToggle />
       {isAuthenticated ? (
-        <Button variant="ghost" className="h-8 px-2" onPress={handleSignOut}>
+        <Button variant="ghost" className="h-8 px-2" onPressIn={handleSignOut}>
           <Text className="text-sm">Logout</Text>
         </Button>
       ) : (
         <Button
           variant="ghost"
           className="h-8 px-2"
-          onPress={() => {
+          onPressIn={() => {
             router.push('/auth');
           }}
         >

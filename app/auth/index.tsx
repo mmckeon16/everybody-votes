@@ -71,7 +71,6 @@ export default function Login() {
         padding: 16, // equivalent to p-4
       }}
     >
-      {' '}
       <Card className="w-full max-w-sm p-2 rounded-2xl">
         <OnboardingAd />
         <Separator className="mx-5 w-auto" />

@@ -46,7 +46,6 @@ export default function RootLayout() {
   React.useEffect(() => {
     (async () => {
       const theme = await AsyncStorage.getItem('theme');
-      console.log('them: ', theme);
       if (Platform.OS === 'web') {
         // Adds the background color to the html element to prevent white background on overscroll.
         document.documentElement.classList.add('bg-background');
@@ -57,15 +56,12 @@ export default function RootLayout() {
         return;
       }
       const colorTheme = theme === 'dark' ? 'dark' : 'light';
-      console.log('colorScheme: ', colorScheme);
-      console.log('colorTheme: ', colorTheme);
       if (colorTheme !== colorScheme) {
         setColorScheme(colorTheme);
         setAndroidNavigationBar(colorTheme);
         setIsColorSchemeLoaded(true);
         return;
       }
-      console.log('hereee');
       setColorScheme(colorTheme);
       setAndroidNavigationBar(colorTheme);
       setIsColorSchemeLoaded(true);
@@ -89,13 +85,16 @@ export default function RootLayout() {
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
+                animation:
+                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                headerRightContainerStyle:
+                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
               }}
             />
             <Stack.Screen
               name="auth"
               options={{
                 headerShown: false,
-                headerRight: () => <HeaderActions />,
               }}
             />
             <Stack.Screen
@@ -103,6 +102,10 @@ export default function RootLayout() {
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
+                animation:
+                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                headerRightContainerStyle:
+                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
               }}
             />
             <Stack.Screen
@@ -110,6 +113,10 @@ export default function RootLayout() {
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
+                animation:
+                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                headerRightContainerStyle:
+                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
               }}
             />
             <Stack.Screen
@@ -117,6 +124,10 @@ export default function RootLayout() {
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
+                animation:
+                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                headerRightContainerStyle:
+                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
               }}
             />
             <Stack.Screen
@@ -124,6 +135,10 @@ export default function RootLayout() {
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
+                animation:
+                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                headerRightContainerStyle:
+                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
               }}
             />
             <Stack.Screen
@@ -131,6 +146,10 @@ export default function RootLayout() {
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
+                animation:
+                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                headerRightContainerStyle:
+                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
               }}
             />
             <Stack.Screen
@@ -138,13 +157,16 @@ export default function RootLayout() {
               options={{
                 title: 'Everybody polls',
                 headerRight: () => <HeaderActions />,
+                animation:
+                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                headerRightContainerStyle:
+                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
               }}
             />
             <Stack.Screen
               name="screens/splash"
               options={{
                 headerShown: false,
-                title: 'Everybody polls',
               }}
             />
           </Stack>
