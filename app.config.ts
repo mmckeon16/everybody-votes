@@ -2,6 +2,7 @@ export default {
   expo: {
     name: 'Everybody Polls',
     slug: 'everybody-polls',
+    scheme: 'everybody-polls',
     extra: {
       EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
       EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
@@ -13,6 +14,10 @@ export default {
       image: './assets/test0icon.png', // Make sure this file exists
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
+    },
+    ios: {
+      bundleIdentifier: 'com.everybody.polls',
+      buildNumber: '1.0.0',
     },
     android: {
       package: 'com.everybody.polls',

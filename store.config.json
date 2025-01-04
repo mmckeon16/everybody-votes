@@ -1,0 +1,23 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "info": {
+      "en-US": {
+        "title": "Everybody Polls",
+        "subtitle": "The answer to 'Do you know someone who as been polled before?'",
+        "description": "Participate in political based polls. Once a poll is closed, view the results and see how your vote compares to others from around the country.",
+        "keywords": [
+          "polls",
+          "voting",
+          "survey",
+          "social",
+          "community",
+          "feedback"
+        ],
+        "marketingUrl": "https://everybody-polls.com",
+        "supportUrl": "https://everybody-polls.com/support",
+        "privacyPolicyUrl": "https://everybody-polls.com/privacy"
+      }
+    }
+  }
+}

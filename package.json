@@ -6,6 +6,7 @@
     "start": "expo start",
     "dev": "EXPO_PUBLIC_ENV=development expo start",
     "reset-project": "node ./scripts/reset-project.js",
+    "build:local:android": "eas build --platform android --local --output builds/android/app-$(date +%Y%m%d_%H%M%S).aab",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
