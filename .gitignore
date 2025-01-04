@@ -45,3 +45,5 @@ yarn-error.*
 app-example
 
 .vscode
+
+.env.local
