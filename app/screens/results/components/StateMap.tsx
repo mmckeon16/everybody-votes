@@ -1,34 +1,78 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
+import { View } from 'react-native';
 import { Text } from '~/components/ui/text';
-import { STATE_PATHS } from '../constants';
+import Svg, { Path } from 'react-native-svg';
+import { Card } from '~/components/ui/card';
+import { STATE_PATHS, mockData } from '../constants';
 
-const USVoteHeatMap = ({ votingData = {} }) => {
+interface VoteOption {
+  text: string;
+  votes: number;
+}
+
+interface StateVotingData {
+  option1_hash: VoteOption;
+  option2_hash: VoteOption;
+  totalVotes: number;
+}
+
+interface VotingDataMap {
+  [stateId: string]: StateVotingData;
+}
+
+interface USVoteHeatMapProps {
+  votingData?: VotingDataMap;
+}
+
+const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ votingData = {} }) => {
+  votingData = mockData;
   // Function to calculate the percentage of option1 votes
-  const getOption1Percentage = stateData => {
+  const getOption1Percentage = (stateData?: StateVotingData): number => {
     if (!stateData || stateData.totalVotes === 0) return 0;
     return (stateData.option1_hash.votes / stateData.totalVotes) * 100;
   };
 
-  // Function to get color based on voting percentage
-  const getStateColor = stateData => {
+  const getStateColor = (stateData?: StateVotingData): string => {
     if (!stateData) return '#CCCCCC'; // Default gray for no data
+
     const option1Percentage = getOption1Percentage(stateData);
-    // Create a gradient from red (0%) to blue (100%)
-    const red = Math.floor((100 - option1Percentage) * 2.55);
-    const blue = Math.floor(option1Percentage * 2.55);
-    return `rgb(${red}, 0, ${blue})`;
+
+    // Convert hex colors to RGB
+    const startColor = {
+      r: parseInt('24', 16), // 36
+      g: parseInt('6E', 16), // 110
+      f: parseInt('F0', 16), // 240
+    };
+
+    const endColor = {
+      r: parseInt('02', 16), // 2
+      g: parseInt('24', 16), // 36
+      b: parseInt('5E', 16), // 94
+    };
+
+    // Interpolate between the two colors based on percentage
+    const r = Math.floor(
+      startColor.r + (endColor.r - startColor.r) * (option1Percentage / 100)
+    );
+    const g = Math.floor(
+      startColor.g + (endColor.g - startColor.g) * (option1Percentage / 100)
+    );
+    const b = Math.floor(
+      startColor.f + (endColor.b - startColor.f) * (option1Percentage / 100)
+    );
+
+    return `rgb(${r}, ${g}, ${b})`;
   };
 
   // Function to format tooltip text
-  const getTooltipText = (stateId, stateData) => {
+  const getTooltipText = (
+    stateId: string,
+    stateData?: StateVotingData
+  ): string => {
     if (!stateData) return `${stateId}: No data`;
     const option1Percent = getOption1Percentage(stateData).toFixed(1);
     const option2Percent = (100 - getOption1Percentage(stateData)).toFixed(1);
-    return `${stateId}:
-${stateData.option1_hash.text}: ${option1Percent}% (${stateData.option1_hash.votes} votes)
-${stateData.option2_hash.text}: ${option2Percent}% (${stateData.option2_hash.votes} votes)
-Total votes: ${stateData.totalVotes}`;
+    return `${stateId}:\n${stateData.option1_hash.text}: ${option1Percent}% (${stateData.option1_hash.votes} votes)\n${stateData.option2_hash.text}: ${option2Percent}% (${stateData.option2_hash.votes} votes)\nTotal votes: ${stateData.totalVotes}`;
   };
 
   // Get sample option text for legend (uses first state with data)
@@ -37,49 +81,45 @@ Total votes: ${stateData.totalVotes}`;
   const option2Text = firstStateWithData?.option2_hash.text || 'No';
 
   return (
-    <Card className="w-full max-w-3xl">
-      <CardHeader>
-        <CardTitle>US Voting Distribution</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="relative w-full" style={{ paddingBottom: '45%' }}>
-          <div className="absolute inset-0">
-            <svg
-              viewBox="400 450 700 250"
-              preserveAspectRatio="xMidYMid meet"
-              className="w-full h-full"
-            >
-              {Object.entries(STATE_PATHS).map(([stateId, pathData]) => (
-                <path
-                  key={stateId}
-                  id={stateId}
-                  d={pathData}
-                  fill={getStateColor(votingData[stateId])}
-                  className="cursor-pointer hover:opacity-80"
-                  title={getTooltipText(stateId, votingData[stateId])}
-                />
-              ))}
-            </svg>
-          </div>
-        </div>
+    <Card className="w-full max-w-3xl rounded-lg shadow-lg">
+      <View className="p-4">
+        <Text className="text-xl font-bold">US Voting Distribution</Text>
+      </View>
+
+      <View className="p-4 space-y-4">
+        <View className="relative w-full aspect-[2.8/1]">
+          <Svg
+            viewBox="400 440 700 300"
+            className="w-full h-full"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {Object.entries(STATE_PATHS).map(([stateId, pathData]) => (
+              <Path
+                key={stateId}
+                d={pathData}
+                fill={getStateColor(votingData[stateId])}
+                opacity={0.9}
+                accessibilityLabel={getTooltipText(
+                  stateId,
+                  votingData[stateId]
+                )}
+              />
+            ))}
+          </Svg>
+        </View>
+
         {/* Legend below the map */}
-        <div className="flex justify-center space-x-8">
-          <div className="flex items-center">
-            <div
-              className="w-4 h-4"
-              style={{ backgroundColor: 'rgb(255, 0, 0)' }}
-            ></div>
-            <span className="ml-2 text-sm">100% {option2Text}</span>
-          </div>
-          <div className="flex items-center">
-            <div
-              className="w-4 h-4"
-              style={{ backgroundColor: 'rgb(0, 0, 255)' }}
-            ></div>
-            <span className="ml-2 text-sm">100% {option1Text}</span>
-          </div>
-        </div>
-      </CardContent>
+        <View className="flex-row justify-center space-x-8">
+          <View className="flex-row items-center">
+            <View className="w-4 h-4 bg-red-600" />
+            <Text className="ml-2 text-sm">100% {option2Text}</Text>
+          </View>
+          <View className="flex-row items-center">
+            <View className="w-4 h-4 bg-blue-600" />
+            <Text className="ml-2 text-sm">100% {option1Text}</Text>
+          </View>
+        </View>
+      </View>
     </Card>
   );
 };
