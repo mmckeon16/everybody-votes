@@ -43,7 +43,7 @@ module.exports = {
         },
         lightBlue: '#246EF0',
         midnight: '#02245e',
-        blueBg: '#f0f4fa',
+        blueBg: 'hsl(var(--blueBg))',
       },
       borderWidth: {
         hairline: hairlineWidth(),
