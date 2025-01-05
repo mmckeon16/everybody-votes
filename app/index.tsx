@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, View } from 'react-native';
-import { Text } from '~/components/ui/text';
+import { View } from 'react-native';
 import { SkeletonCard } from './components/SkeletonCard';
 import { useActiveQuestion } from './hooks/useActiveQuestion';
 import PollResultsCard from './components/PollResultsCard';

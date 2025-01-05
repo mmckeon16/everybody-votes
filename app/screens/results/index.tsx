@@ -8,6 +8,8 @@ import NumberFlipper from './components/NumberFlipper';
 import FilterModal from './components/FilterModal';
 import FilteredResultsCard from './components/FilteredResultsCard';
 import LineChart from './components/LineChart';
+import StateMap from './components/StateMap';
+
 import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
 import { addColorToResults, analyzeVoteData } from '../../lib/utils';
 
@@ -107,6 +109,7 @@ export default function Results() {
             totalVotes={totalVotes}
           />
         )}
+        <StateMap />
       </View>
     </ScrollView>
   );
