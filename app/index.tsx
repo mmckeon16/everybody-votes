@@ -9,11 +9,11 @@ import ErrorVoteCard from './components/ErrorVoteCard';
 
 export default function Screen() {
   const [appIsReady, setAppIsReady] = useState(false);
-  const { isLoading, error } = useActiveQuestion();
+  const { isLoading, isError, error } = useActiveQuestion();
 
   useEffect(() => {
     async function prepare() {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       if (!isLoading) {
         setAppIsReady(true);
       }
@@ -21,7 +21,7 @@ export default function Screen() {
     prepare();
   }, [isLoading]);
 
-  if (error) {
+  if (isError) {
     console.log('error', error);
     return (
       <View className="flex-1 p-6 bg-blueBg flex flex-col gap-3 items-center w-full">

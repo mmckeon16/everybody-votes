@@ -24,7 +24,7 @@ SplashScreen.setOptions({
 
 export default function Screen() {
   const router = useRouter();
-  const { data: activeQuestion, error } = useActiveQuestion();
+  const { data: activeQuestion, error, isError } = useActiveQuestion();
   const { user_vote, options } = activeQuestion || {};
 
   let userVotedText = null;
@@ -35,7 +35,7 @@ export default function Screen() {
 
   const hasEndDatePassed = new Date() > new Date(activeQuestion?.end_date);
 
-  if (error) {
+  if (isError) {
     return (
       <View className="flex justify-center items-center w-full">
         <ErrorVoteCard />
