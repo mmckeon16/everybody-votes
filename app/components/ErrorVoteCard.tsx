@@ -29,7 +29,7 @@ export const ErrorVoteCard = () => {
             router.replace(currentRoute);
           }}
         >
-          <Feather name="refresh-ccw" size={24} color="black" />
+          <Feather name="refresh-ccw" size={20} color="black" />
           <Text>Refresh</Text>
         </Button>
       </CardFooter>

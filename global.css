@@ -23,7 +23,7 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
-    --blueBg: 220 95% 97%; /* light mode - equivalent to #f0f4fa */
+    --blueBg: 108, 100%, 98%; /* light mode - equivalent to #f0f4fa */
   }
 
   .dark:root {
@@ -46,6 +46,6 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
-    --blueBg: 220 30% 15%; /* dark mode - adjust values as needed */
+    --blueBg: 0, 0%, 14%; /* dark mode - adjust values as needed */
   }
 }

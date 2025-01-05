@@ -41,8 +41,8 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        lightBlue: '#246EF0',
-        midnight: '#02245e',
+        lightBlue: '#C400EF',
+        midnight: '#008500',
         blueBg: 'hsl(var(--blueBg))',
       },
       borderWidth: {
