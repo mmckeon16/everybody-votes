@@ -4,6 +4,7 @@ import { Text } from '~/components/ui/text';
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
 import UserStatsBadge from './UserStatsBadge';
 import MediaQuery, { Breakpoints } from '~/components/ui/MediaQuery';
+import FilterModal from './FilterModal';
 
 interface PollOption {
   optionId: string;
@@ -22,11 +23,6 @@ interface PollStats {
 }
 
 interface LineChartProps {
-  // isCorrectPrediction: boolean;
-  // userVotedPerc: string;
-  // userVotedMajority: boolean;
-  // userVotedColor: string;
-  // userPredictedColor: string;
   question: {
     id: string;
     text: string;
@@ -36,6 +32,8 @@ interface LineChartProps {
   user_prediction: string;
   user_vote: string;
   myStats?: PollStats;
+  filteredDemographics: object;
+  setFilteredDemographics: Function;
 }
 
 const LineChart: React.FC<LineChartProps> = ({
@@ -45,12 +43,20 @@ const LineChart: React.FC<LineChartProps> = ({
   user_prediction,
   user_vote,
   myStats,
+  filteredDemographics,
+  setFilteredDemographics,
 }) => {
   return (
     <Card className="w-full max-w-3xl">
-      <CardHeader>
+      <CardHeader className="gap-4">
         <CardTitle>{question.text}</CardTitle>
-        <Text className="text-sm text-gray-500">{totalVotes} votes</Text>
+        <View className="flex flex-row justify-between items-center">
+          <Text className="text-sm text-gray-500">{totalVotes} votes</Text>
+          <FilterModal
+            filteredDemographics={filteredDemographics}
+            setFilteredDemographics={setFilteredDemographics}
+          />
+        </View>
       </CardHeader>
       <CardContent>
         <View className="space-y-4">

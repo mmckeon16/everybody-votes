@@ -13,7 +13,7 @@ import {
   AccordionTrigger,
 } from '~/components/ui/accordion';
 import { Checkbox } from '~/components/ui/checkbox';
-import { demographics, ageMapping } from '../constants';
+import { demographics } from '../constants';
 
 interface FilterModalProps {
   filteredDemographics: object;
@@ -203,7 +203,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           setUserSelectedDemographics(filteredDemographics);
           setModalVisible(true);
         }}
-        className="flex flex-row gap-2 w-auto px-3"
+        className="flex flex-row gap-2 px-3"
       >
         <View>
           <Ionicons

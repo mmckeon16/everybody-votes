@@ -77,30 +77,10 @@ export default function Results() {
             user_vote={user_vote}
             user_prediction={user_prediction}
             myStats={myStats}
+            filteredDemographics={filteredDemographics}
+            setFilteredDemographics={setFilteredDemographics}
           />
         )}
-
-        <Card className="max-w-3xl mx-6 w-full">
-          <CardHeader className="px-4">
-            <FilterModal
-              filteredDemographics={filteredDemographics}
-              setFilteredDemographics={setFilteredDemographics}
-            />
-          </CardHeader>
-          <CardContent className="px-4">
-            {coloredResults && coloredResults.length === 2 && (
-              <View className="w-full flex justify-center">
-                <PieChart data={coloredResults} size={200} strokeWidth={25}>
-                  <View className="flex justify-center">
-                    <Text>
-                      <NumberFlipper targetNumber={totalVotes} /> votes
-                    </Text>
-                  </View>
-                </PieChart>
-              </View>
-            )}
-          </CardContent>
-        </Card>
         {filteredDemographics && isPopulatedFilter && (
           <FilteredResultsCard
             filteredDemographics={filteredDemographics}

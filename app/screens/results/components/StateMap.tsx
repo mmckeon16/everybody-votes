@@ -44,33 +44,31 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
 
   const getStateColor = (stateData?: StateVotingData): string => {
     if (!stateData) return '#CCCCCC';
-
     const option1Percentage = getOption1Percentage(stateData);
 
-    // #c400ef
+    // #c208c9 (pink/magenta)
     const startColor = {
-      r: parseInt('24', 16), // 36
-      g: parseInt('6E', 16), // 110
-      f: parseInt('F0', 16), // 240
+      r: 194, // c2
+      g: 8, // 08
+      b: 201, // c9
     };
 
-    // #008500
+    // #0879C4 (blue)
     const endColor = {
-      r: parseInt('02', 16), // 2
-      g: parseInt('24', 16), // 36
-      b: parseInt('5E', 16), // 94
+      r: 8, // 08
+      g: 121, // 79
+      b: 196, // c4
     };
 
-    const r = Math.floor(
-      startColor.r + (endColor.r - startColor.r) * (option1Percentage / 100)
-    );
-    const g = Math.floor(
-      startColor.g + (endColor.g - startColor.g) * (option1Percentage / 100)
-    );
-    const b = Math.floor(
-      startColor.f + (endColor.b - startColor.f) * (option1Percentage / 100)
-    );
+    // Keep the same easing function for smooth transitions
+    const easeInOutCubic = (t: number) => {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
 
+    const t = easeInOutCubic(option1Percentage / 100);
+    const r = Math.round(startColor.r * (1 - t) + endColor.r * t);
+    const g = Math.round(startColor.g * (1 - t) + endColor.g * t);
+    const b = Math.round(startColor.b * (1 - t) + endColor.b * t);
     return `rgb(${r}, ${g}, ${b})`;
   };
 
@@ -108,6 +106,8 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
               <Path
                 key={stateId}
                 d={pathData}
+                stroke={activeState === stateId ? 'white' : 'none'}
+                strokeWidth={activeState === stateId ? 2 : 0}
                 fill={getStateColor(votingData[stateId])}
                 opacity={0.9}
                 onPress={() => setActiveState(stateId)}
@@ -117,15 +117,13 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
 
           {/* Active State Legend Overlay */}
           {activeState && (
-            <View className="absolute bottom-4 right-4 bg-white/90 rounded-lg shadow-md p-3 border border-gray-200">
+            <View className="absolute bottom-4 right-4 rounded-lg shadow-md p-3 border border-gray-200">
               {getTooltipText(activeState, votingData[activeState]).map(
                 (line, index) => (
                   <Text
                     key={index}
                     className={`${
-                      index === 0
-                        ? 'font-bold text-lg mb-1'
-                        : 'text-sm text-gray-600'
+                      index === 0 ? 'font-bold text-lg mb-1' : 'text-sm'
                     }`}
                   >
                     {line}
@@ -138,12 +136,12 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
 
         <View className="flex-row justify-center space-x-8">
           <View className="flex-row items-center">
-            <View className="w-4 h-4 bg-lightBlue" />
-            <Text className="ml-2 text-sm">100% {option1Text}</Text>
+            <View className="w-4 h-4 bg-lightBlue rounded" />
+            <Text className="ml-2 text-sm">{option1Text}</Text>
           </View>
           <View className="flex-row items-center">
-            <View className="w-4 h-4 bg-midnight" />
-            <Text className="ml-2 text-sm">100% {option2Text}</Text>
+            <View className="w-4 h-4 bg-midnight rounded" />
+            <Text className="ml-2 text-sm">{option2Text}</Text>
           </View>
         </View>
       </View>

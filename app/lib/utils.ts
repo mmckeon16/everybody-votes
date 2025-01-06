@@ -117,8 +117,8 @@ function getRandomRGB(): RGB {
 }
 
 export function returnSetColors(): [string, string] {
-  // #c400ef, #008500
-  return ['#c400ef', '#008500'];
+  // #0879C4, #c208c9
+  return ['#0879C4', '#c208c9'];
 }
 
 export function getTwoDistinctColors(): [string, string] {
