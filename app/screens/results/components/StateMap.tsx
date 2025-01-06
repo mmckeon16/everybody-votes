@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Text } from '~/components/ui/text';
 import Svg, { Path } from 'react-native-svg';
 import { Card } from '~/components/ui/card';
 import { STATE_PATHS, mockData } from '../constants';
+import { Button } from '~/components/ui/button';
 
 interface VoteOption {
   text: string;
@@ -28,7 +30,7 @@ interface USVoteHeatMapProps {
 const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
   const votingData = mockData;
   const insets = useSafeAreaInsets();
-  const [activeState, setActiveState] = useState<string | null>(null);
+  const [activeState, setActiveState] = useState<string | null>('AK');
 
   const contentInsets = {
     top: insets.top,
@@ -72,20 +74,6 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
     return `rgb(${r}, ${g}, ${b})`;
   };
 
-  const getTooltipText = (
-    stateId: string,
-    stateData?: StateVotingData
-  ): string[] => {
-    if (!stateData) return [`${stateId}`, 'No data'];
-    const option1Percent = getOption1Percentage(stateData).toFixed(1);
-    const option2Percent = (100 - getOption1Percentage(stateData)).toFixed(1);
-    return [
-      stateId,
-      `${stateData.option1_hash.text}: ${option1Percent}%`,
-      `${stateData.option2_hash.text}: ${option2Percent}%`,
-    ];
-  };
-
   const firstStateWithData = Object.values(votingData)[0];
   const option1Text = firstStateWithData?.option1_hash.text || 'Yes';
   const option2Text = firstStateWithData?.option2_hash.text || 'No';
@@ -96,9 +84,9 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
         <Text className="text-xl font-bold">US Voting Distribution</Text>
       </View>
       <View className="p-4 space-y-4">
-        <View className="relative w-full aspect-[2.8/1]">
+        <View className="relative w-full aspect-[1.5/1]">
           <Svg
-            viewBox="400 440 700 300"
+            viewBox="500 400 550 300"
             className="w-full h-full"
             preserveAspectRatio="xMidYMid meet"
           >
@@ -117,24 +105,36 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
 
           {/* Active State Legend Overlay */}
           {activeState && (
-            <View className="absolute bottom-4 right-4 rounded-lg shadow-md p-3 border border-gray-200">
-              {getTooltipText(activeState, votingData[activeState]).map(
-                (line, index) => (
-                  <Text
-                    key={index}
-                    className={`${
-                      index === 0 ? 'font-bold text-lg mb-1' : 'text-sm'
-                    }`}
+            <View className="absolute -top-[70px] -right-2 rounded-lg shadow-md p-3 border border-gray-200 bg-background">
+              <View className="flex flex-col gap-1">
+                <View className="flex flex-row justify-between items-center">
+                  <Text className="font-bold text-lg">{activeState}</Text>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="w-7 h-7"
+                    onPress={() => console.log('on pressed!')}
                   >
-                    {line}
-                  </Text>
-                )
-              )}
+                    <MaterialIcons name="expand-more" size={16} color="black" />
+                  </Button>
+                </View>
+                <Text className="text-sm">
+                  {votingData[activeState]?.option1_hash.text}:{' '}
+                  {getOption1Percentage(votingData[activeState]).toFixed(1)}%
+                </Text>
+                <Text className="text-sm">
+                  {votingData[activeState]?.option2_hash.text}:{' '}
+                  {(
+                    100 - getOption1Percentage(votingData[activeState])
+                  ).toFixed(1)}
+                  %
+                </Text>
+              </View>
             </View>
           )}
         </View>
 
-        <View className="flex-row justify-center space-x-8">
+        <View className="flex-row justify-center gap-8">
           <View className="flex-row items-center">
             <View className="w-4 h-4 bg-lightBlue rounded" />
             <Text className="ml-2 text-sm">{option1Text}</Text>
