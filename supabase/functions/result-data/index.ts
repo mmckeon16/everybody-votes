@@ -5,7 +5,7 @@ import { parseAgeRanges } from './utils.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('EXPO_PUBLIC_SUPABASE_ANON_KEY') ?? ''
+  Deno.env.get('SUPABASE_ANON_KEY') ?? ''
 );
 
 Deno.serve(async (req: Request) => {
@@ -48,9 +48,12 @@ Deno.serve(async (req: Request) => {
     const optionIds = questionData.options.map((opt) => opt.id);
     console.log('optionIds', optionIds);
 
-    let answersQuery = supabase.from('answers_with_demographics').select('*');
-    // .in('option_id', optionIds);
-    console.log('answersQuery before any filters', await answersQuery.data);
+    let answersQuery = supabase
+      .from('answers_with_demographics')
+      .select('*')
+      .in('option_id', optionIds);
+
+    console.log('answersQuery before any filters', await answersQuery);
 
     //Now lets check if there are any filters
 
@@ -191,8 +194,34 @@ Deno.serve(async (req: Request) => {
         })),
     }));
 
+    // Calculate votes by state
+    const stateVotes = answers.reduce((acc, answer) => {
+      const state = answer.state;
+      if (!state) return acc;
+
+      if (!acc[state]) {
+        // Initialize state entry with zero votes for all options
+        acc[state] = {
+          state,
+          totalVotes: 0,
+          ...questionData.options.reduce(
+            (opts, opt) => ({
+              ...opts,
+              [opt.id]: { votes: 0, text: opt.text },
+            }),
+            {}
+          ),
+        };
+      }
+
+      // Increment votes for this option in this state
+      acc[state][answer.option_id].votes++;
+      acc[state].totalVotes++;
+
+      return acc;
+    }, {});
+
     return new Response(
-      // appliedFilters: demographicFilters,
       JSON.stringify({
         question: {
           id: questionData.id,
@@ -201,6 +230,7 @@ Deno.serve(async (req: Request) => {
         results,
         totalVotes,
         voteCounts,
+        stateResults: Object.values(stateVotes), // Convert to array
         user_vote: user_vote,
         user_prediction: user_prediction,
       }),
