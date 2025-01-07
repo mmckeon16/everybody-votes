@@ -2,11 +2,12 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import * as Linking from 'expo-linking';
 import { supabase } from '../../lib/supabase';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ProviderButtonProps } from '../../types';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   provider,
@@ -15,17 +16,28 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   isSmall = false,
 }) => {
   const { colorScheme } = useNativewindColorScheme();
+  const router = useRouter();
 
   const signInWithProvider = async () => {
     try {
-      console.log(`Starting ${providerDisplayName} OAuth...`);
+      // Get the root URL for redirect
+      let redirectUrl;
+      if (__DEV__) {
+        // In development (Expo Go), use the exp:// URL for root
+        redirectUrl = Linking.createURL('', {
+          scheme: 'exp',
+        });
+      } else {
+        // In production, use your app scheme root
+        redirectUrl = Linking.createURL('');
+      }
+
+      console.log('Redirect URL:', redirectUrl); // This will help debug
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
-          redirectTo: Platform.select({
-            web: `${window.location.origin}`,
-            default: 'everybody-votes://',
-          }),
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -34,11 +46,15 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       });
 
       console.log('OAuth response:', { data, error });
+
       if (error) throw error;
 
       if (Platform.OS !== 'web' && data?.url) {
-        await supabase.auth.getSession();
-        // router.push('/auth/complete-profile');
+        await Linking.openURL(data.url);
+        const session = await supabase.auth.getSession();
+        if (session) {
+          router.push('/auth/complete-profile');
+        }
       }
     } catch (error) {
       console.error(`Error signing in with ${providerDisplayName}:`, error);

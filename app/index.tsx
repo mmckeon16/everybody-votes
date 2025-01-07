@@ -12,7 +12,7 @@ export default function Screen() {
 
   useEffect(() => {
     async function prepare() {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       if (!isLoading) {
         setAppIsReady(true);
       }
@@ -39,8 +39,6 @@ export default function Screen() {
         </View>
       ) : (
         <View className="flex-1 items-center gap-5 bg-blueBg">
-          <Text>{process.env.EXPO_PUBLIC_SUPABASE_URL}</Text>
-          <Text>{process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}</Text>
           <VoteCard />
           <PollResultsCard />
         </View>
