@@ -217,36 +217,49 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
                   <Text className="font-bold text-lg">{activeState}</Text>
                   <Select
                     id="state"
+                    defaultOpen={false}
                     onValueChange={({ value }) => {
                       setActiveState(value);
                     }}
                   >
                     <SelectTrigger className="w-max" />
-                    <SelectContent>
-                      {/* Search Input */}
-
+                    <SelectContent
+                      // position="popper"
+                      // sideOffset={5}
+                      className="rounded-md overflow-hidden z-50 shadow-lg border border-gray-200"
+                      style={{
+                        minWidth: 200,
+                        maxHeight: 300,
+                      }}
+                    >
                       <SelectGroup>
-                        <SelectLabel>
-                          <Text>US State</Text>
-                        </SelectLabel>
-                        <ScrollView>
-                          {states.map(state => (
-                            <SelectItem
-                              label={state.label}
-                              value={
-                                state.value === 'not-in-us'
-                                  ? 'Not US'
-                                  : state.value
-                              }
-                              key={state.value}
-                            />
-                          ))}
+                        <ScrollView
+                          style={{ maxHeight: 250 }}
+                          showsVerticalScrollIndicator={true}
+                        >
+                          <SelectLabel className="sticky top-0 px-2 py-1.5 border-b border-gray-200 z-10 bg-background">
+                            <Text className="font-medium">US State</Text>
+                          </SelectLabel>
+                          <View className="py-1">
+                            {states.map(state => (
+                              <SelectItem
+                                key={state.value}
+                                className="px-2 py-2 hover:bg-gray-100 active:bg-gray-200 flex flex-row items-center justify-between w-full"
+                                label={state.label}
+                                value={
+                                  state.value === 'not-in-us'
+                                    ? 'Not US'
+                                    : state.value
+                                }
+                              />
+                            ))}
+                          </View>
                         </ScrollView>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </View>
-                {votingData[activeState] !== null ? (
+                {votingData[activeState] !== undefined ? (
                   <View>
                     <Text className="text-sm">
                       {votingData[activeState]?.option1_hash.text}:{' '}
