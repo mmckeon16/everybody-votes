@@ -1,12 +1,24 @@
 import React, { useState, useRef } from 'react';
-import { View, Platform, GestureResponderEvent } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import {
+  View,
+  ScrollView,
+  Platform,
+  GestureResponderEvent,
+  LayoutChangeEvent,
+} from 'react-native';
 import { Text } from '~/components/ui/text';
 import Svg, { Path } from 'react-native-svg';
 import { Card } from '~/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+} from '~/components/ui/select';
 import { STATE_PATHS, mockData } from '../constants';
-import { Button } from '~/components/ui/button';
+import { states } from '../../../auth/constants';
 
 interface VoteOption {
   text: string;
@@ -29,17 +41,9 @@ interface USVoteHeatMapProps {
 
 const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
   const votingData = mockData;
-  const insets = useSafeAreaInsets();
   const [activeState, setActiveState] = useState<string | null>('AK');
   const svgRef = useRef<View>(null);
   const [svgLayout, setSvgLayout] = useState({ width: 0, height: 0 });
-
-  const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
-    left: 12,
-    right: 12,
-  };
 
   const getOption1Percentage = (stateData?: StateVotingData): number => {
     if (!stateData || stateData.totalVotes === 0) return 0;
@@ -77,7 +81,7 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
   const option1Text = firstStateWithData?.option1_hash.text || 'Yes';
   const option2Text = firstStateWithData?.option2_hash.text || 'No';
 
-  const handleLayout = event => {
+  const handleLayout = (event: LayoutChangeEvent) => {
     setSvgLayout({
       width: event.nativeEvent.layout.width,
       height: event.nativeEvent.layout.height,
@@ -209,28 +213,57 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
           {activeState && (
             <View className="absolute -top-[70px] -right-2 rounded-lg shadow-md p-3 border border-gray-200 bg-background">
               <View className="flex flex-col gap-1">
-                <View className="flex flex-row justify-between items-center">
+                <View className="flex flex-row justify-between gap-2 items-center">
                   <Text className="font-bold text-lg">{activeState}</Text>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="w-7 h-7"
-                    onPress={() => console.log('on pressed!')}
+                  <Select
+                    id="state"
+                    onValueChange={({ value }) => {
+                      setActiveState(value);
+                    }}
                   >
-                    <MaterialIcons name="expand-more" size={16} color="black" />
-                  </Button>
+                    <SelectTrigger className="w-max" />
+                    <SelectContent>
+                      {/* Search Input */}
+
+                      <SelectGroup>
+                        <SelectLabel>
+                          <Text>US State</Text>
+                        </SelectLabel>
+                        <ScrollView>
+                          {states.map(state => (
+                            <SelectItem
+                              label={state.label}
+                              value={
+                                state.value === 'not-in-us'
+                                  ? 'Not US'
+                                  : state.value
+                              }
+                              key={state.value}
+                            />
+                          ))}
+                        </ScrollView>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </View>
-                <Text className="text-sm">
-                  {votingData[activeState]?.option1_hash.text}:{' '}
-                  {getOption1Percentage(votingData[activeState]).toFixed(1)}%
-                </Text>
-                <Text className="text-sm">
-                  {votingData[activeState]?.option2_hash.text}:{' '}
-                  {(
-                    100 - getOption1Percentage(votingData[activeState])
-                  ).toFixed(1)}
-                  %
-                </Text>
+                {votingData[activeState] !== null ? (
+                  <View>
+                    <Text className="text-sm">
+                      {votingData[activeState]?.option1_hash.text}:{' '}
+                      {getOption1Percentage(votingData[activeState]).toFixed(1)}
+                      %
+                    </Text>
+                    <Text className="text-sm">
+                      {votingData[activeState]?.option2_hash.text}:{' '}
+                      {(
+                        100 - getOption1Percentage(votingData[activeState])
+                      ).toFixed(1)}
+                      %
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-sm">No data available</Text>
+                )}
               </View>
             </View>
           )}

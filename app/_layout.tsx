@@ -206,4 +206,4 @@ const RootLayout = () => {
   );
 };
 
-export default Sentry.wrap(RootLayout);
+export default RootLayout; //Sentry.wrap(RootLayout);
