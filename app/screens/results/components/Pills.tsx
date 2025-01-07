@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   pillText: {
     fontSize: 14,
@@ -125,7 +126,6 @@ const styles = StyleSheet.create({
   removeButtonText: {
     fontSize: 18,
     color: '#666',
-    lineHeight: 18,
     marginTop: -2,
   },
 });
