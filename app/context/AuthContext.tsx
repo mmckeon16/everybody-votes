@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 
 interface AuthContextType {
@@ -23,6 +23,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    const handleDeepLink = async ({ url }: { url: string }) => {
+      console.log('Got deep link:', url);
+      try {
+        if (url.includes('code=')) {
+          const code = url.match(/code=([^&]+)/)?.[1];
+          if (code) {
+            const { data, error } = await supabase.auth.exchangeCodeForSession(
+              code
+            );
+            if (error) {
+              console.error('Error exchanging code for session:', error);
+              return;
+            }
+            if (data?.session) {
+              setSession(data.session);
+              await checkProfileCompletion(data.session);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error handling deep link:', error);
+      }
+    };
+
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     console.log('Setting up auth listeners...');
 
     // Initial session check
@@ -41,7 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Auth state change listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, _newSession) => {
@@ -52,20 +82,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         sessionExists: !!_newSession,
         userMetadata: _newSession?.user?.user_metadata,
       });
-
       if (_newSession) {
-        // setSession(session);
+        setSession(_newSession);
         await checkProfileCompletion(_newSession);
       } else {
         setSession(null);
         setHasCompletedProfile(false);
       }
     });
-
     return () => {
       subscription.unsubscribe();
     };
-  }, [session]);
+  }, []);
 
   const checkProfileCompletion = async (session: Session) => {
     if (!session?.user) return false;
@@ -89,7 +117,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
     },
     signIn: async (email: string, password: string) => {
-      const { error } = await supabase.auth.signIn({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error) throw error;
     },
     signOut: async () => {

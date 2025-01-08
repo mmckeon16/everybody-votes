@@ -45,12 +45,10 @@ export default function Screen() {
 
   return (
     <Card className="w-full max-w-sm p-2 rounded-2xl">
-      <CardHeader className="items-center">
-        <CardTitle className="pb-2 text-center">
-          {activeQuestion?.text}
-        </CardTitle>
+      <CardHeader className="items-center pb-3">
+        <CardTitle className="text-center">{activeQuestion?.text}</CardTitle>
       </CardHeader>
-      <CardFooter className="flex-col gap-3 pb-4">
+      <CardFooter className="flex-col gap-3 pb-4 pt-0">
         {hasEndDatePassed ? (
           <View className="flex flex-col gap-2">
             <Text className="text-center text-lg font-semibold text-lightBlue">
@@ -61,7 +59,7 @@ export default function Screen() {
             </Text>
           </View>
         ) : (
-          <View>
+          <View className="flex flex-col gap-3">
             <Progress
               value={getTimeRemainingPercentage(
                 activeQuestion?.start_date ?? '',
@@ -80,24 +78,26 @@ export default function Screen() {
               </Text>
             </View>
             <View />
-            {userVotedText ? (
-              <Text>
-                You voted{' '}
-                <Text className="text-lightBlue font-bold">
-                  {userVotedText}
+            <View className="items-center">
+              {userVotedText ? (
+                <Text>
+                  You voted{' '}
+                  <Text className="text-lightBlue font-bold">
+                    {userVotedText}
+                  </Text>
                 </Text>
-              </Text>
-            ) : (
-              <Button
-                variant="outline"
-                className="shadow shadow-foreground/5"
-                onPress={() => {
-                  router.push('/screens/vote');
-                }}
-              >
-                <Text>Vote</Text>
-              </Button>
-            )}
+              ) : (
+                <Button
+                  variant="outline"
+                  className="shadow shadow-foreground/5"
+                  onPress={() => {
+                    router.push('/screens/vote');
+                  }}
+                >
+                  <Text>Vote</Text>
+                </Button>
+              )}
+            </View>
           </View>
         )}
       </CardFooter>

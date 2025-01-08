@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -8,6 +8,7 @@ import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ProviderButtonProps } from '../../types';
 import { useRouter } from 'expo-router';
+// console.log('Project URL:', Constants.expoConfig.hostUri);
 
 const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   provider,
@@ -20,20 +21,10 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithProvider = async () => {
     try {
-      // Get the root URL for redirect
-      let redirectUrl;
-      if (__DEV__) {
-        // In development (Expo Go), use the exp:// URL for root
-        redirectUrl = Linking.createURL('', {
-          scheme: 'exp',
-        });
-      } else {
-        // In production, use your app scheme root
-        redirectUrl = Linking.createURL('');
-      }
+      // Use expo-linking to get the correct URL scheme
+      const redirectUrl = Linking.createURL('');
 
-      console.log('Redirect URL:', redirectUrl); // This will help debug
-
+      console.log('Starting OAuth with redirect URL:', redirectUrl);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
@@ -45,16 +36,9 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         },
       });
 
-      console.log('OAuth response:', { data, error });
-
       if (error) throw error;
-
       if (Platform.OS !== 'web' && data?.url) {
         await Linking.openURL(data.url);
-        const session = await supabase.auth.getSession();
-        if (session) {
-          router.push('/auth/complete-profile');
-        }
       }
     } catch (error) {
       console.error(`Error signing in with ${providerDisplayName}:`, error);
