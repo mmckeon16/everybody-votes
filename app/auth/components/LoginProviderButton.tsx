@@ -17,13 +17,9 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   isSmall = false,
 }) => {
   const { colorScheme } = useNativewindColorScheme();
-  const router = useRouter();
-
   const signInWithProvider = async () => {
     try {
-      // Use expo-linking to get the correct URL scheme
       const redirectUrl = Linking.createURL('');
-
       console.log('Starting OAuth with redirect URL:', redirectUrl);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
@@ -35,16 +31,18 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
           },
         },
       });
-
       if (error) throw error;
       if (Platform.OS !== 'web' && data?.url) {
         await Linking.openURL(data.url);
+        // Note: Don't add navigation here as it will be handled by the deep link handler
+      } else if (Platform.OS === 'web' && data?.url) {
+        // Handle web platform differently if needed
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error(`Error signing in with ${providerDisplayName}:`, error);
     }
   };
-
   return isSmall ? (
     <Button onPress={signInWithProvider} size="icon">
       {IconComponent ? (

@@ -47,20 +47,24 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         </CardHeader>
         <CardContent>
           <View className="flex-column justify-around gap-3">
-            {options.map(option => (
-              <Button
-                key={option.id}
-                onPress={() => setSelectedOption(option)}
-                className={`border-b border-border pb-2 text-3xl font-semibold tracking-tight first:mt-0 web:select-text
+            {options ? (
+              options.map(option => (
+                <Button
+                  key={option.id}
+                  onPress={() => setSelectedOption(option)}
+                  className={`border-b border-border pb-2 text-3xl font-semibold tracking-tight first:mt-0 web:select-text
                 ${
                   selectedOption?.id === option.id
                     ? 'bg-lightBlue	text-white'
                     : 'text-foreground'
                 }`}
-              >
-                <Text>{option.text}</Text>
-              </Button>
-            ))}
+                >
+                  <Text>{option.text}</Text>
+                </Button>
+              ))
+            ) : (
+              <Text>Sorry we can't get the options right now</Text>
+            )}
           </View>
         </CardContent>
         <CardFooter className="flex-col gap-3 pb-0">

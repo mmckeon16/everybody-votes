@@ -39,6 +39,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (data?.session) {
               setSession(data.session);
               await checkProfileCompletion(data.session);
+              // Add navigation after successful OAuth
+              router.replace('/');
             }
           }
         }
@@ -85,6 +87,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (_newSession) {
         setSession(_newSession);
         await checkProfileCompletion(_newSession);
+        // Add this condition to handle successful sign-ins
+        if (event === 'SIGNED_IN') {
+          router.replace('/'); // Redirect to home page
+        }
       } else {
         setSession(null);
         setHasCompletedProfile(false);
