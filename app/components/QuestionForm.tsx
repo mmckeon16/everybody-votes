@@ -6,7 +6,6 @@ interface QuestionFormProps {
   submitText?: string;
 }
 
-// QuestionForm.tsx
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Button } from '~/components/ui/button';
@@ -49,18 +48,25 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
           <View className="flex-column justify-around gap-3">
             {options ? (
               options.map(option => (
-                <Button
-                  key={option.id}
-                  onPress={() => setSelectedOption(option)}
-                  className={`border-b border-border pb-2 text-3xl font-semibold tracking-tight first:mt-0 web:select-text
-                ${
-                  selectedOption?.id === option.id
-                    ? 'bg-lightBlue	text-white'
-                    : 'text-foreground'
-                }`}
-                >
-                  <Text>{option.text}</Text>
-                </Button>
+                <View key={option.id} className="w-full">
+                  <Button
+                    variant="outline"
+                    className={`w-full border-b border-border pb-2 ${
+                      selectedOption?.id === option.id ? 'bg-lightBlue' : ''
+                    }`}
+                    onPress={() => {
+                      setSelectedOption(option);
+                    }}
+                  >
+                    <Text
+                      className={`text-3xl font-semibold tracking-tight ${
+                        selectedOption?.id === option.id ? 'text-white' : ''
+                      }`}
+                    >
+                      {option.text}
+                    </Text>
+                  </Button>
+                </View>
               ))
             ) : (
               <Text>Sorry we can't get the options right now</Text>

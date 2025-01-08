@@ -77,32 +77,33 @@ type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
           )}
         >
           <Pressable
-            ref={ref}
-            onPress={onPress}
-            style={({ pressed }) => [
-              style,
-              pressed && { opacity: 0.7 },
-            ]}
-            className={cn(
-              props.disabled && 'opacity-50',
-              buttonVariants({ variant, size }),
-              pressableClasses,
-              'active:opacity-70' // Add active state styling
-            )}
-            android_ripple={{
-              color: variant === 'outline' || variant === 'ghost' 
-                ? 'rgba(0, 0, 0, 0.1)' 
-                : 'rgba(255, 255, 255, 0.2)',
-              borderless: false,
-              foreground: false // Change to false to ensure ripple appears
-            }}
-            {...props}
-          >
+  ref={ref}
+  onPress={(e) => {
+    onPress?.(e);
+  }}
+  style={({ pressed }) => [
+    style,
+    pressed && { opacity: 0.7 },
+  ]}
+  className={cn(
+    props.disabled && 'opacity-50',
+    buttonVariants({ variant, size }),
+    pressableClasses,
+    'active:opacity-70'
+  )}
+  android_ripple={{
+    color: variant === 'outline' || variant === 'ghost' 
+      ? 'rgba(0, 0, 0, 0.1)' 
+      : 'rgba(255, 255, 255, 0.2)',
+    borderless: false,
+    foreground: false
+  }}
+  {...props}
+>
             <View 
               className={cn(
                 'flex items-center justify-center flex-row',
                 layoutClasses.join(' '),
-                'pointer-events-none' // Ensure View doesn't capture touches
               )}
             >
               {children}
