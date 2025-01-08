@@ -16,7 +16,7 @@ serve(async (req) => {
       .select(
         `
         *,
-        questions!activated_question_id (
+        questions!question_rotation_logs_activated_question_id_fkey (
           text,
           start_date,
           end_date

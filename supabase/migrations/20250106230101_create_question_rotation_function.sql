@@ -77,3 +77,8 @@ select cron.schedule(
     '0 12 * * *',       -- every day at 12pm (noon)
     'select rotate_active_question();'
 );
+
+ALTER TABLE question_rotation_logs
+ADD CONSTRAINT question_rotation_logs_activated_question_id_fkey
+FOREIGN KEY (activated_question_id)
+REFERENCES questions(id);
