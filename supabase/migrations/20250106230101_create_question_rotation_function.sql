@@ -30,36 +30,37 @@ begin
     )
     select count(*) into deactivated_count from deactivated;
 
-    -- Activate next question
-    with activated as (
-        update questions
-        set is_active = true
-        where id = (
-            select id
-            from questions
-            where start_date > (
-                -- Get the end_date of the last active question
-                select coalesce(
-                    (select end_date
-                        from questions
-                        where is_active = true
-                        limit 1),
-                    current_ts
+    -- Only activate next question if we just deactivated one
+    if deactivated_count > 0 then
+        with activated as (
+            update questions
+            set is_active = true
+            where id = (
+                select id
+                from questions
+                where start_date > (
+                    select coalesce(
+                        (select end_date
+                            from questions
+                            where is_active = true
+                            limit 1),
+                        current_ts
+                    )
                 )
+                and not is_active
+                order by start_date asc
+                limit 1
             )
-            and not is_active
-            order by start_date asc
-            limit 1
+            returning id
         )
-        returning id
-    )
-    select id into new_active_id from activated;
+        select id into new_active_id from activated;
 
-    -- Log the rotation
-    insert into question_rotation_logs
-        (deactivated_questions, activated_question_id, success)
-    values
-        (deactivated_count, new_active_id, true);
+        -- Log the rotation
+        insert into question_rotation_logs
+            (deactivated_questions, activated_question_id, success)
+        values
+            (deactivated_count, new_active_id, true);
+    end if;
 
 exception when others then
     insert into question_rotation_logs
@@ -70,9 +71,9 @@ exception when others then
 end;
 $$ language plpgsql;
 
--- Create cron job to run every 3 days
+-- Create cron job to run daily at noon
 select cron.schedule(
     'rotate-questions',  -- job name
-    '0 12 */3 * *',      -- every 3 days at midnight
+    '0 12 * * *',       -- every day at 12pm (noon)
     'select rotate_active_question();'
 );
