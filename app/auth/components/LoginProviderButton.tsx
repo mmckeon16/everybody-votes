@@ -59,10 +59,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       )}
     </Button>
   ) : (
-    <Button
-      onPress={signInWithProvider}
-      className="flex flex-row gap-2 min-h-12 py-2"
-    >
+    <Button onPress={signInWithProvider} className="flex flex-row gap-2 py-2">
       {IconComponent ? (
         <IconComponent
           size={20}

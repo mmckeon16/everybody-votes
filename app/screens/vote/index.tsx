@@ -49,9 +49,9 @@ export default function Vote() {
           <QuestionForm
             question={activeQuestion.text}
             options={activeQuestion.options}
-            onSubmit={function (selectedOption: Option): void {
+            onSubmit={function(selectedOption: Option): void {
               handleSubmit(selectedOption);
-            }} // onSubmit={handleSubmit}
+            }}
             // disabled={isSubmitting}
           />
         )}

@@ -18,7 +18,11 @@ const buttonVariants = cva(
         link: 'web:underline-offset-4 web:hover:underline web:focus:underline ',
       },
       size: {
-        default: 'h-10 px-4 py-2 native:h-12 native:px-5 native:py-3',
+        default: Platform.select({
+          web: 'h-10 px-4 py-2',
+          android: 'min-h-12 px-4', // Remove fixed height, use min-height
+          ios: 'h-12 px-5 py-3',
+        }),
         sm: 'h-9 rounded-md px-3',
         lg: 'h-11 rounded-md px-8 native:h-14',
         icon: 'h-10 w-10',
@@ -96,7 +100,7 @@ type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
           >
             <View 
               className={cn(
-                'flex items-center justify-center',
+                'flex items-center justify-center flex-row',
                 layoutClasses.join(' '),
                 'pointer-events-none' // Ensure View doesn't capture touches
               )}
