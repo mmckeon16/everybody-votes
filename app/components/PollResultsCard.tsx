@@ -9,9 +9,23 @@ import {
 } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
+import useLastActiveQuestion from '../hooks/useLastActiveQuestion';
+import { View } from 'react-native';
 
 export const PollResultsCard = () => {
   const router = useRouter();
+  const { data: lastQuestion, isLoading, error } = useLastActiveQuestion();
+  const { user_vote, options } = lastQuestion || {};
+
+  if (isLoading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error: {error.message}</Text>;
+
+  const question = lastQuestion;
+  let userVotedText = null;
+  if (question?.user_vote) {
+    userVotedText =
+      options[0]?.id === user_vote ? options[0]?.text : options[1]?.text;
+  }
 
   return (
     <Card className="w-full max-w-sm p-2 rounded-2xl">
@@ -19,18 +33,26 @@ export const PollResultsCard = () => {
         <CardTitle className="pb-2 text-center">
           View previous poll results
         </CardTitle>
-        <CardDescription>TODO add question here</CardDescription>
+        <CardDescription>{question?.text}</CardDescription>
       </CardHeader>
       <CardFooter className="flex-col gap-3 pb-4">
-        <Button
-          variant="outline"
-          className="shadow shadow-foreground/5"
-          onPress={() => {
-            router.push('/screens/results');
-          }}
-        >
-          <Text>Results</Text>
-        </Button>
+        <View className="items-center">
+          {userVotedText && (
+            <Text>
+              You voted{' '}
+              <Text className="text-lightBlue font-bold">{userVotedText}</Text>
+            </Text>
+          )}
+          <Button
+            variant="outline"
+            className="shadow shadow-foreground/5"
+            onPress={() => {
+              router.push('/screens/results');
+            }}
+          >
+            <Text>Results</Text>
+          </Button>
+        </View>
       </CardFooter>
     </Card>
   );
