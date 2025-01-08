@@ -77,12 +77,8 @@ const PrivacyScreen = () => {
             or share individual data.
           </Text>
 
-          <Button
-            variant="primary"
-            className="bg-midnight text-white"
-            onPress={() => router.push('/auth/complete-profile')}
-          >
-            Continue to questions
+          <Button onPress={() => router.push('/auth/complete-profile')}>
+            <Text>Continue to questions</Text>
           </Button>
         </CardContent>
       </Card>

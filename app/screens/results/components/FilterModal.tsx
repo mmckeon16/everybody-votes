@@ -203,16 +203,14 @@ const FilterModal: React.FC<FilterModalProps> = ({
           setUserSelectedDemographics(filteredDemographics);
           setModalVisible(true);
         }}
-        className="flex flex-row gap-2 px-3"
+        className="flex-row gap-2  z-10"
       >
-        <View>
-          <Ionicons
-            name="filter"
-            size={16}
-            color={isDarkColorScheme ? 'white' : 'black'}
-          />
-        </View>
-        <Text>Filter</Text>
+        <Ionicons
+          name="filter"
+          size={16}
+          color={isDarkColorScheme ? 'white' : 'black'}
+        />
+        <Text className="text-sm font-medium">Filter</Text>
       </Button>
     </View>
   );

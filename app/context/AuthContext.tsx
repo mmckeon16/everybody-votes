@@ -38,9 +38,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
             if (data?.session) {
               setSession(data.session);
-              await checkProfileCompletion(data.session);
-              // Add navigation after successful OAuth
-              router.replace('/');
+              const needsProfileCompletion = await checkProfileCompletion(
+                data.session
+              );
+
+              // Add a small delay to ensure state updates have propagated
+              setTimeout(() => {
+                if (needsProfileCompletion) {
+                  console.log('Redirecting to signup from deep link...');
+                  router.replace('/auth/signup');
+                } else {
+                  console.log('Redirecting to home from deep link...');
+                  router.replace('/');
+                }
+              }, 100);
             }
           }
         }
@@ -84,18 +95,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         sessionExists: !!_newSession,
         userMetadata: _newSession?.user?.user_metadata,
       });
+
       if (_newSession) {
         setSession(_newSession);
-        await checkProfileCompletion(_newSession);
-        // Add this condition to handle successful sign-ins
-        if (event === 'SIGNED_IN') {
-          router.replace('/'); // Redirect to home page
-        }
+        const needsProfileCompletion = await checkProfileCompletion(
+          _newSession
+        );
+
+        // Add a small delay to ensure state updates have propagated
+        setTimeout(() => {
+          if (needsProfileCompletion) {
+            console.log('Redirecting to signup...');
+            router.replace('/auth/signup');
+          } else {
+            console.log('Redirecting to home...');
+            router.replace('/');
+          }
+        }, 100);
       } else {
         setSession(null);
         setHasCompletedProfile(false);
       }
     });
+
     return () => {
       subscription.unsubscribe();
     };
@@ -106,15 +128,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     console.log('Checking profileCompletion for user:', session.user.id);
     console.log('User metadata:', session.user.user_metadata);
-    // Check user metadata directly
-    if (!session.user.user_metadata?.completed_profile) {
-      setHasCompletedProfile(false);
-      router.push('/auth/complete-profile');
-    } else {
-      setHasCompletedProfile(true);
-    }
-  };
+    console.log(
+      'completed_profile:',
+      !session.user.user_metadata?.completed_profile
+    );
 
+    const needsCompletion = !session.user.user_metadata?.completed_profile;
+    setHasCompletedProfile(!needsCompletion);
+
+    return needsCompletion;
+  };
   const value = {
     session,
     isLoading,

@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, Platform, View } from 'react-native';
 import { TextClassContext } from '~/components/ui/text';
 import { cn } from '~/lib/utils';
 
@@ -60,28 +60,55 @@ const buttonTextVariants = cva(
 type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
   VariantProps<typeof buttonVariants>;
 
-const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
-    return (
-      <TextClassContext.Provider
-        value={cn(
-          props.disabled && 'web:pointer-events-none',
-          buttonTextVariants({ variant, size })
-        )}
-      >
-        <Pressable
-          className={cn(
-            props.disabled && 'opacity-50 web:pointer-events-none',
-            buttonVariants({ variant, size, className })
+  const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
+    ({ className, variant, size, onPress, children, style, ...props }, ref) => {
+      const layoutClasses = className?.match(/(flex-row|gap-\d+|px-\d+|py-\d+|items-\w+|justify-\w+)/g) || [];
+      const pressableClasses = className?.replace(new RegExp(layoutClasses.join('|'), 'g'), '').trim();
+      
+      return (
+        <TextClassContext.Provider
+          value={cn(
+            props.disabled && 'opacity-50',
+            buttonTextVariants({ variant, size })
           )}
-          ref={ref}
-          role='button'
-          {...props}
-        />
-      </TextClassContext.Provider>
-    );
-  }
-);
+        >
+          <Pressable
+            ref={ref}
+            onPress={onPress}
+            style={({ pressed }) => [
+              style,
+              pressed && { opacity: 0.7 },
+            ]}
+            className={cn(
+              props.disabled && 'opacity-50',
+              buttonVariants({ variant, size }),
+              pressableClasses,
+              'active:opacity-70' // Add active state styling
+            )}
+            android_ripple={{
+              color: variant === 'outline' || variant === 'ghost' 
+                ? 'rgba(0, 0, 0, 0.1)' 
+                : 'rgba(255, 255, 255, 0.2)',
+              borderless: false,
+              foreground: false // Change to false to ensure ripple appears
+            }}
+            {...props}
+          >
+            <View 
+              className={cn(
+                'flex items-center justify-center',
+                layoutClasses.join(' '),
+                'pointer-events-none' // Ensure View doesn't capture touches
+              )}
+            >
+              {children}
+            </View>
+          </Pressable>
+        </TextClassContext.Provider>
+      );
+    }
+  );
+
 Button.displayName = 'Button';
 
 export { Button, buttonTextVariants, buttonVariants };
