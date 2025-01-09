@@ -2,7 +2,8 @@ import React from 'react';
 import { useRouter } from 'expo-router';
 import { View, ScrollView } from 'react-native';
 import { Text } from '~/components/ui/text';
-import { Lock, Users, PieChart } from 'lucide-react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Feather from '@expo/vector-icons/Feather';
 import {
   CardDescription,
   CardHeader,
@@ -18,19 +19,19 @@ const PrivacyScreen = () => {
 
   const features = [
     {
-      icon: <Lock className=" text-lightBlue" />,
+      icon: <MaterialIcons name="lock" size={24} className="text-lightBlue" />,
       title: 'Your Privacy Matters',
       description:
         'We never sell or share your personal information. Your demographic details are only used to show voting patterns in aggregate.',
     },
     {
-      icon: <Users className="text-lightBlue" />,
+      icon: <Feather name="users" size={24} className="text-lightBlue" />,
       title: 'See How Others Think',
       description:
         'Filter results by age, location, and other demographics to discover fascinating patterns in how different groups vote.',
     },
     {
-      icon: <PieChart className="text-lightBlue" />,
+      icon: <Feather name="pie-chart" size={24} className="text-lightBlue" />,
       title: 'Predict The Majority',
       description:
         'Test your social intuition! Guess how the majority will vote and see how well you can predict group opinions.',

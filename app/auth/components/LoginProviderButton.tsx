@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import Reac from 'react';
 import { Platform } from 'react-native';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -7,8 +7,6 @@ import { supabase } from '../../lib/supabase';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ProviderButtonProps } from '../../types';
-import { useRouter } from 'expo-router';
-// console.log('Project URL:', Constants.expoConfig.hostUri);
 
 const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   provider,

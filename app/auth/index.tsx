@@ -6,6 +6,7 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import LoginProviderButton from './components/LoginProviderButton';
 import OnboardingAd from './components/OnboardingOverlay';
+import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import { IconProps } from '../types';
 import {
   Card,
@@ -27,6 +28,7 @@ const AppleIconButton: React.FC<IconProps> = ({ size, color }) => {
 
 export default function Login() {
   const router = useRouter();
+  const { colorScheme } = useNativewindColorScheme();
 
   const handleHomePress = () => {
     router.push('/');
@@ -47,7 +49,11 @@ export default function Login() {
       >
         <Card className="w-full max-w-sm p-2 rounded-2xl">
           <Button size="icon" onPress={handleHomePress}>
-            <FontAwesome name="home" size={18} color="white" />
+            <FontAwesome
+              name="home"
+              size={18}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
           </Button>
           <OnboardingAd />
           <Separator className="mx-5 w-auto" />

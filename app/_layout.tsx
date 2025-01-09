@@ -113,6 +113,7 @@ const RootLayout = () => {
               options={{
                 title: 'Everybody polls',
                 headerBackVisible: false,
+                headerLeft: () => null,
                 headerRight: () => <HeaderActions />,
                 animation:
                   Platform.OS === 'android' ? 'slide_from_right' : undefined,
