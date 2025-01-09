@@ -22,17 +22,20 @@ export const OccupationSelect: React.FC<StepProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = React.useState('');
   const [selectedCategoryLabel, setSelectedCategoryLabel] = React.useState('');
-  const [selectedSubcategoryLabel, setSelectedSubcategoryLabel] =
-    React.useState('');
+  const [
+    selectedSubcategoryLabel,
+    setSelectedSubcategoryLabel,
+  ] = React.useState('');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [otherOccupation, setOtherOccupation] = React.useState('');
-  const [filteredCategories, setFilteredCategories] =
-    React.useState<OccupationCategory[]>(occupationCategories);
+  const [filteredCategories, setFilteredCategories] = React.useState<
+    OccupationCategory[]
+  >(occupationCategories);
 
   React.useEffect(() => {
     if (searchQuery) {
-      const filtered = occupationCategories.filter((category) => {
-        const matchingSubcategories = category.subcategories.filter((sub) =>
+      const filtered = occupationCategories.filter(category => {
+        const matchingSubcategories = category.subcategories.filter(sub =>
           sub.label.toLowerCase().includes(searchQuery.toLowerCase())
         );
         return (
@@ -48,7 +51,7 @@ export const OccupationSelect: React.FC<StepProps> = ({
 
   return (
     <View className="w-full">
-      <View className="space-y-4">
+      <View className="gap-4">
         <Select
           className="web:w-full"
           onValueChange={({ value }) => {
@@ -79,12 +82,12 @@ export const OccupationSelect: React.FC<StepProps> = ({
                 />
               </View>
             </View>
-            {filteredCategories.map((category) => (
+            {filteredCategories.map(category => (
               <SelectGroup key={category.value}>
                 <Separator />
                 <SelectLabel>{category.label}</SelectLabel>
                 <Separator />
-                {category.subcategories.map((subcategory) => {
+                {category.subcategories.map(subcategory => {
                   return (
                     <View key={`${category.value}-${subcategory.value}`}>
                       <SelectItem

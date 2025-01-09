@@ -182,7 +182,7 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
       <View className="p-4">
         <Text className="text-xl font-bold">US Voting Distribution</Text>
       </View>
-      <View className="p-4 space-y-4">
+      <View className="p-4 gap-4">
         <View
           ref={svgRef}
           onLayout={handleLayout}

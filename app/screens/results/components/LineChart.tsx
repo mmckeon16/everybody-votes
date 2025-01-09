@@ -59,9 +59,9 @@ const LineChart: React.FC<LineChartProps> = ({
         </View>
       </CardHeader>
       <CardContent>
-        <View className="space-y-4">
+        <View className="gap-4">
           {results.map(result => (
-            <View key={result.optionId} className="space-y-2">
+            <View key={result.optionId} className="gap-2">
               <MediaQuery {...Breakpoints.xs}>
                 <View className="w-fit">
                   <UserStatsBadge

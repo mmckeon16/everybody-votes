@@ -58,7 +58,7 @@ const OnboardingOverlay = () => {
         <CardTitle className="text-center">Join the Conversation!</CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="gap-4">
         {features.map((feature, index) => (
           <FeatureItem
             key={index}

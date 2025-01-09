@@ -12,8 +12,8 @@ const OnboardingOverlay = ({ onSignUpClick }) => {
           <CardTitle className="text-center">Join the Conversation!</CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-6">
-          <View className="flex-row space-x-4">
+        <CardContent className="gap-6">
+          <View className="flex-row gap-4">
             <Vote className="w-6 h-6 text-blue-500 mt-1" />
             <View className="flex-1">
               <Text className="font-semibold">Make Your Voice Heard</Text>
@@ -24,7 +24,7 @@ const OnboardingOverlay = ({ onSignUpClick }) => {
             </View>
           </View>
 
-          <View className="flex-row space-x-4">
+          <View className="flex-row gap-4">
             <ChartBar className="w-6 h-6 text-blue-500 mt-1" />
             <View className="flex-1">
               <Text className="font-semibold">Explore Detailed Insights</Text>
@@ -34,7 +34,7 @@ const OnboardingOverlay = ({ onSignUpClick }) => {
             </View>
           </View>
 
-          <View className="flex-row space-x-4">
+          <View className="flex-row gap-4">
             <Target className="w-6 h-6 text-blue-500 mt-1" />
             <View className="flex-1">
               <Text className="font-semibold">Test Your Prediction Skills</Text>
@@ -44,7 +44,7 @@ const OnboardingOverlay = ({ onSignUpClick }) => {
             </View>
           </View>
 
-          <View className="flex-row space-x-4">
+          <View className="flex-row gap-4">
             <UserCircle2 className="w-6 h-6 text-blue-500 mt-1" />
             <View className="flex-1">
               <Text className="font-semibold">Privacy First</Text>

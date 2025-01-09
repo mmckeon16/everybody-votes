@@ -61,7 +61,7 @@ const PrivacyScreen = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <View className="space-y-6 mb-8">
+          <View className="gap-4 mb-8">
             {features.map((feature, index) => (
               <FeatureIcon
                 key={index}
