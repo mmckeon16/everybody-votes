@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import {
   DemographicKey,
   PillData,
@@ -83,13 +83,13 @@ const DemographicPills: React.FC<DemographicPillsProps> = ({
           >
             <Text style={styles.pillText}>{pill.displayText}</Text>
             {onRemove && (
-              <TouchableOpacity
+              <Pressable
                 onPress={() => onRemove(pill.category, pill.originalValue)}
                 style={styles.removeButton}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
               >
                 <Text style={styles.removeButtonText}>×</Text>
-              </TouchableOpacity>
+              </Pressable>
             )}
           </View>
         ))}
