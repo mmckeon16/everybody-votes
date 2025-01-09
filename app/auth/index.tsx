@@ -3,6 +3,7 @@ import { View, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import LoginProviderButton from './components/LoginProviderButton';
 import OnboardingAd from './components/OnboardingOverlay';
 import { IconProps } from '../types';
@@ -13,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
 
 const FacebookIconButton: React.FC<IconProps> = ({ size, color }) => {
@@ -32,13 +34,6 @@ export default function Login() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#02245e' }}>
-      <Pressable
-        onPress={handleHomePress}
-        className="absolute top-12 left-4 z-10 bg-white/10 p-2 rounded-full"
-      >
-        <AntDesign name="home" size={24} color="white" />
-      </Pressable>
-
       <ScrollView
         style={{
           flex: 1,
@@ -51,6 +46,9 @@ export default function Login() {
         }}
       >
         <Card className="w-full max-w-sm p-2 rounded-2xl">
+          <Button size="icon" onPress={handleHomePress}>
+            <FontAwesome name="home" size={18} color="white" />
+          </Button>
           <OnboardingAd />
           <Separator className="mx-5 w-auto" />
           <CardHeader className="items-center pb-3">
