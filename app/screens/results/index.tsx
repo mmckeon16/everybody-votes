@@ -10,16 +10,14 @@ import FilteredResultsCard from './components/FilteredResultsCard';
 import LineChart from './components/LineChart';
 import StateMap from './components/StateMap';
 
-import { useActiveQuestion } from '~/app/hooks/useActiveQuestion';
+import { useLastActiveQuestion } from '~/app/hooks/useLastActiveQuestion';
 import { addColorToResults, analyzeVoteData } from '../../lib/utils';
 
 export default function Results() {
   const [filteredDemographics, setFilteredDemographics] = useState(null);
-  const { data: activeQuestion } = useActiveQuestion();
+  const { data: lastQuestion } = useLastActiveQuestion();
 
-  const { data: totalResults, isLoading, error } = useResults(
-    activeQuestion?.id
-  );
+  const { data: totalResults, isLoading, error } = useResults(lastQuestion?.id);
   console.log('Data from totalResults....');
   console.log(totalResults);
   const nullData = { question: null, totalVotes: null, results: null };
@@ -36,7 +34,7 @@ export default function Results() {
   let isPopulatedFilter = null;
   if (filteredDemographics) {
     isPopulatedFilter = Object.values(filteredDemographics).some(
-      arr => arr.length > 0
+      (arr) => arr.length > 0
     );
   }
 
@@ -84,7 +82,7 @@ export default function Results() {
         {filteredDemographics && isPopulatedFilter && (
           <FilteredResultsCard
             filteredDemographics={filteredDemographics}
-            activeQuestion={activeQuestion}
+            activeQuestion={lastQuestion}
             setFilteredDemographics={setFilteredDemographics}
             totalVotes={totalVotes}
           />

@@ -52,5 +52,20 @@ export const questionsApi = {
     });
     return response.json();
   },
+
+  getLastActiveQuestion: async (userId?: string) => {
+    const url = new URL(`${baseUrl}/last-active-question`);
+    if (userId) {
+      url.searchParams.append('userId', userId);
+    }
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  },
 };
 export default questionsApi;
