@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SkeletonCard } from './components/SkeletonCard';
 import { useActiveQuestion } from './hooks/useActiveQuestion';
 import PollResultsCard from './components/PollResultsCard';
 import VoteCard from './components/VoteCard';
 import ErrorVoteCard from './components/ErrorVoteCard';
+import { Button } from '~/components/ui/button';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function Screen() {
   const [appIsReady, setAppIsReady] = useState(false);
   const { isLoading, isError, error } = useActiveQuestion();
+  const router = useRouter();
 
+  const handleHomePress = () => {
+    router.push('/auth/signup');
+  };
   useEffect(() => {
     async function prepare() {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -41,6 +48,9 @@ export default function Screen() {
         <View className="flex-1 items-center gap-5 bg-blueBg">
           <VoteCard />
           <PollResultsCard />
+          <Button size="icon" onPress={handleHomePress}>
+            <FontAwesome name="home" size={18} color={'white'} />
+          </Button>
         </View>
       )}
     </View>
