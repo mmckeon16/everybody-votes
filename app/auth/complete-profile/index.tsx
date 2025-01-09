@@ -229,13 +229,21 @@ export default function CompleteProfile() {
   );
 
   return (
-    <ScrollView className="flex p-5">
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        padding: 20,
+        paddingTop: 40,
+      }}
+    >
       <Text className="text-2xl text-center">Complete your profile</Text>
-      <Progress
-        value={(currentStep / Object.keys(STEPS).length) * 100}
-        className="h-2 my-8"
-        indicatorClassName="bg-lightBlue"
-      />
+      <View className="my-8">
+        <Progress
+          value={(currentStep / Object.keys(STEPS).length) * 100}
+          className="h-2"
+          indicatorClassName="bg-lightBlue"
+        />
+      </View>
       {error && <Text>{error}</Text>}
       {renderStep()}
       {renderButtons()}
