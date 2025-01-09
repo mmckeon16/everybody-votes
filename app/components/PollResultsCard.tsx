@@ -29,14 +29,14 @@ export const PollResultsCard = () => {
 
   return (
     <Card className="w-full max-w-sm p-2 rounded-2xl">
-      <CardHeader className="items-center">
+      <CardHeader className="items-center pb-3">
         <CardTitle className="pb-2 text-center">
           View previous poll results
         </CardTitle>
         <CardDescription>{question?.text}</CardDescription>
       </CardHeader>
-      <CardFooter className="flex-col gap-3 pb-4">
-        <View className="items-center">
+      <CardFooter className="flex-col pb-4">
+        <View className="items-center gap-3">
           {userVotedText && (
             <Text>
               You voted{' '}

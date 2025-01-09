@@ -42,6 +42,10 @@ export default function Screen() {
       </View>
     );
   }
+  const percentage = getTimeRemainingPercentage(
+    activeQuestion?.start_date ?? '',
+    activeQuestion?.end_date ?? ''
+  );
 
   return (
     <Card className="w-full max-w-sm p-2 rounded-2xl">
@@ -54,21 +58,18 @@ export default function Screen() {
             <Text className="text-center text-lg font-semibold text-lightBlue">
               This poll has ended
             </Text>
-            <Text className="text-center text-slate-600	">
+            <Text className="text-center text-slate-600">
               Come back soon to vote on the next question and view the results
             </Text>
           </View>
         ) : (
-          <View className="flex flex-col gap-3">
+          <View className="flex flex-col gap-3 w-full">
             <Progress
-              value={getTimeRemainingPercentage(
-                activeQuestion?.start_date ?? '',
-                activeQuestion?.end_date ?? ''
-              )}
+              value={percentage}
               className="h-2"
               indicatorClassName="bg-lightBlue"
             />
-            <View className="flex-row items-center overflow-hidden">
+            <View className="flex-row items-center justify-center overflow-hidden">
               <Text className="text-sm font-bold text-lightBlue">
                 {getTimeUntilExpiration(activeQuestion?.end_date ?? '')}
               </Text>
@@ -77,7 +78,6 @@ export default function Screen() {
                 until this poll closes
               </Text>
             </View>
-            <View />
             <View className="items-center">
               {userVotedText ? (
                 <Text>
