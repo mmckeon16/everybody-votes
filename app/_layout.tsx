@@ -8,6 +8,7 @@ import {
   Theme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from './context/AuthContext';
@@ -103,108 +104,110 @@ const RootLayout = () => {
   }
 
   return (
-    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-          <Stack>
-            <Stack.Screen
-              name="index"
-              options={{
-                title: 'Everybody polls',
-                headerBackVisible: false,
-                headerLeft: () => null,
-                headerRight: () => <HeaderActions />,
-                animation:
-                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                headerRightContainerStyle:
-                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
-              }}
-            />
-            <Stack.Screen
-              name="auth"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="screens/vote/index"
-              options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-                animation:
-                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                headerRightContainerStyle:
-                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
-              }}
-            />
-            <Stack.Screen
-              name="screens/predict/index"
-              options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-                animation:
-                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                headerRightContainerStyle:
-                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
-              }}
-            />
-            <Stack.Screen
-              name="screens/results/index"
-              options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-                animation:
-                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                headerRightContainerStyle:
-                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
-              }}
-            />
-            <Stack.Screen
-              name="screens/thanks"
-              options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-                animation:
-                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                headerRightContainerStyle:
-                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
-              }}
-            />
-            <Stack.Screen
-              name="auth/complete-profile"
-              options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-                animation:
-                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                headerRightContainerStyle:
-                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
-              }}
-            />
-            <Stack.Screen
-              name="auth/celebrate"
-              options={{
-                title: 'Everybody polls',
-                headerRight: () => <HeaderActions />,
-                animation:
-                  Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                headerRightContainerStyle:
-                  Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
-              }}
-            />
-            <Stack.Screen
-              name="screens/splash"
-              options={{
-                headerShown: false,
-              }}
-            />
-          </Stack>
-        </AuthProvider>
-      </QueryClientProvider>
-      <PortalHost />
-      <Toast />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+            <Stack>
+              <Stack.Screen
+                name="index"
+                options={{
+                  title: 'Everybody polls',
+                  headerBackVisible: false,
+                  headerLeft: () => null,
+                  headerRight: () => <HeaderActions />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                  headerRightContainerStyle:
+                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                }}
+              />
+              <Stack.Screen
+                name="auth"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="screens/vote/index"
+                options={{
+                  title: 'Everybody polls',
+                  headerRight: () => <HeaderActions />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                  headerRightContainerStyle:
+                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                }}
+              />
+              <Stack.Screen
+                name="screens/predict/index"
+                options={{
+                  title: 'Everybody polls',
+                  headerRight: () => <HeaderActions />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                  headerRightContainerStyle:
+                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                }}
+              />
+              <Stack.Screen
+                name="screens/results/index"
+                options={{
+                  title: 'Everybody polls',
+                  headerRight: () => <HeaderActions />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                  headerRightContainerStyle:
+                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                }}
+              />
+              <Stack.Screen
+                name="screens/thanks"
+                options={{
+                  title: 'Everybody polls',
+                  headerRight: () => <HeaderActions />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                  headerRightContainerStyle:
+                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                }}
+              />
+              <Stack.Screen
+                name="auth/complete-profile"
+                options={{
+                  title: 'Everybody polls',
+                  headerRight: () => <HeaderActions />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                  headerRightContainerStyle:
+                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                }}
+              />
+              <Stack.Screen
+                name="auth/celebrate"
+                options={{
+                  title: 'Everybody polls',
+                  headerRight: () => <HeaderActions />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
+                  headerRightContainerStyle:
+                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                }}
+              />
+              <Stack.Screen
+                name="screens/splash"
+                options={{
+                  headerShown: false,
+                }}
+              />
+            </Stack>
+          </AuthProvider>
+        </QueryClientProvider>
+        <PortalHost />
+        <Toast />
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 };
 

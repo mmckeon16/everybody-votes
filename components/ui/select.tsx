@@ -1,6 +1,7 @@
 import * as SelectPrimitive from '@rn-primitives/select';
 import * as React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView, ScrollView as GestureScrollView } from 'react-native-gesture-handler';
+import { Platform, StyleSheet, View, ScrollView } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Check } from '~/lib/icons/Check';
 import { ChevronDown } from '~/lib/icons/ChevronDown';
@@ -73,40 +74,91 @@ const SelectContent = React.forwardRef<
 >(({ className, children, position = 'popper', portalHost, ...props }, ref) => {
   const { open } = SelectPrimitive.useRootContext();
 
+  if (Platform.OS === 'web') {
+    return (
+      <SelectPrimitive.Portal hostName={portalHost}>
+        <SelectPrimitive.Content
+          ref={ref}
+          className={cn(
+            'relative z-50 max-h-96 min-w-[8rem] rounded-md border border-border bg-popover shadow-md shadow-foreground/10 py-2 px-1',
+            position === 'popper' &&
+              'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+            open
+              ? 'web:zoom-in-95 web:animate-in web:fade-in-0'
+              : 'web:zoom-out-95 web:animate-out web:fade-out-0',
+            className
+          )}
+          position={position}
+          {...props}
+        >
+          <SelectScrollUpButton />
+          <SelectPrimitive.Viewport
+            className={cn(
+              'p-1',
+              position === 'popper' &&
+                'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+            )}
+          >
+            {children}
+          </SelectPrimitive.Viewport>
+          <SelectScrollDownButton />
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    );
+  }
+
   return (
     <SelectPrimitive.Portal hostName={portalHost}>
-      <SelectPrimitive.Overlay style={Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined}>
-        <Animated.View entering={FadeIn} exiting={FadeOut}>
-          <SelectPrimitive.Content
-            ref={ref}
-            className={cn(
-              'relative z-50 max-h-96 min-w-[8rem] rounded-md border border-border bg-popover shadow-md shadow-foreground/10 py-2 px-1',
-              position === 'popper' &&
-                'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
-              open
-                ? 'web:zoom-in-95 web:animate-in web:fade-in-0'
-                : 'web:zoom-out-95 web:animate-out web:fade-out-0',
-              className
-            )}
-            position={position}
-            {...props}
+      <SelectPrimitive.Overlay style={StyleSheet.absoluteFill}>
+        <Animated.View 
+          entering={FadeIn} 
+          exiting={FadeOut} 
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <View 
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: 'rgba(0,0,0,0.5)' }
+            ]} 
+          />
+          <View 
+            style={{ 
+              width: '80%', 
+              backgroundColor: 'white',
+              borderRadius: 8,
+              maxHeight: '80%',
+              overflow: 'hidden'
+            }}
           >
-            {Platform.OS === 'web' && <SelectScrollUpButton />}
-            <SelectPrimitive.Viewport
-              className={cn(
-                'p-1',
-                position === 'popper' &&
-                  'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
-              )}
-              style={Platform.OS !== 'web' ? {
-                maxHeight: 300,  // Adjust this value as needed
-                scrollEnabled: true,
-              } : undefined}
+            <View style={{ borderBottomWidth: 1, borderBottomColor: '#e5e5e5' }}>
+              {React.Children.map(children, child => {
+                if (React.isValidElement(child) && child.type === SelectGroup) {
+                  return React.Children.map(child.props.children, groupChild => {
+                    if (React.isValidElement(groupChild) && groupChild.type === SelectLabel) {
+                      return groupChild;
+                    }
+                  });
+                }
+              })}
+            </View>
+            <ScrollView
+              showsVerticalScrollIndicator={true}
+              directionalLockEnabled={true}
+              alwaysBounceVertical={false}
+              style={{ maxHeight: 300 }}
+              contentContainerStyle={{ paddingVertical: 8 }}
             >
-              {children}
-            </SelectPrimitive.Viewport>
-            {Platform.OS === 'web' && <SelectScrollDownButton />}
-          </SelectPrimitive.Content>
+              {React.Children.map(children, child => {
+                if (React.isValidElement(child) && child.type === SelectGroup) {
+                  return React.Children.map(child.props.children, groupChild => {
+                    if (React.isValidElement(groupChild) && groupChild.type !== SelectLabel) {
+                      return groupChild;
+                    }
+                  });
+                }
+              })}
+            </ScrollView>
+          </View>
         </Animated.View>
       </SelectPrimitive.Overlay>
     </SelectPrimitive.Portal>

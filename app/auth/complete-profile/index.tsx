@@ -148,6 +148,7 @@ export default function CompleteProfile() {
         type: 'error',
         text1: 'Error',
         text2: err instanceof Error ? err.message : 'Failed to submit profile',
+        position: 'bottom',
       });
       router.push('/');
     }

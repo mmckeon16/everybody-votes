@@ -251,14 +251,15 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
                   >
                     <SelectTrigger className="w-max" />
                     <SelectContent
-                      className="rounded-md overflow-hidden z-50 shadow-lg border border-gray-200"
-                      style={{
-                        minWidth: 200,
-                        maxHeight: 300,
-                      }}
+                      className={Platform.select({
+                        web:
+                          'rounded-md overflow-hidden z-50 shadow-lg border border-gray-200',
+                        default:
+                          'rounded-md overflow-hidden z-50 shadow-lg border border-gray-200 w-[80%] self-center mx-auto',
+                      })}
                     >
                       <SelectGroup>
-                        <SelectLabel className="sticky top-0 px-2 border-b border-gray-200 z-10 bg-background">
+                        <SelectLabel className="px-2 py-1.5 border-b border-gray-200 z-10 bg-background">
                           <Text className="font-medium">US State</Text>
                         </SelectLabel>
                         <View className="py-1">
