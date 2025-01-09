@@ -5,6 +5,7 @@ import {
   Platform,
   GestureResponderEvent,
   LayoutChangeEvent,
+  FlatList,
 } from 'react-native';
 import { Text } from '~/components/ui/text';
 import Svg, { Path } from 'react-native-svg';
@@ -224,8 +225,6 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
                   >
                     <SelectTrigger className="w-max" />
                     <SelectContent
-                      // position="popper"
-                      // sideOffset={5}
                       className="rounded-md overflow-hidden z-50 shadow-lg border border-gray-200"
                       style={{
                         minWidth: 200,
@@ -233,28 +232,27 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
                       }}
                     >
                       <SelectGroup>
-                        <ScrollView
+                        <SelectLabel className="px-2 py-1.5 border-b border-gray-200 z-10 bg-background">
+                          <Text className="font-medium">US State</Text>
+                        </SelectLabel>
+                        <FlatList
+                          data={states}
+                          keyExtractor={state => state.value}
+                          renderItem={({ item: state }) => (
+                            <SelectItem
+                              key={state.value}
+                              className="px-2 py-2 hover:bg-gray-100 active:bg-gray-200 flex flex-row items-center justify-between w-full"
+                              label={state.label}
+                              value={
+                                state.value === 'not-in-us'
+                                  ? 'Not US'
+                                  : state.value
+                              }
+                            />
+                          )}
                           style={{ maxHeight: 250 }}
                           showsVerticalScrollIndicator={true}
-                        >
-                          <SelectLabel className="sticky top-0 px-2 py-1.5 border-b border-gray-200 z-10 bg-background">
-                            <Text className="font-medium">US State</Text>
-                          </SelectLabel>
-                          <View className="py-1">
-                            {states.map(state => (
-                              <SelectItem
-                                key={state.value}
-                                className="px-2 py-2 hover:bg-gray-100 active:bg-gray-200 flex flex-row items-center justify-between w-full"
-                                label={state.label}
-                                value={
-                                  state.value === 'not-in-us'
-                                    ? 'Not US'
-                                    : state.value
-                                }
-                              />
-                            ))}
-                          </View>
-                        </ScrollView>
+                        />
                       </SelectGroup>
                     </SelectContent>
                   </Select>

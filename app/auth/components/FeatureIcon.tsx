@@ -13,8 +13,8 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
   title,
   description,
 }) => (
-  <View className="flex-row space-x-4">
-    <View className="mt-1">{icon}</View>
+  <View className="flex-row gap-4">
+    <View>{icon}</View>
     <View className="flex-1">
       <Text className="font-semibold">{title}</Text>
       <Text className="text-gray-600">{description}</Text>

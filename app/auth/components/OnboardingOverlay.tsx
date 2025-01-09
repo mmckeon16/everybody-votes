@@ -13,7 +13,7 @@ const OnboardingOverlay = () => {
       icon: (
         <MaterialIcons
           name="how-to-vote"
-          size={24}
+          size={20}
           className="w-6 h-6 text-lightBlue"
         />
       ),
@@ -25,7 +25,7 @@ const OnboardingOverlay = () => {
       icon: (
         <FontAwesome6
           name="chart-bar"
-          size={24}
+          size={20}
           className="w-6 h-6 text-lightBlue"
         />
       ),
@@ -34,7 +34,7 @@ const OnboardingOverlay = () => {
     },
     {
       icon: (
-        <Feather name="target" size={24} className="w-6 h-6 text-lightBlue" />
+        <Feather name="target" size={20} className="w-6 h-6 text-lightBlue" />
       ),
       title: 'Test your prediction skills',
       description: 'Predict majority opinions and track your accuracy',
@@ -43,7 +43,7 @@ const OnboardingOverlay = () => {
       icon: (
         <FontAwesome
           name="user-circle"
-          size={24}
+          size={20}
           className="w-6 h-6 text-lightBlue"
         />
       ),
