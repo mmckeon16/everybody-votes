@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import {
   View,
-  ScrollView,
   Platform,
   GestureResponderEvent,
   LayoutChangeEvent,
@@ -18,7 +17,7 @@ import {
   SelectLabel,
   SelectTrigger,
 } from '~/components/ui/select';
-import { STATE_PATHS, mockData } from '../constants';
+import { STATE_PATHS } from '../constants';
 import { states } from '../../../auth/constants';
 
 interface VoteOption {
@@ -26,32 +25,53 @@ interface VoteOption {
   votes: number;
 }
 
-interface StateVotingData {
-  option1_hash: VoteOption;
-  option2_hash: VoteOption;
+interface StateResult {
+  state: string;
   totalVotes: number;
-}
-
-interface VotingDataMap {
-  [stateId: string]: StateVotingData;
+  [key: string]: VoteOption | string | number; // For dynamic UUID keys
 }
 
 interface USVoteHeatMapProps {
-  votingData?: VotingDataMap;
+  stateResults: StateResult[];
 }
 
-const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
-  const votingData = mockData;
+const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
   const [activeState, setActiveState] = useState<string | null>('AK');
   const svgRef = useRef<View>(null);
   const [svgLayout, setSvgLayout] = useState({ width: 0, height: 0 });
 
-  const getOption1Percentage = (stateData?: StateVotingData): number => {
-    if (!stateData || stateData.totalVotes === 0) return 0;
-    return (stateData.option1_hash.votes / stateData.totalVotes) * 100;
+  // Convert array to map for easier lookup
+  const votingData = stateResults.reduce((acc, curr) => {
+    const options = Object.entries(curr).reduce((optAcc, [key, value]) => {
+      if (typeof value === 'object' && 'votes' in value && 'text' in value) {
+        optAcc[key] = value;
+      }
+      return optAcc;
+    }, {} as Record<string, VoteOption>);
+
+    acc[curr.state] = {
+      totalVotes: curr.totalVotes,
+      ...options,
+    };
+    return acc;
+  }, {} as Record<string, { totalVotes: number } & Record<string, VoteOption>>);
+
+  const getOption1Percentage = (
+    stateData?: typeof votingData[string]
+  ): number => {
+    if (!stateData) return 0;
+
+    // Get the first option's votes
+    const options = Object.values(stateData).filter(
+      (value): value is VoteOption =>
+        typeof value === 'object' && 'votes' in value && 'text' in value
+    );
+
+    if (options.length === 0 || stateData.totalVotes === 0) return 0;
+    return (options[0].votes / stateData.totalVotes) * 100;
   };
 
-  const getStateColor = (stateData?: StateVotingData): string => {
+  const getStateColor = (stateData?: typeof votingData[string]): string => {
     if (!stateData) return '#CCCCCC';
     const option1Percentage = getOption1Percentage(stateData);
 
@@ -78,9 +98,17 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
     return `rgb(${r}, ${g}, ${b})`;
   };
 
-  const firstStateWithData = Object.values(votingData)[0];
-  const option1Text = firstStateWithData?.option1_hash.text || 'Yes';
-  const option2Text = firstStateWithData?.option2_hash.text || 'No';
+  // Get option texts from the first state result
+  const firstStateWithData = stateResults[0];
+  const options = Object.entries(firstStateWithData)
+    .filter(
+      ([_, value]): value is [string, VoteOption] =>
+        typeof value === 'object' && 'text' in value && 'votes' in value
+    )
+    .map(([_, value]) => value);
+
+  const option1Text = options[0]?.text || 'Yes';
+  const option2Text = options[1]?.text || 'No';
 
   const handleLayout = (event: LayoutChangeEvent) => {
     setSvgLayout({
@@ -210,7 +238,6 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
             ))}
           </Svg>
 
-          {/* Active State Legend Overlay */}
           {activeState && (
             <View className="absolute -top-[70px] -right-2 rounded-lg shadow-md p-3 border border-gray-200 bg-background">
               <View className="flex flex-col gap-1">
@@ -257,20 +284,26 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({}) => {
                     </SelectContent>
                   </Select>
                 </View>
-                {votingData[activeState] !== undefined ? (
+                {activeState && votingData[activeState] ? (
                   <View>
-                    <Text className="text-sm">
-                      {votingData[activeState]?.option1_hash.text}:{' '}
-                      {getOption1Percentage(votingData[activeState]).toFixed(1)}
-                      %
-                    </Text>
-                    <Text className="text-sm">
-                      {votingData[activeState]?.option2_hash.text}:{' '}
-                      {(
-                        100 - getOption1Percentage(votingData[activeState])
-                      ).toFixed(1)}
-                      %
-                    </Text>
+                    {Object.entries(votingData[activeState])
+                      .filter(
+                        ([_, value]): value is [string, VoteOption] =>
+                          typeof value === 'object' &&
+                          'text' in value &&
+                          'votes' in value
+                      )
+                      .map(([_, option], index) => (
+                        <Text key={index} className="text-sm">
+                          {option.text}:{' '}
+                          {(
+                            (option.votes /
+                              votingData[activeState].totalVotes) *
+                            100
+                          ).toFixed(1)}
+                          %
+                        </Text>
+                      ))}
                   </View>
                 ) : (
                   <Text className="text-sm">No data available</Text>

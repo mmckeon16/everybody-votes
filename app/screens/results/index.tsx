@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, View, ActivityIndicator } from 'react-native';
-import PieChart from './components/PieChart';
 import { useResults } from '../../hooks/useResults';
 import { Text } from '~/components/ui/text';
-import { Card, CardContent, CardHeader } from '~/components/ui/card';
-import NumberFlipper from './components/NumberFlipper';
-import FilterModal from './components/FilterModal';
 import FilteredResultsCard from './components/FilteredResultsCard';
 import LineChart from './components/LineChart';
 import StateMap from './components/StateMap';
@@ -28,13 +24,14 @@ export default function Results() {
       results,
       user_vote,
       user_prediction,
+      stateResults,
     } = nullData,
   } = totalResults || {};
 
   let isPopulatedFilter = null;
   if (filteredDemographics) {
     isPopulatedFilter = Object.values(filteredDemographics).some(
-      (arr) => arr.length > 0
+      arr => arr.length > 0
     );
   }
 
@@ -87,7 +84,7 @@ export default function Results() {
             totalVotes={totalVotes}
           />
         )}
-        <StateMap />
+        <StateMap stateResults={stateResults} />
       </View>
     </ScrollView>
   );
