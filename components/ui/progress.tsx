@@ -9,7 +9,6 @@ interface ProgressProps extends ProgressPrimitive.RootProps {
 
 const Progress = React.forwardRef<ProgressPrimitive.RootRef, ProgressProps>(
   ({ className, value, indicatorClassName, ...props }, ref) => {
-    console.log('Rendering progress with value:', value);
 
     // Web implementation
     if (Platform.OS === 'web') {
