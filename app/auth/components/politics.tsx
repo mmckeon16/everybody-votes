@@ -24,6 +24,36 @@ import {
 const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
   const [showOtherParties, setShowOtherParties] = useState(false);
   const [showOtherLeanings, setShowOtherLeanings] = useState(false);
+  const [activePartySelect, setActivePartySelect] = useState<'main' | 'other'>(
+    'main'
+  );
+  const [activeLeaningSelect, setActiveLeaningSelect] = useState<
+    'main' | 'other'
+  >('main');
+
+  const handlePartyChange = (value: string) => {
+    // Check if the selected value is in otherPoliticalParties
+    const isOtherParty = otherPoliticalParties.some(
+      party => party.value === value
+    );
+    setActivePartySelect(isOtherParty ? 'other' : 'main');
+    setProfileData({
+      ...profileData,
+      politicalParty: value,
+    });
+  };
+
+  const handleLeaningChange = (value: string) => {
+    // Check if the selected value is in otherPoliticalLeanings
+    const isOtherLeaning = otherPoliticalLeanings.some(
+      leaning => leaning.value === value
+    );
+    setActiveLeaningSelect(isOtherLeaning ? 'other' : 'main');
+    setProfileData({
+      ...profileData,
+      politicalIdeology: value,
+    });
+  };
 
   return (
     <View className="flex flex-col gap-6">
@@ -31,59 +61,54 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         <Label nativeID="party">
           <Text>Political Party</Text>
         </Label>
-        <Select
-          id="party"
-          className="web:w-full"
-          onValueChange={({ value }) => {
-            setProfileData({
-              ...profileData,
-              politicalParty: value,
-            });
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue
-              className="text-foreground text-sm native:text-lg"
-              placeholder="Political Party"
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>
-                <Text>Political Party</Text>
-              </SelectLabel>
-              {majorPoliticalParties.map(politicalParty => (
-                <SelectItem
-                  label={politicalParty.label}
-                  value={politicalParty.value}
-                  key={politicalParty.value}
-                />
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <TouchableOpacity
-          className="flex flex-row gap-3 justify-start items-center"
-          onPress={() => setShowOtherParties(!showOtherParties)}
-        >
-          <Text>See more</Text>
-          {showOtherParties ? (
-            <Entypo name="chevron-thin-up" size={16} color="black" />
-          ) : (
-            <Entypo name="chevron-thin-down" size={16} color="black" />
-          )}
-        </TouchableOpacity>
-        {showOtherParties && (
-          <View className="flex flex-col gap-3">
+        {activePartySelect === 'main' ? (
+          <>
             <Select
               id="party"
               className="web:w-full"
-              onValueChange={({ value }) => {
-                setProfileData({
-                  ...profileData,
-                  politicalParty: value,
-                });
-              }}
+              onValueChange={({ value }) => handlePartyChange(value)}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  className="text-foreground text-sm native:text-lg"
+                  placeholder="Political Party"
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>
+                    <Text>Political Party</Text>
+                  </SelectLabel>
+                  {majorPoliticalParties.map(politicalParty => (
+                    <SelectItem
+                      label={politicalParty.label}
+                      value={politicalParty.value}
+                      key={politicalParty.value}
+                    />
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <TouchableOpacity
+              className="flex flex-row gap-3 justify-start items-center"
+              onPress={() => setShowOtherParties(!showOtherParties)}
+            >
+              <Text>See more</Text>
+              {showOtherParties ? (
+                <Entypo name="chevron-thin-up" size={16} color="black" />
+              ) : (
+                <Entypo name="chevron-thin-down" size={16} color="black" />
+              )}
+            </TouchableOpacity>
+          </>
+        ) : null}
+
+        {(showOtherParties || activePartySelect === 'other') && (
+          <View className="flex flex-col gap-3">
+            <Select
+              id="other-party"
+              className="web:w-full"
+              onValueChange={({ value }) => handlePartyChange(value)}
             >
               <SelectTrigger>
                 <SelectValue
@@ -106,68 +131,75 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            {activePartySelect === 'other' && (
+              <TouchableOpacity
+                className="flex flex-row gap-3 justify-start items-center"
+                onPress={() => {
+                  setActivePartySelect('main');
+                  setShowOtherParties(false);
+                }}
+              >
+                <Text>Show main parties</Text>
+                <Entypo name="chevron-thin-up" size={16} color="black" />
+              </TouchableOpacity>
+            )}
           </View>
         )}
         <Separator />
       </View>
 
       <View className="flex flex-col gap-3">
-        <Label nativeID="party">
+        <Label nativeID="leaning">
           <Text>Political Leaning</Text>
         </Label>
-        <Select
-          id="party"
-          className="web:w-full"
-          onValueChange={({ value }) => {
-            setProfileData({
-              ...profileData,
-              politicalIdeology: value,
-            });
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue
-              className="text-foreground text-sm native:text-lg"
-              placeholder="Political Leaning"
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>
-                <Text>Political Leaning</Text>
-              </SelectLabel>
-              {mainPoliticalLeanings.map(politicalLeaning => (
-                <SelectItem
-                  label={politicalLeaning.label}
-                  value={politicalLeaning.value}
-                  key={politicalLeaning.value}
-                />
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <TouchableOpacity
-          className="flex flex-row gap-3 justify-start items-center"
-          onPress={() => setShowOtherLeanings(!showOtherLeanings)}
-        >
-          <Text>See more</Text>
-          {showOtherLeanings ? (
-            <Entypo name="chevron-thin-up" size={16} color="black" />
-          ) : (
-            <Entypo name="chevron-thin-down" size={16} color="black" />
-          )}
-        </TouchableOpacity>
-        {showOtherLeanings && (
-          <View className="flex flex-col gap-3">
+        {activeLeaningSelect === 'main' ? (
+          <>
             <Select
               id="leaning"
               className="web:w-full"
-              onValueChange={({ value }) => {
-                setProfileData({
-                  ...profileData,
-                  politicalIdeology: value,
-                });
-              }}
+              onValueChange={({ value }) => handleLeaningChange(value)}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  className="text-foreground text-sm native:text-lg"
+                  placeholder="Political Leaning"
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>
+                    <Text>Political Leaning</Text>
+                  </SelectLabel>
+                  {mainPoliticalLeanings.map(politicalLeaning => (
+                    <SelectItem
+                      label={politicalLeaning.label}
+                      value={politicalLeaning.value}
+                      key={politicalLeaning.value}
+                    />
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <TouchableOpacity
+              className="flex flex-row gap-3 justify-start items-center"
+              onPress={() => setShowOtherLeanings(!showOtherLeanings)}
+            >
+              <Text>See more</Text>
+              {showOtherLeanings ? (
+                <Entypo name="chevron-thin-up" size={16} color="black" />
+              ) : (
+                <Entypo name="chevron-thin-down" size={16} color="black" />
+              )}
+            </TouchableOpacity>
+          </>
+        ) : null}
+
+        {(showOtherLeanings || activeLeaningSelect === 'other') && (
+          <View className="flex flex-col gap-3">
+            <Select
+              id="other-leaning"
+              className="web:w-full"
+              onValueChange={({ value }) => handleLeaningChange(value)}
             >
               <SelectTrigger>
                 <SelectValue
@@ -190,6 +222,18 @@ const Demographics: React.FC<StepProps> = ({ setProfileData, profileData }) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            {activeLeaningSelect === 'other' && (
+              <TouchableOpacity
+                className="flex flex-row gap-3 justify-start items-center"
+                onPress={() => {
+                  setActiveLeaningSelect('main');
+                  setShowOtherLeanings(false);
+                }}
+              >
+                <Text>Show main leanings</Text>
+                <Entypo name="chevron-thin-up" size={16} color="black" />
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </View>
