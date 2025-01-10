@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Modal, ScrollView, View } from 'react-native';
+import { Alert, Modal, ScrollView, View, Platform } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useColorScheme } from '~/lib/useColorScheme';
@@ -16,19 +16,36 @@ import { Checkbox } from '~/components/ui/checkbox';
 import { demographics } from '../constants';
 
 interface FilterModalProps {
-  filteredDemographics: object;
-  setFilteredDemographics: Function;
+  filteredDemographics: Record<string, string[]>;
+  setFilteredDemographics: (demographics: Record<string, string[]>) => void;
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
   filteredDemographics,
   setFilteredDemographics,
 }) => {
-  const [modalVisible, setModalVisible] = useState(false); // TODO use useRef
-  const [userSelectedDemographics, setUserSelectedDemographics] = useState(
-    filteredDemographics ? filteredDemographics : []
-  ); // TODO use useRef
+  const [modalVisible, setModalVisible] = useState(false);
+  const [userSelectedDemographics, setUserSelectedDemographics] = useState<
+    Record<string, string[]>
+  >(() => {
+    // Initialize with empty arrays for each demographic category
+    const initialState: Record<string, string[]> = {};
+    demographics.forEach(demo => {
+      initialState[demo.id] = filteredDemographics?.[demo.id] || [];
+    });
+    return initialState;
+  });
+
   const { isDarkColorScheme } = useColorScheme();
+
+  const modalBackgroundStyle = Platform.select({
+    android: {
+      backgroundColor: isDarkColorScheme
+        ? 'rgba(0,0,0,0.9)'
+        : 'rgba(255,255,255,0.9)',
+    },
+    default: {},
+  });
 
   return (
     <View>
@@ -37,21 +54,20 @@ const FilterModal: React.FC<FilterModalProps> = ({
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
+          setModalVisible(false);
         }}
       >
-        <ScrollView>
-          <View className="flex-1 items-center justify-center px-5 min-h-screen">
+        <View className="flex-1" style={modalBackgroundStyle}>
+          <View className="flex-1 px-4 py-6">
             <View
-              className={`m-5 rounded-3xl p-8 items-center shadow-lg w-full ${
+              className={`flex-1 rounded-3xl p-4 shadow-lg ${
                 isDarkColorScheme ? 'bg-black' : 'bg-white'
               }`}
             >
               <Button
                 size="icon"
                 variant="ghost"
-                className="self-end"
+                className="self-end mb-2"
                 onPress={() => setModalVisible(false)}
               >
                 <AntDesign
@@ -60,150 +76,179 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   color={isDarkColorScheme ? 'white' : 'black'}
                 />
               </Button>
-              <Accordion
-                type="multiple"
-                collapsible
-                defaultValue={['item-1']}
-                className="w-full native:max-w-md"
+
+              <ScrollView
+                className="flex-1"
+                showsVerticalScrollIndicator={true}
+                contentContainerStyle={{
+                  flexGrow: 1,
+                }}
               >
-                {demographics.map(({ name, options, id }, index) => (
-                  <AccordionItem value={name} key={id}>
-                    <AccordionTrigger>
-                      <Text>{name}</Text>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ScrollView
-                        className="max-h-52"
-                        contentContainerStyle={{
-                          flexDirection: 'row',
-                          flexWrap: 'wrap',
-                          gap: 8, // This will add spacing between items
-                          flexGrow: 1,
-                        }}
-                      >
-                        {id === 'occupation'
-                          ? options?.map(({ label, value, subcategories }) => {
-                              const selected = userSelectedDemographics
-                                ? userSelectedDemographics[id]
-                                : null;
-                              return (
-                                <View key={value}>
-                                  <Text>{label}</Text>
-                                  {subcategories?.map(subcategory => (
-                                    <View
-                                      className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
-                                      key={subcategory.value}
-                                    >
-                                      <Checkbox
-                                        id={subcategory.value}
-                                        checked={selected?.includes(
-                                          subcategory.value
-                                        )}
-                                        onCheckedChange={() => {
-                                          setUserSelectedDemographics(
-                                            prevState => {
-                                              const updatedData = {
-                                                ...prevState,
-                                              };
-                                              if (
-                                                updatedData[id]?.includes(
-                                                  subcategory.value
-                                                )
-                                              ) {
-                                                updatedData[id] = updatedData[
-                                                  id
-                                                ].filter(
-                                                  item =>
-                                                    item !== subcategory.value
+                <Accordion
+                  type="multiple"
+                  collapsible
+                  defaultValue={['item-1']}
+                  className="w-full"
+                >
+                  {demographics.map(({ name, options, id }) => (
+                    <AccordionItem value={name} key={id}>
+                      <AccordionTrigger>
+                        <Text>{name}</Text>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <View className="flex-row flex-wrap">
+                          {id === 'occupation'
+                            ? options?.map(
+                                ({ label, value, subcategories }) => {
+                                  const selected =
+                                    userSelectedDemographics[id] || [];
+                                  return (
+                                    <View key={value} className="w-full mb-2">
+                                      <Text className="font-bold mb-1">
+                                        {label}
+                                      </Text>
+                                      <View className="flex-row flex-wrap">
+                                        {subcategories?.map(subcategory => (
+                                          <View
+                                            className="w-1/2 flex-row items-center px-2 py-1"
+                                            key={subcategory.value}
+                                          >
+                                            <Checkbox
+                                              id={subcategory.value}
+                                              checked={selected.includes(
+                                                subcategory.value
+                                              )}
+                                              onCheckedChange={() => {
+                                                setUserSelectedDemographics(
+                                                  prevState => {
+                                                    const updatedData = {
+                                                      ...prevState,
+                                                    };
+                                                    if (!updatedData[id]) {
+                                                      updatedData[id] = [];
+                                                    }
+                                                    if (
+                                                      updatedData[id].includes(
+                                                        subcategory.value
+                                                      )
+                                                    ) {
+                                                      updatedData[
+                                                        id
+                                                      ] = updatedData[
+                                                        id
+                                                      ].filter(
+                                                        item =>
+                                                          item !==
+                                                          subcategory.value
+                                                      );
+                                                    } else {
+                                                      updatedData[id] = [
+                                                        ...updatedData[id],
+                                                        subcategory.value,
+                                                      ];
+                                                    }
+                                                    return updatedData;
+                                                  }
                                                 );
-                                              } else {
-                                                updatedData[id] = [
-                                                  ...(updatedData[id] || []),
-                                                  subcategory.value,
-                                                ];
-                                              }
-                                              return updatedData;
-                                            }
-                                          );
-                                        }}
-                                      />
-                                      <Label
-                                        nativeID={subcategory.value}
-                                        className="flex-1 flex-shrink"
-                                        numberOfLines={1}
-                                      >
-                                        {subcategory.label}
-                                      </Label>
+                                              }}
+                                            />
+                                            <Label
+                                              nativeID={subcategory.value}
+                                              className="flex-1 ml-2"
+                                              numberOfLines={1}
+                                            >
+                                              {subcategory.label}
+                                            </Label>
+                                          </View>
+                                        ))}
+                                      </View>
                                     </View>
-                                  ))}
-                                </View>
-                              );
-                            })
-                          : options?.map(({ label, value }) => {
-                              const selected = userSelectedDemographics
-                                ? userSelectedDemographics[id]
-                                : null;
-                              return (
-                                <View
-                                  className="w-1/2 flex flex-row items-center gap-2 px-2 py-1"
-                                  key={value}
-                                >
-                                  <Checkbox
-                                    id={value}
-                                    checked={selected?.includes(value)}
-                                    onCheckedChange={() => {
-                                      setUserSelectedDemographics(prevState => {
-                                        const updatedData = { ...prevState };
-                                        if (updatedData[id]?.includes(value)) {
-                                          updatedData[id] = updatedData[
-                                            id
-                                          ].filter(item => item !== value);
-                                        } else {
-                                          updatedData[id] = [
-                                            ...(updatedData[id] || []),
-                                            value,
-                                          ];
-                                        }
-                                        return updatedData;
-                                      });
-                                    }}
-                                  />
-                                  <Label
-                                    nativeID={value}
-                                    className="flex-1 flex-shrink"
-                                    numberOfLines={1}
+                                  );
+                                }
+                              )
+                            : options?.map(({ label, value }) => {
+                                const selected =
+                                  userSelectedDemographics[id] || [];
+                                return (
+                                  <View
+                                    className="w-1/2 flex-row items-center px-2 py-1"
+                                    key={value}
                                   >
-                                    {label}
-                                  </Label>
-                                </View>
-                              );
-                            })}
-                      </ScrollView>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+                                    <Checkbox
+                                      id={value}
+                                      checked={selected.includes(value)}
+                                      onCheckedChange={() => {
+                                        setUserSelectedDemographics(
+                                          prevState => {
+                                            const updatedData = {
+                                              ...prevState,
+                                            };
+                                            if (!updatedData[id]) {
+                                              updatedData[id] = [];
+                                            }
+                                            if (
+                                              updatedData[id].includes(value)
+                                            ) {
+                                              updatedData[id] = updatedData[
+                                                id
+                                              ].filter(item => item !== value);
+                                            } else {
+                                              updatedData[id] = [
+                                                ...updatedData[id],
+                                                value,
+                                              ];
+                                            }
+                                            return updatedData;
+                                          }
+                                        );
+                                      }}
+                                    />
+                                    <Label
+                                      nativeID={value}
+                                      className="flex-1 ml-2"
+                                      numberOfLines={1}
+                                    >
+                                      {label}
+                                    </Label>
+                                  </View>
+                                );
+                              })}
+                        </View>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </ScrollView>
+
               <Button
                 variant="outline"
                 onPress={() => {
                   setFilteredDemographics(userSelectedDemographics);
-                  setModalVisible(!modalVisible);
+                  setModalVisible(false);
                 }}
-                className="mt-6"
+                className="mt-4"
               >
                 <Text>Generate visualization</Text>
               </Button>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </Modal>
+
       <Button
         variant="outline"
         onPress={() => {
-          setUserSelectedDemographics(filteredDemographics);
+          setUserSelectedDemographics(() => {
+            // Reset to current filtered demographics or empty arrays
+            const initialState: Record<string, string[]> = {};
+            demographics.forEach(demo => {
+              initialState[demo.id] = filteredDemographics?.[demo.id] || [];
+            });
+            return initialState;
+          });
           setModalVisible(true);
         }}
-        className="flex-row gap-2  z-10"
+        className="flex-row gap-2 z-10"
       >
         <Ionicons
           name="filter"

@@ -68,6 +68,7 @@ const SelectScrollDownButton = ({ className, ...props }: SelectPrimitive.ScrollD
 };
 
 
+
 const SelectContent = React.forwardRef<
   SelectPrimitive.ContentRef,
   SelectPrimitive.ContentProps & { portalHost?: string }
@@ -75,8 +76,36 @@ const SelectContent = React.forwardRef<
   const { open } = SelectPrimitive.useRootContext();
 
   if (Platform.OS === 'web') {
-    // ... (web implementation remains the same)
-    return null;
+    return (
+      <SelectPrimitive.Portal hostName={portalHost}>
+        <SelectPrimitive.Content
+          ref={ref}
+          className={cn(
+            'relative z-50 max-h-96 min-w-[8rem] rounded-md border border-border bg-popover shadow-md shadow-foreground/10 py-2 px-1',
+            position === 'popper' &&
+              'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+            open
+              ? 'web:zoom-in-95 web:animate-in web:fade-in-0'
+              : 'web:zoom-out-95 web:animate-out web:fade-out-0',
+            className
+          )}
+          position={position}
+          {...props}
+        >
+          <SelectScrollUpButton />
+          <SelectPrimitive.Viewport
+            className={cn(
+              'p-1',
+              position === 'popper' &&
+                'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+            )}
+          >
+            {children}
+          </SelectPrimitive.Viewport>
+          <SelectScrollDownButton />
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    );
   }
 
   return (

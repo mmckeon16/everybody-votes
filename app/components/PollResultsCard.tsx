@@ -9,6 +9,7 @@ import {
 } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
+import { SkeletonCard } from './SkeletonCard';
 import useLastActiveQuestion from '../hooks/useLastActiveQuestion';
 import { View } from 'react-native';
 
@@ -17,7 +18,12 @@ export const PollResultsCard = () => {
   const { data: lastQuestion, isLoading, error } = useLastActiveQuestion();
   const { user_vote, options } = lastQuestion || {};
 
-  if (isLoading) return <Text>Loading...</Text>;
+  if (isLoading)
+    return (
+      <View className="flex flex-col gap-3 items-center w-full">
+        <SkeletonCard />
+      </View>
+    );
   if (error) return <Text>Error: {error.message}</Text>;
 
   const question = lastQuestion;
