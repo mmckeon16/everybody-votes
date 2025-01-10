@@ -8,20 +8,27 @@ import {
   Theme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { AuthProvider } from './context/AuthContext';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as Linking from 'expo-linking';
+import { isRunningInExpoGo } from 'expo';
+import {
+  SplashScreen,
+  Stack,
+  useNavigationContainerRef,
+  useRouter,
+} from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import * as Sentry from '@sentry/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { PortalHost } from '@rn-primitives/portal';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { PortalHost } from '@rn-primitives/portal';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
-import HeaderActions from './components/HeaderActions';
 import Toast from '~/components/ui/toast';
-import * as Sentry from '@sentry/react-native';
-import { isRunningInExpoGo } from 'expo';
+import { HomeButton } from '~/components/ui/HomeButton';
+import { AuthProvider } from './context/AuthContext';
+import HeaderActions from './components/HeaderActions';
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -62,6 +69,66 @@ const queryClient = new QueryClient();
 const RootLayout = () => {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+  const router = useRouter();
+
+  const linking = {
+    prefixes: ['everybody-polls://', 'exp://', 'http://localhost:8081'],
+    config: {
+      initialRouteName: 'index',
+      screens: {
+        index: '',
+        auth: 'auth',
+        'screens/vote/index': 'vote',
+        'screens/predict/index': 'predict',
+        'screens/results/index': 'results',
+        'screens/thanks': 'thanks',
+        'auth/complete-profile': 'auth/complete-profile',
+        'auth/celebrate': 'auth/celebrate',
+        'screens/splash': 'splash',
+      },
+    },
+  };
+
+  // Modify your existing deep link handling
+  useEffect(() => {
+    const handleDeepLink = (url: string) => {
+      if (url) {
+        const parsed = Linking.parse(url);
+        console.log('Parsed URL:', parsed);
+
+        // Map the parsed URL path to your expo-router routes
+        const path = parsed.path;
+        if (path) {
+          try {
+            router.push(path);
+          } catch (e) {
+            console.error('Navigation error:', e);
+            // Fallback to home if navigation fails
+            router.push('/');
+          }
+        }
+      }
+    };
+
+    // Handle deep links when app is not open
+    const init = async () => {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        handleDeepLink(initialUrl);
+      }
+    };
+
+    init();
+
+    // Handle deep links when app is open
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [router]);
 
   // Capture the NavigationContainer ref and register it with the integration.
   const ref = useNavigationContainerRef();
@@ -109,7 +176,12 @@ const RootLayout = () => {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-            <Stack>
+            <Stack
+              screenOptions={{
+                headerShown: true,
+              }}
+              linking={linking}
+            >
               <Stack.Screen
                 name="index"
                 options={{
@@ -133,6 +205,7 @@ const RootLayout = () => {
                 name="screens/vote/index"
                 options={{
                   title: 'Everybody polls',
+                  headerLeft: () => <HomeButton />,
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
@@ -144,6 +217,7 @@ const RootLayout = () => {
                 name="screens/predict/index"
                 options={{
                   title: 'Everybody polls',
+                  headerLeft: () => <HomeButton />,
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
@@ -155,6 +229,7 @@ const RootLayout = () => {
                 name="screens/results/index"
                 options={{
                   title: 'Everybody polls',
+                  headerLeft: () => <HomeButton />,
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
@@ -166,6 +241,7 @@ const RootLayout = () => {
                 name="screens/thanks"
                 options={{
                   title: 'Everybody polls',
+                  headerLeft: () => <HomeButton />,
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
@@ -188,6 +264,7 @@ const RootLayout = () => {
                 name="auth/celebrate"
                 options={{
                   title: 'Everybody polls',
+                  headerLeft: () => <HomeButton />,
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,

@@ -45,6 +45,18 @@ export default {
       kotlin: {
         suppressKotlinVersionCompatibilityCheck: true, // Add this line
       },
+      intentFilters: [
+        {
+          action: 'VIEW',
+          autoVerify: true,
+          data: [
+            {
+              scheme: 'everybody-polls',
+            },
+          ],
+          category: ['BROWSABLE', 'DEFAULT'],
+        },
+      ],
     },
     plugins: [
       [
