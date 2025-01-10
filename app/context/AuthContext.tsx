@@ -23,10 +23,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const handleDeepLink = async ({ url }: { url: string }) => {
-      console.log('Got deep link:', url);
-      try {
-        if (url.includes('code=')) {
+    const handleAuthDeepLink = async ({ url }: { url: string }) => {
+      console.log('Got auth deep link:', url);
+      // Only handle auth-specific deep links
+      if (url.includes('code=')) {
+        try {
           const code = url.match(/code=([^&]+)/)?.[1];
           if (code) {
             const { data, error } = await supabase.auth.exchangeCodeForSession(
@@ -42,25 +43,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 data.session
               );
 
-              // Add a small delay to ensure state updates have propagated
-              setTimeout(() => {
-                if (needsProfileCompletion) {
-                  console.log('Redirecting to signup from deep link...');
-                  router.replace('/auth/signup');
-                } else {
-                  console.log('Redirecting to home from deep link...');
-                  router.replace('/');
-                }
-              }, 100);
+              if (needsProfileCompletion) {
+                router.replace('/auth/signup');
+              } else {
+                router.replace('/');
+              }
             }
           }
+        } catch (error) {
+          console.error('Error handling auth deep link:', error);
         }
-      } catch (error) {
-        console.error('Error handling deep link:', error);
       }
     };
 
-    const subscription = Linking.addEventListener('url', handleDeepLink);
+    const subscription = Linking.addEventListener('url', handleAuthDeepLink);
     return () => {
       subscription.remove();
     };
@@ -88,12 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, _newSession) => {
-      console.log('Auth state changed:', {
+      console.log('Navigation flow:', {
         event,
-        userId: _newSession?.user?.id,
-        userEmail: _newSession?.user?.email,
-        sessionExists: !!_newSession,
-        userMetadata: _newSession?.user?.user_metadata,
+        currentRoute: router.getCurrentRoute(),
+        isAuthenticated: !!_newSession,
       });
 
       if (_newSession) {
@@ -102,22 +96,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           _newSession
         );
 
-        // Add a small delay to ensure state updates have propagated
-        setTimeout(() => {
-          if (needsProfileCompletion) {
-            console.log('Redirecting to signup...');
-            router.replace('/auth/signup');
-          } else {
-            console.log('Redirecting to home...');
-            router.replace('/');
-          }
-        }, 100);
+        // Remove setTimeout and handle navigation directly
+        if (needsProfileCompletion) {
+          console.log('Redirecting to signup...');
+          router.replace('/auth/signup');
+        } else {
+          console.log('Redirecting to home...');
+          router.replace('/');
+        }
       } else {
         setSession(null);
         setHasCompletedProfile(false);
+        router.replace('/auth'); // Add explicit navigation on signout
       }
     });
 
+    // Single return for cleanup
     return () => {
       subscription.unsubscribe();
     };

@@ -56,9 +56,9 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     try {
       const redirectUrl = Platform.select({
         web: 'http://localhost:8081',
-        android: 'everybody-polls://index', // Explicitly set the route
-        ios: 'everybody-polls://index',
-        default: Linking.createURL('index'), // Add specific path
+        android: 'everybody-polls://index/', // Explicitly set the route
+        ios: 'everybody-polls://index/',
+        default: Linking.createURL('/'), // Add specific path
       });
       console.log('Starting OAuth with redirect URL:', redirectUrl);
       const { data, error } = await supabase.auth.signInWithOAuth({
