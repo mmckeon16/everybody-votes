@@ -20,6 +20,12 @@ interface FilterModalProps {
   setFilteredDemographics: (demographics: Record<string, string[]>) => void;
 }
 
+const LONG_LABEL_THRESHOLD = Platform.select({
+  android: 17,
+  ios: 17,
+  default: 20,
+}); // Characters threshold for considering a label "long"
+
 const FilterModal: React.FC<FilterModalProps> = ({
   filteredDemographics,
   setFilteredDemographics,
@@ -28,7 +34,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [userSelectedDemographics, setUserSelectedDemographics] = useState<
     Record<string, string[]>
   >(() => {
-    // Initialize with empty arrays for each demographic category
     const initialState: Record<string, string[]> = {};
     demographics.forEach(demo => {
       initialState[demo.id] = filteredDemographics?.[demo.id] || [];
@@ -46,6 +51,51 @@ const FilterModal: React.FC<FilterModalProps> = ({
     },
     default: {},
   });
+
+  // Helper function to determine if a label is long
+  const isLongLabel = (label: string) => label.length > LONG_LABEL_THRESHOLD;
+
+  const renderOption = (
+    id: string,
+    label: string,
+    value: string,
+    selected: string[]
+  ) => {
+    const shouldTakeFullWidth = isLongLabel(label);
+
+    return (
+      <View
+        className={`flex-row items-center px-2 py-1 ${
+          shouldTakeFullWidth ? 'w-full' : 'w-1/2'
+        }`}
+        key={value}
+      >
+        <Checkbox
+          id={value}
+          checked={selected.includes(value)}
+          onCheckedChange={() => {
+            setUserSelectedDemographics(prevState => {
+              const updatedData = { ...prevState };
+              if (!updatedData[id]) {
+                updatedData[id] = [];
+              }
+              if (updatedData[id].includes(value)) {
+                updatedData[id] = updatedData[id].filter(
+                  item => item !== value
+                );
+              } else {
+                updatedData[id] = [...updatedData[id], value];
+              }
+              return updatedData;
+            });
+          }}
+        />
+        <Label nativeID={value} className="flex-1 ml-2">
+          {label}
+        </Label>
+      </View>
+    );
+  };
 
   return (
     <View>
@@ -108,111 +158,27 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                         {label}
                                       </Text>
                                       <View className="flex-row flex-wrap">
-                                        {subcategories?.map(subcategory => (
-                                          <View
-                                            className="w-1/2 flex-row items-center px-2 py-1"
-                                            key={subcategory.value}
-                                          >
-                                            <Checkbox
-                                              id={subcategory.value}
-                                              checked={selected.includes(
-                                                subcategory.value
-                                              )}
-                                              onCheckedChange={() => {
-                                                setUserSelectedDemographics(
-                                                  prevState => {
-                                                    const updatedData = {
-                                                      ...prevState,
-                                                    };
-                                                    if (!updatedData[id]) {
-                                                      updatedData[id] = [];
-                                                    }
-                                                    if (
-                                                      updatedData[id].includes(
-                                                        subcategory.value
-                                                      )
-                                                    ) {
-                                                      updatedData[
-                                                        id
-                                                      ] = updatedData[
-                                                        id
-                                                      ].filter(
-                                                        item =>
-                                                          item !==
-                                                          subcategory.value
-                                                      );
-                                                    } else {
-                                                      updatedData[id] = [
-                                                        ...updatedData[id],
-                                                        subcategory.value,
-                                                      ];
-                                                    }
-                                                    return updatedData;
-                                                  }
-                                                );
-                                              }}
-                                            />
-                                            <Label
-                                              nativeID={subcategory.value}
-                                              className="flex-1 ml-2"
-                                              numberOfLines={1}
-                                            >
-                                              {subcategory.label}
-                                            </Label>
-                                          </View>
-                                        ))}
+                                        {subcategories?.map(subcategory =>
+                                          renderOption(
+                                            id,
+                                            subcategory.label,
+                                            subcategory.value,
+                                            selected
+                                          )
+                                        )}
                                       </View>
                                     </View>
                                   );
                                 }
                               )
-                            : options?.map(({ label, value }) => {
-                                const selected =
-                                  userSelectedDemographics[id] || [];
-                                return (
-                                  <View
-                                    className="w-1/2 flex-row items-center px-2 py-1"
-                                    key={value}
-                                  >
-                                    <Checkbox
-                                      id={value}
-                                      checked={selected.includes(value)}
-                                      onCheckedChange={() => {
-                                        setUserSelectedDemographics(
-                                          prevState => {
-                                            const updatedData = {
-                                              ...prevState,
-                                            };
-                                            if (!updatedData[id]) {
-                                              updatedData[id] = [];
-                                            }
-                                            if (
-                                              updatedData[id].includes(value)
-                                            ) {
-                                              updatedData[id] = updatedData[
-                                                id
-                                              ].filter(item => item !== value);
-                                            } else {
-                                              updatedData[id] = [
-                                                ...updatedData[id],
-                                                value,
-                                              ];
-                                            }
-                                            return updatedData;
-                                          }
-                                        );
-                                      }}
-                                    />
-                                    <Label
-                                      nativeID={value}
-                                      className="flex-1 ml-2"
-                                      numberOfLines={1}
-                                    >
-                                      {label}
-                                    </Label>
-                                  </View>
-                                );
-                              })}
+                            : options?.map(({ label, value }) =>
+                                renderOption(
+                                  id,
+                                  label,
+                                  value,
+                                  userSelectedDemographics[id] || []
+                                )
+                              )}
                         </View>
                       </AccordionContent>
                     </AccordionItem>
@@ -239,7 +205,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
         variant="outline"
         onPress={() => {
           setUserSelectedDemographics(() => {
-            // Reset to current filtered demographics or empty arrays
             const initialState: Record<string, string[]> = {};
             demographics.forEach(demo => {
               initialState[demo.id] = filteredDemographics?.[demo.id] || [];
