@@ -61,13 +61,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('Redirecting to signup...');
           router.replace('/auth/signup');
         } else {
-          // console.log('Redirecting to home...');
-          // router.replace('/');
+          console.log('Redirecting to home...');
+          router.replace('/');
         }
       } else {
         setSession(null);
         setHasCompletedProfile(false);
-        router.replace('/auth');
+        router.replace('/');
       }
     });
 
@@ -91,18 +91,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return needsCompletion;
   };
+
   const value = {
     session,
     isLoading,
     signUp: async (email: string, password: string) => {
       const { error } = await supabase.auth.signUp({ email, password });
-      if (error) throw error;
-    },
-    signIn: async (email: string, password: string) => {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
       if (error) throw error;
     },
     signOut: async () => {
