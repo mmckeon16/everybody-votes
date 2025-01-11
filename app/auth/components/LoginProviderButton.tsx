@@ -4,6 +4,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import * as Linking from 'expo-linking';
+import * as AuthSession from 'expo-auth-session';
 import { supabase } from '../../lib/supabase';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
@@ -54,23 +55,16 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithProvider = async () => {
     try {
-      const redirectUrl = Platform.select({
-        web: 'http://localhost:8081',
-        android: 'everybody-polls://index/', // Explicitly set the route
-        ios: 'everybody-polls://index/',
-        default: Linking.createURL('/'), // Add specific path
-      });
+      const redirectUrl = AuthSession.makeRedirectUri();
       console.log('Starting OAuth with redirect URL:', redirectUrl);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
           redirectTo: redirectUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
         },
       });
+      console.log('got this data.url:', data.url);
+
       if (error) throw error;
       if (Platform.OS !== 'web' && data?.url) {
         await Linking.openURL(data.url);

@@ -23,46 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const handleAuthDeepLink = async ({ url }: { url: string }) => {
-      console.log('Got auth deep link:', url);
-      // Only handle auth-specific deep links
-      if (url.includes('code=')) {
-        try {
-          const code = url.match(/code=([^&]+)/)?.[1];
-          if (code) {
-            const { data, error } = await supabase.auth.exchangeCodeForSession(
-              code
-            );
-            if (error) {
-              console.error('Error exchanging code for session:', error);
-              return;
-            }
-            if (data?.session) {
-              setSession(data.session);
-              const needsProfileCompletion = await checkProfileCompletion(
-                data.session
-              );
-
-              if (needsProfileCompletion) {
-                router.replace('/auth/signup');
-              } else {
-                router.replace('/');
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Error handling auth deep link:', error);
-        }
-      }
-    };
-
-    const subscription = Linking.addEventListener('url', handleAuthDeepLink);
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  useEffect(() => {
     console.log('Setting up auth listeners...');
 
     // Initial session check
@@ -84,10 +44,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, _newSession) => {
-      console.log('Navigation flow:', {
+      console.log('Auth state changed:', {
         event,
-        currentRoute: router.getCurrentRoute(),
         isAuthenticated: !!_newSession,
+        userEmail: _newSession?.user?.email,
+        userMetadata: _newSession?.user?.user_metadata,
       });
 
       if (_newSession) {
@@ -96,22 +57,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           _newSession
         );
 
-        // Remove setTimeout and handle navigation directly
         if (needsProfileCompletion) {
           console.log('Redirecting to signup...');
           router.replace('/auth/signup');
         } else {
-          console.log('Redirecting to home...');
-          router.replace('/');
+          // console.log('Redirecting to home...');
+          // router.replace('/');
         }
       } else {
         setSession(null);
         setHasCompletedProfile(false);
-        router.replace('/auth'); // Add explicit navigation on signout
+        router.replace('/auth');
       }
     });
 
-    // Single return for cleanup
     return () => {
       subscription.unsubscribe();
     };

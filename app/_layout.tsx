@@ -99,44 +99,6 @@ const RootLayout = () => {
     },
   };
 
-  useEffect(() => {
-    const handleAppDeepLink = (url: string) => {
-      if (url && !url.includes('code=')) {
-        // Ignore auth deep links
-        const parsed = Linking.parse(url);
-        console.log('Parsed app deep link URL:', parsed);
-
-        const path = parsed.path;
-        if (path) {
-          try {
-            router.push(path);
-          } catch (e) {
-            console.error('Navigation error:', e);
-            router.push('/');
-          }
-        }
-      }
-    };
-
-    const init = async () => {
-      const initialUrl = await Linking.getInitialURL();
-      if (initialUrl && !initialUrl.includes('code=')) {
-        // Ignore auth deep links
-        handleAppDeepLink(initialUrl);
-      }
-    };
-
-    init();
-
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      handleAppDeepLink(url);
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [router]);
-
   // Capture the NavigationContainer ref and register it with the integration.
   const ref = useNavigationContainerRef();
 
