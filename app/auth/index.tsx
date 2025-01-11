@@ -48,11 +48,11 @@ export default function Login() {
         }}
       >
         <Card className="w-full max-w-sm p-2 rounded-2xl">
-          <Button size="icon" onPress={handleHomePress}>
+          <Button variant="ghost" size="icon" onPress={handleHomePress}>
             <FontAwesome
               name="home"
               size={18}
-              color={colorScheme === 'dark' ? 'black' : 'white'}
+              color={colorScheme === 'dark' ? 'white' : 'black'}
             />
           </Button>
           <OnboardingAd />

@@ -6,6 +6,7 @@ import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import { Button } from '~/components/ui/button';
 import { Card, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Progress } from '~/components/ui/progress';
+import GradientBadge from '~/components/ui/GradientBadge';
 import { Text } from '~/components/ui/text';
 import {
   getTimeUntilExpiration,
@@ -51,10 +52,11 @@ export default function Screen() {
 
   return (
     <Card className="w-full max-w-sm p-2 rounded-2xl">
-      <CardHeader className="items-center pb-3">
+      <CardHeader className="pb-3 pt-3 flex gap-3">
+        <GradientBadge text="ACTIVE" />
         <CardTitle className="text-center">{activeQuestion?.text}</CardTitle>
       </CardHeader>
-      <CardFooter className="flex-col gap-3 pb-4 pt-0">
+      <CardFooter className="flex-col gap-5 pb-4 pt-0">
         {hasEndDatePassed ? (
           <View className="flex flex-col gap-2">
             <Text className="text-center text-lg font-semibold text-lightBlue">
@@ -65,7 +67,7 @@ export default function Screen() {
             </Text>
           </View>
         ) : (
-          <View className="flex flex-col gap-3 w-full">
+          <View className="flex flex-col gap-5 w-full pt-2">
             <Progress
               value={percentage}
               className="h-2"
@@ -90,13 +92,12 @@ export default function Screen() {
                 </Text>
               ) : (
                 <Button
-                  variant="outline"
-                  className="shadow shadow-foreground/5"
+                  className="shadow shadow-foreground/5 w-full bg-lightBlue"
                   onPress={() => {
                     router.push('/screens/vote');
                   }}
                 >
-                  <Text>Vote</Text>
+                  <Text className="text-white">Vote</Text>
                 </Button>
               )}
             </View>

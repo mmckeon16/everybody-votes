@@ -33,7 +33,7 @@ const NumberFlipper: React.FC<NumberFlipperProps> = ({ targetNumber }) => {
     return () => clearInterval(timer);
   }, [targetNumber]);
 
-  return <Text>{currentNumber}</Text>;
+  return <Text className="font-serif text-3xl">{currentNumber}</Text>;
 };
 
 export default NumberFlipper;
