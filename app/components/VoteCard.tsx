@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import { Button } from '~/components/ui/button';
 import { Card, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Progress } from '~/components/ui/progress';
@@ -24,6 +25,7 @@ SplashScreen.setOptions({
 
 export default function Screen() {
   const router = useRouter();
+  const { colorScheme } = useNativewindColorScheme();
   const { data: activeQuestion, error, isError } = useActiveQuestion();
   const { user_vote, options } = activeQuestion || {};
 
@@ -67,10 +69,10 @@ export default function Screen() {
             <Progress
               value={percentage}
               className="h-2"
-              indicatorClassName="bg-lightBlue"
+              indicatorClassName="bg-blueLightPinkDark"
             />
             <View className="flex-row items-center justify-center overflow-hidden">
-              <Text className="text-sm font-bold text-lightBlue">
+              <Text className="text-sm font-bold text-blueLightPinkDark">
                 {getTimeUntilExpiration(activeQuestion?.end_date ?? '')}
               </Text>
               <Text className="text-sm text-muted-foreground">

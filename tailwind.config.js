@@ -41,9 +41,10 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        lightBlue: '#0879C4',
-        midnight: '#c208c9',
+        lightBlue: 'hsl(var(--lightBlue))',
+        midnight: 'hsl(var(--midnight))',
         blueBg: 'hsl(var(--blueBg))',
+        blueLightPinkDark: 'hsl(var(--blueLightPinkDark))',
       },
       borderWidth: {
         hairline: hairlineWidth(),
