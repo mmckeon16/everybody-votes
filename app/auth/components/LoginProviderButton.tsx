@@ -55,7 +55,11 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithProvider = async () => {
     try {
-      const redirectUrl = AuthSession.makeRedirectUri();
+      const redirectUrl = AuthSession.makeRedirectUri({
+        scheme: 'everybody-polls',
+        path: '/',
+        preferLocalhost: true,
+      });
       console.log('Starting OAuth with redirect URL:', redirectUrl);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
@@ -65,7 +69,10 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       });
       console.log('got this data.url:', data.url);
 
-      if (error) throw error;
+      if (error) {
+        console.log('error in signin with provider: ', error);
+        throw error;
+      }
       if (Platform.OS !== 'web' && data?.url) {
         await Linking.openURL(data.url);
         // Note: Don't add navigation here as it will be handled by the deep link handler
