@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "everybody-votes",
-    "slug": "everybody-votes",
+    "name": "everybody-polls",
+    "slug": "everybody-polls",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "everybody-votes",
+    "scheme": "com.everybody.polls",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -22,7 +22,7 @@
           "autoVerify": true,
           "data": [
             {
-              "scheme": "everybody-votes",
+              "scheme": "com.everybody.polls",
               "host": "auth/complete-profile"
             }
           ],

@@ -51,7 +51,7 @@ export default {
           autoVerify: true,
           data: [
             {
-              scheme: 'everybody-polls',
+              scheme: 'com.everybody.polls',
             },
           ],
           category: ['BROWSABLE', 'DEFAULT'],

@@ -9,6 +9,7 @@ import { supabase } from '../../lib/supabase';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ProviderButtonProps } from '../../types';
+import Toast from 'react-native-toast-message';
 
 const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   provider,
@@ -55,16 +56,16 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithProvider = async () => {
     try {
-      const redirectUrl = AuthSession.makeRedirectUri({
-        scheme: 'everybody-polls',
-        path: '/',
-        preferLocalhost: true,
-      });
-      console.log('Starting OAuth with redirect URL:', redirectUrl);
+      // const redirectUrl = AuthSession.makeRedirectUri({
+      //   scheme: 'com.everybody.polls',
+      //   path: '/',
+      //   preferLocalhost: true,
+      // });
+      // console.log('Starting OAuth with redirect URL:', redirectUrl);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: 'com.everybody.polls://index',
         },
       });
       console.log('got this data.url:', data.url);
@@ -80,8 +81,13 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         // Handle web platform differently if needed
         window.location.href = data.url;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error signing in with ${providerDisplayName}:`, error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error signing in',
+        text2: error,
+      });
     }
   };
   return isSmall ? (
