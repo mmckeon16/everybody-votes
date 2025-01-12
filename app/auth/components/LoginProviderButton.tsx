@@ -9,6 +9,11 @@ import { supabase } from '../../lib/supabase';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ProviderButtonProps } from '../../types';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   provider,
@@ -53,14 +58,51 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     }
   };
 
+  const signInWithGoogle = async () => {
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      webClientId:
+        '977118953072-1esbi08qjlmi7fj016brorjnu8eeuc07.apps.googleusercontent.com,977118953072-nasqa2l0vldnsb4qup28cfmm63holf4d.apps.googleusercontent.com',
+    });
+
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      if (userInfo?.data?.idToken) {
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: userInfo?.data?.idToken,
+        });
+        console.log(error, data);
+      } else {
+        throw new Error('no ID token present!');
+      }
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('user cancelled the login flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('operation (e.g. sign in) is in progress already');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('play services not available or outdated');
+      } else {
+        console.log('some other error happened during the day');
+      }
+    }
+  };
+
   const signInWithProvider = async () => {
     try {
+      if (provider === 'apple') {
+        return signInWithApple();
+      } else if (provider === 'google') {
+        return signInWithGoogle();
+      }
       const redirectUrl = AuthSession.makeRedirectUri({
-        scheme: 'everybody-polls',
         path: '/',
-        preferLocalhost: true,
       });
+
       console.log('Starting OAuth with redirect URL:', redirectUrl);
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {

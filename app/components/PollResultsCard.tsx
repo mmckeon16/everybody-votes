@@ -7,7 +7,6 @@ import {
   CardTitle,
   CardDescription,
 } from '~/components/ui/card';
-import { Badge } from '~/components/ui/badge';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { SkeletonCard } from './SkeletonCard';
