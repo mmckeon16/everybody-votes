@@ -72,6 +72,13 @@ export default {
         },
       ],
       [
+        '@react-native-google-signin/google-signin',
+        {
+          iosUrlScheme:
+            '977118953072-nasqa2l0vldnsb4qup28cfmm63holf4d.apps.googleusercontent.com',
+        },
+      ],
+      [
         '@sentry/react-native/expo',
         {
           organization: 'collect-software',
