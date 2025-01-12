@@ -61,8 +61,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   const signInWithGoogle = async () => {
     GoogleSignin.configure({
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-      webClientId:
-        '977118953072-1esbi08qjlmi7fj016brorjnu8eeuc07.apps.googleusercontent.com,977118953072-nasqa2l0vldnsb4qup28cfmm63holf4d.apps.googleusercontent.com',
+      webClientId: process.env.GOOGLE_CLIENT_ID,
     });
 
     try {
