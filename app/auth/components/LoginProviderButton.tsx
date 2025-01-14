@@ -75,7 +75,13 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
           provider: 'google',
           token: userInfo?.data?.idToken,
         });
-        setTestText(data);
+        if (data) {
+          setTestText(JSON.stringify(data));
+        } else if (error) {
+          setTestText(JSON.stringify(error));
+        } else {
+          setTestText('no error or data found');
+        }
         console.log(error, data);
       } else {
         throw new Error('no ID token present!');
