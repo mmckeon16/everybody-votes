@@ -1,5 +1,5 @@
-import React from 'react';
-import { Platform } from 'react-native';
+import React, { useState } from 'react';
+import { Platform, View } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -22,6 +22,9 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   isSmall = false,
 }) => {
   const { colorScheme } = useNativewindColorScheme();
+  const [testText, setTestText] = useState(
+    JSON.stringify({ 'hey there': 'test here' })
+  );
 
   const signInWithApple = async () => {
     try {
@@ -72,6 +75,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
           provider: 'google',
           token: userInfo?.data?.idToken,
         });
+        setTestText(data);
         console.log(error, data);
       } else {
         throw new Error('no ID token present!');
@@ -131,40 +135,48 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     }
   };
   return isSmall ? (
-    <Button onPress={signInWithProvider} size="icon">
-      {IconComponent ? (
-        <IconComponent
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
-      ) : (
-        <AntDesign
-          name={provider}
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
-      )}
-    </Button>
-  ) : (
-    <Button
-      onPress={provider === 'apple' ? signInWithApple : signInWithProvider}
-      className="flex flex-row gap-2 py-2"
-    >
-      {IconComponent ? (
-        <IconComponent
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
-      ) : (
-        <AntDesign
-          name={provider}
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
-      )}
+    <View className="flex flex-col text-wrap w-20">
+      <Text className="text-wrap">{testText}</Text>
 
-      <Text>Sign in with {providerDisplayName}</Text>
-    </Button>
+      <Button onPress={signInWithProvider} size="icon">
+        {IconComponent ? (
+          <IconComponent
+            size={20}
+            color={colorScheme === 'dark' ? 'black' : 'white'}
+          />
+        ) : (
+          <AntDesign
+            name={provider}
+            size={20}
+            color={colorScheme === 'dark' ? 'black' : 'white'}
+          />
+        )}
+      </Button>
+    </View>
+  ) : (
+    <>
+      <Text className="text-wrap">{testText}</Text>
+
+      <Button
+        onPress={provider === 'apple' ? signInWithApple : signInWithProvider}
+        className="flex flex-row gap-2 py-2 text-wrap	"
+      >
+        {IconComponent ? (
+          <IconComponent
+            size={20}
+            color={colorScheme === 'dark' ? 'black' : 'white'}
+          />
+        ) : (
+          <AntDesign
+            name={provider}
+            size={20}
+            color={colorScheme === 'dark' ? 'black' : 'white'}
+          />
+        )}
+
+        <Text>Sign in with {providerDisplayName}</Text>
+      </Button>
+    </>
   );
 };
 
