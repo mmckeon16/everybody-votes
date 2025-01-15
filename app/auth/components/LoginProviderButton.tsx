@@ -63,7 +63,6 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithGoogle = async () => {
     GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
       webClientId: process.env.GOOGLE_CLIENT_ID,
     });
 
@@ -71,12 +70,12 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       if (userInfo?.data?.idToken) {
-        const { data, error } = await supabase.auth.signInWithIdToken({
+        const response = await supabase.auth.signInWithIdToken({
           provider: 'google',
           token: userInfo?.data?.idToken,
         });
-        if (data) {
-          setTestText(JSON.stringify(data));
+        if (response) {
+          setTestText(JSON.stringify(response));
         } else if (error) {
           setTestText(JSON.stringify(error));
         } else {
@@ -84,6 +83,8 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         }
         console.log(error, data);
       } else {
+        setTestText('no ID token present!');
+
         throw new Error('no ID token present!');
       }
     } catch (error) {
