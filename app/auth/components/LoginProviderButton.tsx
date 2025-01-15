@@ -26,8 +26,10 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     JSON.stringify({ 'hey there': 'test here' })
   );
 
+  const clientId = process.env.GOOGLE_CLIENT_ID;
   GoogleSignin.configure({
     webClientId: process.env.GOOGLE_CLIENT_ID,
+    offlineAccess: true,
   });
 
   const signInWithApple = async () => {
@@ -145,7 +147,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   return isSmall ? (
     <View className="flex flex-col text-wrap w-20">
       <Text className="text-wrap">{testText}</Text>
-
+      <Text>{clientId}</Text>
       <Button onPress={signInWithProvider} size="icon">
         {IconComponent ? (
           <IconComponent
