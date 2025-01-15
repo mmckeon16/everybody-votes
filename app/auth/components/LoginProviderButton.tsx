@@ -26,9 +26,10 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     JSON.stringify({ 'hey there': 'test here' })
   );
 
-  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+  const supabaseURL = process.env.EXPO_PUBLIC_SUPABASE_URL;
   GoogleSignin.configure({
-    webClientId: process.env.GOOGLE_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     // offlineAccess: true,
   });
 
@@ -147,7 +148,8 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   return isSmall ? (
     <View className="flex flex-col text-wrap w-20">
       <Text className="text-wrap">{testText}</Text>
-      <Text>{clientId}</Text>
+      <Text>Client ID: {clientId}</Text>
+      <Text>Supabase URL: {supabaseURL}</Text>
       <Button onPress={signInWithProvider} size="icon">
         {IconComponent ? (
           <IconComponent
