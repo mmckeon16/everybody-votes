@@ -29,7 +29,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   const clientId = process.env.GOOGLE_CLIENT_ID;
   GoogleSignin.configure({
     webClientId: process.env.GOOGLE_CLIENT_ID,
-    offlineAccess: true,
+    // offlineAccess: true,
   });
 
   const signInWithApple = async () => {
