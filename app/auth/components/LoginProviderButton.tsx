@@ -26,6 +26,10 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     JSON.stringify({ 'hey there': 'test here' })
   );
 
+  GoogleSignin.configure({
+    webClientId: process.env.GOOGLE_CLIENT_ID,
+  });
+
   const signInWithApple = async () => {
     try {
       const redirectUrl = Linking.createURL('');
@@ -62,13 +66,11 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   };
 
   const signInWithGoogle = async () => {
-    GoogleSignin.configure({
-      webClientId: process.env.GOOGLE_CLIENT_ID,
-    });
-
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
+      setTestText(JSON.stringify(userInfo));
+
       if (userInfo?.data?.idToken) {
         const response = await supabase.auth.signInWithIdToken({
           provider: 'google',
@@ -83,8 +85,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         }
         console.log(error, data);
       } else {
-        setTestText('no ID token present!');
-
+        // setTestText('no ID token present!');
         throw new Error('no ID token present!');
       }
     } catch (error) {
