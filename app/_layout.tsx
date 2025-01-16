@@ -104,7 +104,7 @@ const RootLayout = () => {
           } catch (e) {
             console.error('Navigation error:', e);
             // Fallback to home if navigation fails
-            router.push('/');
+            // router.push('/');
           }
         }
       }
@@ -170,6 +170,9 @@ const RootLayout = () => {
     return null;
   }
 
+  const headerRightContainerStyle =
+    Platform.OS === 'android' ? { paddingRight: 8 } : undefined;
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
@@ -191,14 +194,22 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle:
-                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
                 name="auth"
                 options={{
                   headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="+not-found"
+                options={{
+                  title: 'Everybody polls',
+                  headerLeft: () => <HomeButton />,
+                  animation:
+                    Platform.OS === 'android' ? 'slide_from_right' : undefined,
                 }}
               />
               <Stack.Screen
@@ -209,8 +220,7 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle:
-                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -221,8 +231,7 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle:
-                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -233,8 +242,7 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle:
-                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -245,8 +253,7 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle:
-                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -256,8 +263,7 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle:
-                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -268,8 +274,7 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle:
-                    Platform.OS === 'android' ? { paddingRight: 8 } : undefined,
+                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen

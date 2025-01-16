@@ -1,117 +1,31 @@
-import { Stack } from 'expo-router';
-import { useRouter } from 'expo-router';
-import { View, ScrollView } from 'react-native';
-import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
-import * as Linking from 'expo-linking';
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text } from 'react-native';
+import { View } from 'react-native';
 
 export default function NotFoundScreen() {
-  const router = useRouter();
-  const [debugInfo, setDebugInfo] = useState<{
-    initialUrl: string | null;
-    currentUrl: string | null;
-    lastError: string | null;
-    timestamp: string;
-  }>({
-    initialUrl: null,
-    currentUrl: null,
-    lastError: null,
-    timestamp: new Date().toISOString(),
-  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial URL with error handling
-    Linking.getInitialURL()
-      .then((url) => {
-        setDebugInfo((prev) => ({
-          ...prev,
-          initialUrl: url,
-        }));
-      })
-      .catch((error) => {
-        setDebugInfo((prev) => ({
-          ...prev,
-          lastError: error.message || 'Error getting initial URL',
-        }));
-      });
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
 
-    // Listen for URL changes with error handling
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      try {
-        console.log('URL Event received:', url);
-        setDebugInfo((prev) => ({
-          ...prev,
-          currentUrl: url,
-          timestamp: new Date().toISOString(),
-        }));
-      } catch (error: any) {
-        setDebugInfo((prev) => ({
-          ...prev,
-          lastError: error.message || 'Error handling URL event',
-        }));
-      }
-    });
-
-    // Try to get the current URL
-    try {
-      const url = Linking.createURL('');
-      setDebugInfo((prev) => ({
-        ...prev,
-        lastError: `Current app URL scheme: ${url}`,
-      }));
-    } catch (error: any) {
-      setDebugInfo((prev) => ({
-        ...prev,
-        lastError: error.message || 'Error getting URL scheme',
-      }));
-    }
-
-    return () => {
-      subscription.remove();
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <>
-      <Stack.Screen options={{ title: 'Debug Info' }} />
-      <ScrollView className="m-3">
-        <View className="bg-red-100 p-4 rounded-lg mb-4">
-          <Text className="text-red-800 font-bold mb-2">
-            Debug Information:
-          </Text>
-          <Text className="text-red-800">Time: {debugInfo.timestamp}</Text>
-          <Text className="text-red-800">
-            Initial URL: {debugInfo.initialUrl || 'None'}
-          </Text>
-          <Text className="text-red-800">
-            Current URL: {debugInfo.currentUrl || 'None'}
-          </Text>
-          <Text className="text-red-800">
-            Last Error: {debugInfo.lastError || 'None'}
+    <View className="flex items-center justify-center h-full bg-gray-50">
+      {isLoading ? (
+        <ActivityIndicator size="large" className="text-blue-500" />
+      ) : (
+        <View className="flex items-center space-y-4">
+          <Text className="text-6xl font-bold text-gray-800">404</Text>
+          <Text className="text-xl text-gray-600">Page Not Found</Text>
+          <Text className="text-gray-500 text-center px-4">
+            Sorry, we couldn't find the page you're looking for.
           </Text>
         </View>
-
-        <Button
-          onPress={() => {
-            router.push('/');
-          }}
-        >
-          <Text>Go to home screen!</Text>
-        </Button>
-
-        <Button
-          className="mt-2"
-          onPress={() => {
-            setDebugInfo((prev) => ({
-              ...prev,
-              timestamp: new Date().toISOString(),
-            }));
-          }}
-        >
-          <Text>Refresh Debug Info</Text>
-        </Button>
-      </ScrollView>
-    </>
+      )}
+    </View>
   );
 }
