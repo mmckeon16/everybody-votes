@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import {
   Card,
@@ -20,6 +20,7 @@ import GradientBadge from '~/components/ui/GradientBadge';
 
 export const PollResultsCard = () => {
   const router = useRouter();
+  const [chartMounted, setChartMounted] = useState(false);
   const { data: lastQuestion, error: QuestionError } = useLastActiveQuestion();
   const { user_vote, options } = lastQuestion || {};
 
@@ -28,6 +29,10 @@ export const PollResultsCard = () => {
   const { data: { totalVotes, results } = nullData } = totalResults || {};
 
   const coloredResults = addColorToResults(results);
+
+  useLayoutEffect(() => {
+    setChartMounted(true);
+  }, []);
 
   if (isLoading || !totalResults)
     return (
@@ -54,16 +59,18 @@ export const PollResultsCard = () => {
         />
         <CardTitle className="pb-2">{question?.text}</CardTitle>
       </CardHeader>
-      <CardDescription className="w-full items-center justify-center pb-5">
-        <View className="w-full items-center justify-center">
-          <PieChart data={coloredResults} size={200} strokeWidth={25}>
-            <View className="flex justify-center">
-              <View className="flex flex-col items-center justify-center">
-                <NumberFlipper targetNumber={totalVotes} />
-                <Text>votes</Text>
+      <CardDescription className="w-full flex items-center justify-center pb-5">
+        <View className="w-full h-[200px] items-center justify-center">
+          {chartMounted && (
+            <PieChart data={coloredResults} size={200} strokeWidth={25}>
+              <View className="absolute inset-0 flex items-center justify-center">
+                <View className="flex flex-col items-center justify-center">
+                  <NumberFlipper targetNumber={totalVotes} />
+                  <Text>votes</Text>
+                </View>
               </View>
-            </View>
-          </PieChart>
+            </PieChart>
+          )}
         </View>
       </CardDescription>
       <CardFooter className="flex-col pb-4">

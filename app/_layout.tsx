@@ -69,7 +69,9 @@ const queryClient = new QueryClient();
 const RootLayout = () => {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+  const [isNavigationReady, setIsNavigationReady] = React.useState(false);
   const router = useRouter();
+  const navigationRef = useNavigationContainerRef();
 
   const linking = {
     prefixes: ['everybody-polls://', 'exp://', 'http://localhost:8081'],
@@ -89,28 +91,23 @@ const RootLayout = () => {
     },
   };
 
-  // Modify your existing deep link handling
   useEffect(() => {
     const handleDeepLink = (url: string) => {
-      if (url) {
+      if (url && isNavigationReady) {
         const parsed = Linking.parse(url);
         console.log('Parsed URL:', parsed);
 
-        // Map the parsed URL path to your expo-router routes
         const path = parsed.path;
         if (path) {
           try {
             router.push(path);
           } catch (e) {
             console.error('Navigation error:', e);
-            // Fallback to home if navigation fails
-            // router.push('/');
           }
         }
       }
     };
 
-    // Handle deep links when app is not open
     const init = async () => {
       const initialUrl = await Linking.getInitialURL();
       if (initialUrl) {
@@ -118,9 +115,10 @@ const RootLayout = () => {
       }
     };
 
-    init();
+    if (isNavigationReady) {
+      init();
+    }
 
-    // Handle deep links when app is open
     const subscription = Linking.addEventListener('url', ({ url }) => {
       handleDeepLink(url);
     });
@@ -128,16 +126,15 @@ const RootLayout = () => {
     return () => {
       subscription.remove();
     };
-  }, [router]);
+  }, [isNavigationReady, router]);
 
-  // Capture the NavigationContainer ref and register it with the integration.
-  const ref = useNavigationContainerRef();
-
+  // Register navigation container and set ready state
   useEffect(() => {
-    if (ref?.current) {
-      navigationIntegration.registerNavigationContainer(ref);
+    if (navigationRef?.current) {
+      navigationIntegration.registerNavigationContainer(navigationRef);
+      setIsNavigationReady(true);
     }
-  }, [ref]);
+  }, [navigationRef?.current]);
 
   useEffect(() => {
     (async () => {
@@ -184,6 +181,7 @@ const RootLayout = () => {
                 headerShown: true,
               }}
               linking={linking}
+              ref={navigationRef}
             >
               <Stack.Screen
                 name="index"
