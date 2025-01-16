@@ -76,28 +76,59 @@ const RootLayout = () => {
     config: {
       initialRouteName: 'index',
       screens: {
-        index: {
-          path: '',
-        },
-        auth: {
-          path: 'auth',
-          screens: {
-            signup: 'auth/signup',
-            'complete-profile': 'auth/complete-profile',
-            celebrate: 'auth/celebrate',
-          },
-        },
-        screens: {
-          path: 'screens',
-          screens: {
-            vote: 'screens/vote',
-            predict: 'screens/predict',
-            thanks: 'screens/thanks',
-          },
-        },
+        index: '',
+        auth: 'auth',
+        'screens/vote/index': 'vote',
+        'screens/predict/index': 'predict',
+        'screens/results/index': 'results',
+        'screens/thanks': 'thanks',
+        'auth/complete-profile': 'auth/complete-profile',
+        'auth/celebrate': 'auth/celebrate',
+        'screens/splash': 'splash',
       },
     },
   };
+
+  // Modify your existing deep link handling
+  useEffect(() => {
+    const handleDeepLink = (url: string) => {
+      if (url) {
+        const parsed = Linking.parse(url);
+        console.log('Parsed URL:', parsed);
+
+        // Map the parsed URL path to your expo-router routes
+        const path = parsed.path;
+        if (path) {
+          try {
+            router.push(path);
+          } catch (e) {
+            console.error('Navigation error:', e);
+            // Fallback to home if navigation fails
+            router.push('/');
+          }
+        }
+      }
+    };
+
+    // Handle deep links when app is not open
+    const init = async () => {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        handleDeepLink(initialUrl);
+      }
+    };
+
+    init();
+
+    // Handle deep links when app is open
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [router]);
 
   // Capture the NavigationContainer ref and register it with the integration.
   const ref = useNavigationContainerRef();
