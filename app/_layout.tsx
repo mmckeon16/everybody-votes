@@ -167,8 +167,8 @@ const RootLayout = () => {
     return null;
   }
 
-  const headerRightContainerStyle =
-    Platform.OS === 'android' ? { paddingRight: 8 } : undefined;
+  const headerRightContainerStyle = undefined;
+  // Platform.OS === 'android' ? { paddingRight: 2 } : undefined;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
