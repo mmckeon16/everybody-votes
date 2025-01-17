@@ -60,15 +60,13 @@ export const PollResultsCard = () => {
         <CardTitle className="pb-2">{question?.text}</CardTitle>
       </CardHeader>
       <CardDescription>
-        <View className="flex-1 w-full items-center">
-          <View style={{ position: 'relative', width: 200, height: 200 }}>
-            <PieChart data={coloredResults} size={200} strokeWidth={25}>
-              <View className="flex items-center justify-center">
-                <NumberFlipper targetNumber={totalVotes} />
-                <Text>votes</Text>
-              </View>
-            </PieChart>
-          </View>
+        <View style={{ width: '100%', alignItems: 'center' }}>
+          <PieChart data={coloredResults} size={200} strokeWidth={25}>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <NumberFlipper targetNumber={totalVotes} />
+              <Text>votes</Text>
+            </View>
+          </PieChart>
         </View>
       </CardDescription>
       <CardFooter className="flex-col pb-4">

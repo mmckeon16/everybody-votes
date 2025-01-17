@@ -34,7 +34,6 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
   const progress = useSharedValue(0);
-  const centerContentSize = Math.floor(radius * 1.4);
 
   useEffect(() => {
     if (data.length !== 2) {
@@ -79,52 +78,46 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   }));
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.svgContainer, { width: size, height: size }]}>
-        <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
-          <G rotation={90} origin={`${center}, ${center}`}>
-            <AnimatedCircle
-              cx={center}
-              cy={center}
-              r={radius}
-              stroke={data[0].color}
-              strokeWidth={strokeWidth}
-              fill="none"
-              animatedProps={animatedProps1}
-              strokeLinecap="round"
-            />
-            <AnimatedCircle
-              cx={center}
-              cy={center}
-              r={radius}
-              stroke={data[1].color}
-              strokeWidth={strokeWidth}
-              fill="none"
-              animatedProps={animatedProps2}
-              strokeLinecap="round"
-            />
-          </G>
-        </Svg>
-      </View>
-      <View
-        style={[
-          styles.childrenContainer,
-          {
-            width: centerContentSize,
-            height: centerContentSize,
-          },
-        ]}
-      >
-        {children}
+    <View style={styles.outerContainer}>
+      <View style={[styles.chartContainer, { width: size, height: size }]}>
+        <View style={StyleSheet.absoluteFillObject}>
+          <Svg width={size} height={size}>
+            <G rotation={90} origin={`${center}, ${center}`}>
+              <AnimatedCircle
+                cx={center}
+                cy={center}
+                r={radius}
+                stroke={data[0].color}
+                strokeWidth={strokeWidth}
+                fill="none"
+                animatedProps={animatedProps1}
+                strokeLinecap="round"
+              />
+              <AnimatedCircle
+                cx={center}
+                cy={center}
+                r={radius}
+                stroke={data[1].color}
+                strokeWidth={strokeWidth}
+                fill="none"
+                animatedProps={animatedProps2}
+                strokeLinecap="round"
+              />
+            </G>
+          </Svg>
+        </View>
+        <View style={styles.contentContainer}>{children}</View>
       </View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  chartContainer: {
     position: 'relative',
     ...Platform.select({
       android: {
@@ -132,13 +125,8 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  svgContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  childrenContainer: {
-    position: 'absolute',
+  contentContainer: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
