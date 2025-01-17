@@ -1,5 +1,9 @@
 # Everybody Votes
 
+Make your voice heard!
+
+This is an app to vote on questions and see the results. See results based on demographics.
+
 This is a mono repo containing both a React Native Expo application and Supabase Edge Functions.
 
 The project uses [Expo](https://expo.dev) for the mobile app (created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app)) and Supabase for the backend services.
