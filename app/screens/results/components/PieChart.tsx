@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, LayoutChangeEvent } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 import Animated, {
   useAnimatedProps,
@@ -30,16 +30,11 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   strokeWidth = 25,
   children,
 }) => {
-  const [layout, setLayout] = useState({ width: 0, height: 0 });
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
   const progress = useSharedValue(0);
   const centerContentSize = Math.floor(radius * 1.4);
-
-  const onLayout = (event: LayoutChangeEvent) => {
-    setLayout(event.nativeEvent.layout);
-  };
 
   useEffect(() => {
     if (data.length !== 2) {
@@ -84,89 +79,68 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   }));
 
   return (
-    <View
-      style={[styles.wrapper, { width: size, height: size }]}
-      onLayout={onLayout}
-    >
-      <View style={styles.container}>
-        <View
-          style={[
-            styles.centerContent,
-            {
-              width: centerContentSize,
-              height: centerContentSize,
-              left: (size - centerContentSize) / 2,
-              top: (size - centerContentSize) / 2,
-            },
-          ]}
-        >
-          {children}
-        </View>
-        <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
-          <G rotation={90} origin={`${center}, ${center}`}>
-            <AnimatedCircle
-              cx={center}
-              key={`donut-segment-${data[0]?.optionText}`}
-              cy={center}
-              r={radius}
-              stroke={data[0].color}
-              strokeWidth={strokeWidth}
-              fill="none"
-              animatedProps={animatedProps1}
-              strokeLinecap="round"
-            />
-            <AnimatedCircle
-              cx={center}
-              key={`donut-segment-${data[1]?.optionText}`}
-              cy={center}
-              r={radius}
-              stroke={data[1].color}
-              strokeWidth={strokeWidth}
-              fill="none"
-              animatedProps={animatedProps2}
-              strokeLinecap="round"
-            />
-          </G>
-        </Svg>
+    <View style={[styles.mainContainer, { width: size, height: size }]}>
+      <Svg width={size} height={size}>
+        <G rotation={90} origin={`${center}, ${center}`}>
+          <AnimatedCircle
+            cx={center}
+            key={`donut-segment-${data[0]?.optionText}`}
+            cy={center}
+            r={radius}
+            stroke={data[0].color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            animatedProps={animatedProps1}
+            strokeLinecap="round"
+          />
+          <AnimatedCircle
+            cx={center}
+            key={`donut-segment-${data[1]?.optionText}`}
+            cy={center}
+            r={radius}
+            stroke={data[1].color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            animatedProps={animatedProps2}
+            strokeLinecap="round"
+          />
+        </G>
+      </Svg>
+      <View
+        style={[
+          styles.childrenContainer,
+          {
+            width: centerContentSize,
+            height: centerContentSize,
+            top: (size - centerContentSize) / 2,
+            left: (size - centerContentSize) / 2,
+          },
+        ]}
+      >
+        {children}
       </View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
-  wrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  mainContainer: {
     position: 'relative',
-    width: '100%',
-    height: '100%',
+    alignSelf: 'center',
+    ...Platform.select({
+      android: {
+        elevation: 0,
+      },
+      web: {
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+    }),
   },
-  centerContent: {
+  childrenContainer: {
     position: 'absolute',
-    zIndex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  legendContainer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 20,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  colorBox: {
-    width: 16,
-    height: 16,
-    borderRadius: 4,
+    zIndex: 1,
   },
 });
 
