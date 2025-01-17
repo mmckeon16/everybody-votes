@@ -20,7 +20,7 @@ export default {
       policy: 'appVersion',
     },
     splash: {
-      image: './assets/test0icon.png', // Make sure this file exists
+      image: './assets/images/every-body-polls-icon.png', // Make sure this file exists
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
     },
@@ -32,7 +32,7 @@ export default {
     android: {
       package: 'com.everybody.polls',
       adaptiveIcon: {
-        foregroundImage: './assets/test0icon.png',
+        foregroundImage: './assets/images/every-body-polls-icon.png',
         backgroundColor: '#ffffff',
       },
       versionCode: 1,
@@ -64,9 +64,9 @@ export default {
         'expo-splash-screen',
         {
           backgroundColor: '#232323',
-          image: './assets/test0icon.png',
+          image: './assets/images/every-body-polls-icon.png',
           dark: {
-            image: './assets/test0icon.png',
+            image: './assets/images/every-body-polls-icon.png',
             backgroundColor: '#000000',
           },
           imageWidth: 200,
