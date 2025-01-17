@@ -80,32 +80,30 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   return (
     <View style={styles.outerContainer}>
       <View style={[styles.chartContainer, { width: size, height: size }]}>
-        <View style={StyleSheet.absoluteFillObject}>
-          <Svg width={size} height={size}>
-            <G rotation={90} origin={`${center}, ${center}`}>
-              <AnimatedCircle
-                cx={center}
-                cy={center}
-                r={radius}
-                stroke={data[0].color}
-                strokeWidth={strokeWidth}
-                fill="none"
-                animatedProps={animatedProps1}
-                strokeLinecap="round"
-              />
-              <AnimatedCircle
-                cx={center}
-                cy={center}
-                r={radius}
-                stroke={data[1].color}
-                strokeWidth={strokeWidth}
-                fill="none"
-                animatedProps={animatedProps2}
-                strokeLinecap="round"
-              />
-            </G>
-          </Svg>
-        </View>
+        <Svg width={size} height={size}>
+          <G rotation={90} origin={`${center}, ${center}`}>
+            <AnimatedCircle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={data[0].color}
+              strokeWidth={strokeWidth}
+              fill="none"
+              animatedProps={animatedProps1}
+              strokeLinecap="round"
+            />
+            <AnimatedCircle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={data[1].color}
+              strokeWidth={strokeWidth}
+              fill="none"
+              animatedProps={animatedProps2}
+              strokeLinecap="round"
+            />
+          </G>
+        </Svg>
         <View style={styles.contentContainer}>{children}</View>
       </View>
     </View>
@@ -118,12 +116,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chartContainer: {
-    position: 'relative',
-    ...Platform.select({
-      android: {
-        elevation: 0,
-      },
-    }),
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   contentContainer: {
     ...StyleSheet.absoluteFillObject,
