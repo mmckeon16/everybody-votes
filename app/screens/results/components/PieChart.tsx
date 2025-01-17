@@ -79,41 +79,39 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   }));
 
   return (
-    <View style={[styles.mainContainer, { width: size, height: size }]}>
-      <Svg width={size} height={size}>
-        <G rotation={90} origin={`${center}, ${center}`}>
-          <AnimatedCircle
-            cx={center}
-            key={`donut-segment-${data[0]?.optionText}`}
-            cy={center}
-            r={radius}
-            stroke={data[0].color}
-            strokeWidth={strokeWidth}
-            fill="none"
-            animatedProps={animatedProps1}
-            strokeLinecap="round"
-          />
-          <AnimatedCircle
-            cx={center}
-            key={`donut-segment-${data[1]?.optionText}`}
-            cy={center}
-            r={radius}
-            stroke={data[1].color}
-            strokeWidth={strokeWidth}
-            fill="none"
-            animatedProps={animatedProps2}
-            strokeLinecap="round"
-          />
-        </G>
-      </Svg>
+    <View style={styles.container}>
+      <View style={[styles.svgContainer, { width: size, height: size }]}>
+        <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
+          <G rotation={90} origin={`${center}, ${center}`}>
+            <AnimatedCircle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={data[0].color}
+              strokeWidth={strokeWidth}
+              fill="none"
+              animatedProps={animatedProps1}
+              strokeLinecap="round"
+            />
+            <AnimatedCircle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={data[1].color}
+              strokeWidth={strokeWidth}
+              fill="none"
+              animatedProps={animatedProps2}
+              strokeLinecap="round"
+            />
+          </G>
+        </Svg>
+      </View>
       <View
         style={[
           styles.childrenContainer,
           {
             width: centerContentSize,
             height: centerContentSize,
-            top: (size - centerContentSize) / 2,
-            left: (size - centerContentSize) / 2,
           },
         ]}
       >
@@ -122,19 +120,22 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  mainContainer: {
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
-    alignSelf: 'center',
     ...Platform.select({
       android: {
         elevation: 0,
       },
-      web: {
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
     }),
+  },
+  svgContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   childrenContainer: {
     position: 'absolute',
