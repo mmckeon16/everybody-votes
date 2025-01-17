@@ -5,8 +5,7 @@
 package-lock.json
 # env
 .env
-.env.development
-
+.env.*
 # dependencies
 node_modules/
 
