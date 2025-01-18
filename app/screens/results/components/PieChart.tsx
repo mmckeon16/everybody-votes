@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 import Animated, {
@@ -30,12 +30,15 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   strokeWidth = 25,
   children,
 }) => {
+  const [mounted, setMounted] = useState(false);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
   const progress = useSharedValue(0);
 
   useEffect(() => {
+    setMounted(true);
+
     if (data.length !== 2) {
       console.warn('Exactly two data items are required');
       return;
@@ -47,81 +50,78 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
       return;
     }
 
-    progress.value = withTiming(1, {
-      duration: 2000,
-      easing: Easing.bezier(0.16, 0, 0.4, 1),
-    });
+    // Delay the animation start
+    progress.value = withDelay(
+      100, // Small delay to ensure proper positioning
+      withTiming(1, {
+        duration: 2000,
+        easing: Easing.bezier(0.16, 0, 0.4, 1),
+      })
+    );
   }, [data]);
 
-  const segment1Length = useDerivedValue(() => {
-    return (data[0].percentage / 100) * circumference * progress.value;
-  });
-
-  const segment2Length = useDerivedValue(() => {
-    return (data[1].percentage / 100) * circumference * progress.value;
-  });
-
-  const animatedProps1 = useAnimatedProps(() => ({
-    strokeDasharray: `${segment1Length.value} ${circumference}`,
-    strokeDashoffset: 0,
-    originX: center,
-    originY: center,
-    rotation: 180,
-  }));
-
-  const animatedProps2 = useAnimatedProps(() => ({
-    strokeDasharray: `${segment2Length.value} ${circumference}`,
-    strokeDashoffset: -circumference + segment2Length.value,
-    originX: center,
-    originY: center,
-    rotation: 180,
-  }));
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <View style={styles.outerContainer}>
-      <View style={[styles.chartContainer, { width: size, height: size }]}>
-        <Svg width={size} height={size}>
-          <G rotation={90} origin={`${center}, ${center}`}>
-            <AnimatedCircle
-              cx={center}
-              cy={center}
-              r={radius}
-              stroke={data[0].color}
-              strokeWidth={strokeWidth}
-              fill="none"
-              animatedProps={animatedProps1}
-              strokeLinecap="round"
-            />
-            <AnimatedCircle
-              cx={center}
-              cy={center}
-              r={radius}
-              stroke={data[1].color}
-              strokeWidth={strokeWidth}
-              fill="none"
-              animatedProps={animatedProps2}
-              strokeLinecap="round"
-            />
-          </G>
-        </Svg>
-        <View style={styles.contentContainer}>{children}</View>
+    <View style={[styles.container, { width: size, height: size }]}>
+      <Svg width={size} height={size}>
+        <G rotation={90} origin={`${center}, ${center}`}>
+          <AnimatedCircle
+            cx={center}
+            cy={center}
+            r={radius}
+            stroke={data[0].color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            animatedProps={animatedProps1}
+            strokeLinecap="round"
+          />
+          <AnimatedCircle
+            cx={center}
+            cy={center}
+            r={radius}
+            stroke={data[1].color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            animatedProps={animatedProps2}
+            strokeLinecap="round"
+          />
+        </G>
+      </Svg>
+      <View
+        style={[
+          styles.childrenContainer,
+          {
+            position: 'absolute',
+            width: size,
+            height: size,
+            left: 0,
+            top: 0,
+          },
+        ]}
+      >
+        {children}
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  outerContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+  container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    ...Platform.select({
+      android: {
+        elevation: 0,
+      },
+    }),
   },
-  chartContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  contentContainer: {
-    ...StyleSheet.absoluteFillObject,
+  childrenContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
