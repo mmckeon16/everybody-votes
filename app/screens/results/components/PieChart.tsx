@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   useDerivedValue,
   Easing,
+  withDelay,
 } from 'react-native-reanimated';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -35,6 +36,30 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
   const progress = useSharedValue(0);
+
+  const segment1Length = useDerivedValue(() => {
+    return (data[0].percentage / 100) * circumference * progress.value;
+  });
+
+  const segment2Length = useDerivedValue(() => {
+    return (data[1].percentage / 100) * circumference * progress.value;
+  });
+
+  const animatedProps1 = useAnimatedProps(() => ({
+    strokeDasharray: `${segment1Length.value} ${circumference}`,
+    strokeDashoffset: 0,
+    originX: center,
+    originY: center,
+    rotation: 180,
+  }));
+
+  const animatedProps2 = useAnimatedProps(() => ({
+    strokeDasharray: `${segment2Length.value} ${circumference}`,
+    strokeDashoffset: -circumference + segment2Length.value,
+    originX: center,
+    originY: center,
+    rotation: 180,
+  }));
 
   useEffect(() => {
     setMounted(true);
