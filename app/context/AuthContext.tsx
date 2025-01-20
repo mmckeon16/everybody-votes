@@ -3,6 +3,7 @@ import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
+import { registerForPushNotifications } from '../lib/api/notify';
 
 interface AuthContextType {
   session: Session | null;
@@ -21,6 +22,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
   const router = useRouter();
+
+  export function usePushNotifications(userId: string | null) {
+    useEffect(() => {
+      if (!userId) return;
+
+      registerForPushNotifications(userId).catch(error => {
+        console.error('Failed to register for push notifications:', error);
+      });
+    }, [userId]); // Re-run when userId changes (e.g., after login)
+  }
 
   useEffect(() => {
     const handleDeepLink = async ({ url }: { url: string }) => {
@@ -159,6 +170,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: !!session,
     hasCompletedProfile,
   };
+
+  // Use the hook to handle push notification setup
+  usePushNotifications(session?.user?.id ?? null);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

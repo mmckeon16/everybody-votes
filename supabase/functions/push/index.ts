@@ -1,22 +1,29 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-console.log('Hello from Functions!');
-
-interface Notification {
+interface User {
   id: string;
-  user_id: string;
-  body: string;
+  expo_push_token: string;
+}
+
+interface Question {
+  id: string;
+  text: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
 }
 
 interface WebhookPayload {
   type: 'INSERT' | 'UPDATE' | 'DELETE';
   table: string;
-  record: Notification;
+  record: {
+    id: string;
+    is_active: boolean;
+  };
   schema: 'public';
-  old_record: null | Notification;
+  old_record: null | {
+    is_active: boolean;
+  };
 }
 
 const supabase = createClient(
@@ -25,33 +32,99 @@ const supabase = createClient(
 );
 
 Deno.serve(async req => {
-  const payload: WebhookPayload = await req.json();
-  const { data } = await supabase
-    .from('profiles')
-    .select('expo_push_token')
-    .eq('id', payload.record.user_id)
-    .single();
+  try {
+    const payload: WebhookPayload = await req.json();
 
-  const res = await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${Deno.env.get('EXPO_ACCESS_TOKEN')}`,
-    },
-    body: JSON.stringify({
-      to: data?.expo_push_token,
-      sound: 'default',
-      body: payload.record.body,
-    }),
-  }).then(res => res.json());
+    // Only proceed if this is an UPDATE and is_active changed to true
+    if (
+      payload.type !== 'UPDATE' ||
+      !payload.record.is_active ||
+      payload.old_record?.is_active === payload.record.is_active
+    ) {
+      return new Response(
+        JSON.stringify({ message: 'No notification needed' }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
-  return new Response(JSON.stringify(res), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+    // Get the active question details
+    const { data: activeQuestion, error: questionError } = await supabase
+      .from('questions')
+      .select('*')
+      .eq('id', payload.record.id)
+      .single();
+
+    if (questionError || !activeQuestion) {
+      throw new Error('Failed to fetch question details');
+    }
+
+    // Get all users with push tokens
+    const { data: users, error: usersError } = await supabase
+      .from('users')
+      .select('expo_push_token')
+      .not('expo_push_token', 'is', null);
+
+    if (usersError) {
+      throw new Error('Failed to fetch users');
+    }
+
+    // Format the notification message
+    const endDate = new Date(activeQuestion.end_date).toLocaleDateString();
+    const notificationBody = `New question available: "${activeQuestion.text}". Available until ${endDate}`;
+
+    // Send notifications to all users in batches of 100
+    const pushTokens = users.map(user => user.expo_push_token).filter(Boolean);
+    const batchSize = 100;
+    const batches = [];
+
+    for (let i = 0; i < pushTokens.length; i += batchSize) {
+      const batch = pushTokens.slice(i, i + batchSize);
+      batches.push(batch);
+    }
+
+    const results = await Promise.all(
+      batches.map(async tokenBatch => {
+        const messages = tokenBatch.map(token => ({
+          to: token,
+          sound: 'default',
+          title: 'New Question Available',
+          body: notificationBody,
+          data: { questionId: activeQuestion.id },
+        }));
+
+        return fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Deno.env.get('EXPO_ACCESS_TOKEN')}`,
+          },
+          body: JSON.stringify(messages),
+        }).then(res => res.json());
+      })
+    );
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: `Notifications sent to ${pushTokens.length} users`,
+        results,
+      }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
 });
-
-// To invoke:
-// curl -i --location --request POST 'http://localhost:54321/functions/v1/' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'
