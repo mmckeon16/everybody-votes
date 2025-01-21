@@ -62,9 +62,9 @@ const OnboardingOverlay = () => {
         {features.map((feature, index) => (
           <FeatureItem
             key={index}
-            icon={feature.icon}
-            title={feature.title}
-            description={feature.description}
+            icon={feature?.icon}
+            title={feature?.title}
+            description={feature?.description}
           />
         ))}
       </CardContent>

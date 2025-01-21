@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SkeletonCard } from './components/SkeletonCard';
 import { useActiveQuestion } from './hooks/useActiveQuestion';
@@ -38,14 +38,19 @@ export default function Screen() {
   }
 
   return (
-    <View className="flex-1 p-6 bg-blueBg">
+    <ScrollView
+      className="flex-1 p-6 bg-blueBg"
+      contentContainerStyle={{
+        flexGrow: 1,
+      }}
+    >
       {!appIsReady ? (
         <View className="flex flex-col gap-3 items-center w-full">
           <SkeletonCard />
           <SkeletonCard />
         </View>
       ) : (
-        <View className="flex-1 items-center gap-5 bg-blueBg">
+        <View className="flex-1 items-center gap-5 pb-10 bg-blueBg">
           <VoteCard />
           <PollResultsCard />
           {/* <Button size="icon" onPress={handleHomePress}>
@@ -53,6 +58,6 @@ export default function Screen() {
           </Button> */}
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }

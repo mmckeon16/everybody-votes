@@ -103,8 +103,13 @@ export function changeResultsForChart<T>(
   if (data) {
     return data.map(result => ({
       ...result,
-      name: result.optionText,
-      value: result.percentage,
+      label: {
+        text: result?.percentage > 0 ? `${result?.percentage}%` : '',
+        fontWeight: 'bold',
+        fontSize: 20,
+        fill: 'white',
+      },
+      value: result?.percentage,
     }));
   } else return null;
 }

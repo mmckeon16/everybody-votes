@@ -12,16 +12,13 @@ import { Button } from '~/components/ui/button';
 import { SkeletonCard } from './SkeletonCard';
 import useLastActiveQuestion from '../hooks/useLastActiveQuestion';
 import { View } from 'react-native';
-// import PieChart from '../screens/results/components/PieChart';
-import NumberFlipper from '../screens/results/components/NumberFlipper';
 import { changeResultsForChart } from '../lib/utils';
 import { useResults } from '../hooks/useResults';
 import GradientBadge from '~/components/ui/GradientBadge';
-import { PieChart, Pie, Legend, Cell } from 'recharts';
+import PieChart from 'react-native-pie-chart';
 
 export const PollResultsCard = () => {
   const router = useRouter();
-  const [chartMounted, setChartMounted] = useState(false);
   const { data: lastQuestion, error: QuestionError } = useLastActiveQuestion();
   const { user_vote, options } = lastQuestion || {};
 
@@ -31,11 +28,7 @@ export const PollResultsCard = () => {
 
   const alteredResults = changeResultsForChart(results);
 
-  useLayoutEffect(() => {
-    setChartMounted(true);
-  }, []);
-
-  if (isLoading || !totalResults)
+  if (isLoading || !alteredResults)
     return (
       <View className="flex flex-col gap-3 items-center w-full">
         <SkeletonCard />
@@ -64,22 +57,11 @@ export const PollResultsCard = () => {
       </CardHeader>
       <CardDescription className="pb-3">
         <View className="w-full flex items-center justify-center">
-          <PieChart width={300} height={300}>
-            <Pie
-              dataKey="value"
-              data={alteredResults}
-              cx={150}
-              cy={150}
-              innerRadius={40}
-              outerRadius={80}
-              fill="#82ca9d"
-              label
-            >
-              {alteredResults?.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-          </PieChart>
+          <PieChart
+            widthAndHeight={250}
+            series={alteredResults}
+            cover={0.45}
+          ></PieChart>
         </View>
       </CardDescription>
       <CardFooter className="flex-col pb-4">
