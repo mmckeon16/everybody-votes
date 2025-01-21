@@ -12,11 +12,12 @@ import { Button } from '~/components/ui/button';
 import { SkeletonCard } from './SkeletonCard';
 import useLastActiveQuestion from '../hooks/useLastActiveQuestion';
 import { View } from 'react-native';
-import PieChart from '../screens/results/components/PieChart';
+// import PieChart from '../screens/results/components/PieChart';
 import NumberFlipper from '../screens/results/components/NumberFlipper';
-import { addColorToResults } from '../lib/utils';
+import { changeResultsForChart } from '../lib/utils';
 import { useResults } from '../hooks/useResults';
 import GradientBadge from '~/components/ui/GradientBadge';
+import { PieChart, Pie, Legend, Cell } from 'recharts';
 
 export const PollResultsCard = () => {
   const router = useRouter();
@@ -28,7 +29,7 @@ export const PollResultsCard = () => {
   const nullData = { question: null, totalVotes: null, results: null };
   const { data: { totalVotes, results } = nullData } = totalResults || {};
 
-  const coloredResults = addColorToResults(results);
+  const alteredResults = changeResultsForChart(results);
 
   useLayoutEffect(() => {
     setChartMounted(true);
@@ -49,36 +50,36 @@ export const PollResultsCard = () => {
       options[0]?.id === user_vote ? options[0]?.text : options[1]?.text;
   }
 
+  console.log('altereddata: ', alteredResults);
+
   return (
     <Card className="w-full max-w-sm p-2 rounded-2xl">
-      <CardHeader className="pb-3 pt-3 flex gap-3">
+      <CardHeader className="pb-1 pt-3 flex gap-3">
         <GradientBadge
           firstColor="#0879C4"
           secondColor="#2563EB"
           text="PREVIOUS RESULTS"
         />
-        <CardTitle className="pb-2">{question?.text}</CardTitle>
+        <CardTitle>{question?.text}</CardTitle>
       </CardHeader>
-      <CardDescription>
+      <CardDescription className="pb-3">
         <View className="w-full flex items-center justify-center">
-          <View
-            style={{
-              width: 200,
-              height: 200,
-              left: 0,
-              right: 0,
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              position: 'relative',
-            }}
-          >
-            <PieChart data={coloredResults} size={200} strokeWidth={25}>
-              <View className="flex items-center justify-center">
-                <NumberFlipper targetNumber={totalVotes} />
-                <Text>votes</Text>
-              </View>
-            </PieChart>
-          </View>
+          <PieChart width={300} height={300}>
+            <Pie
+              dataKey="value"
+              data={alteredResults}
+              cx={150}
+              cy={150}
+              innerRadius={40}
+              outerRadius={80}
+              fill="#82ca9d"
+              label
+            >
+              {alteredResults?.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+          </PieChart>
         </View>
       </CardDescription>
       <CardFooter className="flex-col pb-4">

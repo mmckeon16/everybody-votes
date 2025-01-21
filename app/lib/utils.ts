@@ -95,6 +95,20 @@ export function addColorToResults<T>(
   } else return null;
 }
 
+export function changeResultsForChart<T>(
+  results: T[]
+): (T & { optionText: string; percentage: number })[] | null {
+  const data = addColorToResults(results);
+
+  if (data) {
+    return data.map(result => ({
+      ...result,
+      name: result.optionText,
+      value: result.percentage,
+    }));
+  } else return null;
+}
+
 export function getColorDistance(color1: RGB, color2: RGB): number {
   // Calculate Euclidean distance between colors in RGB space
   const rDiff = color1.r - color2.r;
