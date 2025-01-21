@@ -31,7 +31,7 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 );
 
-Deno.serve(async req => {
+Deno.serve(async (req) => {
   try {
     const payload: WebhookPayload = await req.json();
 
@@ -75,7 +75,9 @@ Deno.serve(async req => {
     const notificationBody = `New question available: "${activeQuestion.text}". Available until ${endDate}`;
 
     // Send notifications to all users in batches of 100
-    const pushTokens = users.map(user => user.expo_push_token).filter(Boolean);
+    const pushTokens = users
+      .map((user) => user.expo_push_token)
+      .filter(Boolean);
     const batchSize = 100;
     const batches = [];
 
@@ -85,11 +87,11 @@ Deno.serve(async req => {
     }
 
     const results = await Promise.all(
-      batches.map(async tokenBatch => {
-        const messages = tokenBatch.map(token => ({
+      batches.map(async (tokenBatch) => {
+        const messages = tokenBatch.map((token) => ({
           to: token,
           sound: 'default',
-          title: 'New Question Available',
+          title: 'New Poll!',
           body: notificationBody,
           data: { questionId: activeQuestion.id },
         }));
@@ -101,7 +103,7 @@ Deno.serve(async req => {
             Authorization: `Bearer ${Deno.env.get('EXPO_ACCESS_TOKEN')}`,
           },
           body: JSON.stringify(messages),
-        }).then(res => res.json());
+        }).then((res) => res.json());
       })
     );
 
