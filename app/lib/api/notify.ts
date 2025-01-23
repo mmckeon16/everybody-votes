@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
 import { supabase } from '../supabase';
 
 // Configure how notifications should appear
@@ -12,48 +13,56 @@ Notifications.setNotificationHandler({
 
 export async function registerForPushNotifications(userId: string) {
   try {
-    // Check if we already have permission
-    const {
-      status: existingStatus,
-    } = await Notifications.getPermissionsAsync();
+    // Request permission
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
-    // If we don't have permission, ask for it
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Failed to get push token for push notification!');
-      return;
+      throw new Error('Permission not granted for push notifications');
     }
 
     // Get the token
-    const { data: tokenData } = await Notifications.getExpoPushTokenAsync({
-      projectId: process.env.EXPO_PROJECT_ID, // Add this to your app.json or app.config.js
-    });
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
 
-    // Store it in Supabase
-    const { error } = await supabase
-      .from('users')
-      .update({ expo_push_token: tokenData.data })
-      .eq('id', userId);
+    // First, delete any existing tokens for this user
+    await supabase.from('push_tokens').delete().eq('user_id', userId);
 
-    if (error) {
-      console.error('Error saving push token:', error);
-    }
+    // Then insert the new token
+    const { error } = await supabase.from('push_tokens').insert([
+      {
+        user_id: userId,
+        token: token,
+      },
+    ]);
 
-    // For Android channel
+    if (error) throw error;
+
+    // Platform-specific setup
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
         name: 'default',
         importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
       });
     }
+
+    return token;
   } catch (error) {
-    console.error('Error setting up push notifications:', error);
+    console.error('Error registering for push notifications:', error);
+    // throw error;
+  }
+}
+
+export async function unregisterPushNotifications(userId: string) {
+  try {
+    await supabase.from('push_tokens').delete().eq('user_id', userId);
+  } catch (error) {
+    console.error('Error unregistering push notifications:', error);
+    // throw error;
   }
 }

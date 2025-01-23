@@ -60,24 +60,21 @@ Deno.serve(async (req) => {
       throw new Error('Failed to fetch question details');
     }
 
-    // Get all users with push tokens
-    const { data: users, error: usersError } = await supabase
-      .from('users')
-      .select('expo_push_token')
-      .not('expo_push_token', 'is', null);
+    // Get all active push tokens
+    const { data: tokens, error: tokensError } = await supabase
+      .from('push_tokens')
+      .select('token');
 
-    if (usersError) {
-      throw new Error('Failed to fetch users');
+    if (tokensError) {
+      throw new Error('Failed to fetch push tokens');
     }
 
     // Format the notification message
     const endDate = new Date(activeQuestion.end_date).toLocaleDateString();
     const notificationBody = `New question available: "${activeQuestion.text}". Available until ${endDate}`;
 
-    // Send notifications to all users in batches of 100
-    const pushTokens = users
-      .map((user) => user.expo_push_token)
-      .filter(Boolean);
+    // Send notifications to all tokens in batches
+    const pushTokens = tokens.map((t) => t.token);
     const batchSize = 100;
     const batches = [];
 
