@@ -56,8 +56,14 @@ export const PollResultsCard = () => {
         <CardTitle>{question?.text}</CardTitle>
       </CardHeader>
       <CardDescription className="pb-3 w-full">
-        <View className="w-full flex-1 items-center justify-center">
-          <PieChart widthAndHeight={250} series={alteredResults} cover={0.45} />
+        <View className="w-full h-[250px] flex items-center justify-center">
+          <View className="w-[250px] h-[250px] flex items-center justify-center">
+            <PieChart
+              widthAndHeight={250}
+              series={alteredResults}
+              cover={0.45}
+            />
+          </View>
         </View>
       </CardDescription>
       <CardFooter className="flex-col pb-4">
