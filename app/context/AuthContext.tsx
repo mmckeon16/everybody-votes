@@ -3,6 +3,14 @@ import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
+import {
+  registerForPushNotifications,
+  unregisterPushNotifications,
+} from '../lib/api/notify';
+import {
+  setupNotifications,
+  useNotificationListeners,
+} from '../lib/notifications';
 
 interface AuthContextType {
   session: Session | null;
@@ -22,6 +30,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
   const router = useRouter();
 
+  const usePushNotifications = (userId: string | null) => {
+    useEffect(() => {
+      if (!userId) return;
+
+      registerForPushNotifications(userId).catch((error) => {
+        console.error('Failed to register for push notifications:', error);
+      });
+    }, [userId]); // Re-run when userId changes (e.g., after login)
+  };
+
   useEffect(() => {
     const handleDeepLink = async ({ url }: { url: string }) => {
       console.log('Got deep link:', url);
@@ -29,9 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (url.includes('code=')) {
           const code = url.match(/code=([^&]+)/)?.[1];
           if (code) {
-            const { data, error } = await supabase.auth.exchangeCodeForSession(
-              code
-            );
+            const { data, error } =
+              await supabase.auth.exchangeCodeForSession(code);
             if (error) {
               console.error('Error exchanging code for session:', error);
               return;
@@ -66,6 +83,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Set up notifications when the app starts
+  useEffect(() => {
+    setupNotifications();
+  }, []);
+
+  // Use notification listeners
+  useNotificationListeners();
+
   useEffect(() => {
     console.log('Setting up auth listeners...');
 
@@ -98,9 +123,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (_newSession) {
         setSession(_newSession);
-        const needsProfileCompletion = await checkProfileCompletion(
-          _newSession
-        );
+        const needsProfileCompletion =
+          await checkProfileCompletion(_newSession);
 
         // Add a small delay to ensure state updates have propagated
         setTimeout(() => {
@@ -138,6 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return needsCompletion;
   };
+
   const value = {
     session,
     isLoading,
@@ -153,12 +178,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
     },
     signOut: async () => {
-      await supabase.auth.signOut();
-      router.replace('/auth');
+      try {
+        if (session?.user?.id) {
+          await unregisterPushNotifications(session.user.id);
+        }
+        await supabase.auth.signOut();
+        router.replace('/auth');
+      } catch (error) {
+        console.error('Error during sign out:', error);
+      }
     },
     isAuthenticated: !!session,
     hasCompletedProfile,
   };
+
+  // Use the hook to handle push notification setup
+  usePushNotifications(session?.user?.id ?? null);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

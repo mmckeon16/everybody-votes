@@ -29,6 +29,7 @@ serve(async (req) => {
 
     if (error) throw error;
 
+    //DISCORD WEBHOOK
     // Prepare the webhook message
     const webhookBody = {
       username: 'Question Rotation Bot',
@@ -92,6 +93,53 @@ serve(async (req) => {
 
     if (!response.ok) {
       throw new Error(`Discord webhook failed: ${response.statusText}`);
+    }
+
+    //PUSH NOTIFICATIONS, only send if there is a new question
+    if (log.success && log.questions) {
+      // Get all active push tokens
+      const { data: tokens, error: tokensError } = await supabase
+        .from('push_tokens')
+        .select('token');
+
+      if (tokensError) {
+        throw new Error('Failed to fetch push tokens');
+      }
+
+      // Format the notification message
+      const endDate = new Date(log.questions.end_date).toLocaleDateString();
+      const notificationBody = `New question available: "${log.questions.text}". Available until ${endDate}`;
+
+      // Send notifications to all tokens in batches
+      const pushTokens = tokens.map((t) => t.token);
+      const batchSize = 100;
+      const batches = [];
+
+      for (let i = 0; i < pushTokens.length; i += batchSize) {
+        const batch = pushTokens.slice(i, i + batchSize);
+        batches.push(batch);
+      }
+
+      const results = await Promise.all(
+        batches.map(async (tokenBatch) => {
+          const messages = tokenBatch.map((token) => ({
+            to: token,
+            sound: 'default',
+            title: 'New Poll!',
+            body: notificationBody,
+            data: { questionId: log.questions.id },
+          }));
+
+          return fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${Deno.env.get('EXPO_ACCESS_TOKEN')}`,
+            },
+            body: JSON.stringify(messages),
+          }).then((res) => res.json());
+        })
+      );
     }
 
     return new Response(JSON.stringify({ success: true }), {
