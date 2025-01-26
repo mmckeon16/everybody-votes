@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
@@ -16,6 +16,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
   isSmall = false,
 }) => {
   const { colorScheme } = useNativewindColorScheme();
+  const [errorMsg, setErrorMsg] = useState('');
 
   const signInWithApple = async () => {
     try {
@@ -41,12 +42,17 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
           await Linking.openURL(url);
         }
       } else {
+        setErrorMsg('No identityToken.');
         throw new Error('No identityToken.');
       }
     } catch (e) {
       if (e.code === 'ERR_REQUEST_CANCELED') {
+        setErrorMsg('user cancelled flow');
+
         // handle that the user canceled the sign-in flow
       } else {
+        setErrorMsg('handle other error:', e?.code);
+
         // handle other errors
       }
     }
@@ -83,41 +89,46 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       console.error(`Error signing in with ${providerDisplayName}:`, error);
     }
   };
-  return isSmall ? (
-    <Button onPress={signInWithProvider} size="icon">
-      {IconComponent ? (
-        <IconComponent
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
+  return (
+    <>
+      {errorMsg}
+      {isSmall ? (
+        <Button onPress={signInWithProvider} size="icon">
+          {IconComponent ? (
+            <IconComponent
+              size={20}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+          ) : (
+            <AntDesign
+              name={provider}
+              size={20}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+          )}
+        </Button>
       ) : (
-        <AntDesign
-          name={provider}
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
-      )}
-    </Button>
-  ) : (
-    <Button
-      onPress={provider === 'apple' ? signInWithApple : signInWithProvider}
-      className="flex flex-row gap-2 py-2"
-    >
-      {IconComponent ? (
-        <IconComponent
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
-      ) : (
-        <AntDesign
-          name={provider}
-          size={20}
-          color={colorScheme === 'dark' ? 'black' : 'white'}
-        />
-      )}
+        <Button
+          onPress={provider === 'apple' ? signInWithApple : signInWithProvider}
+          className="flex flex-row gap-2 py-2"
+        >
+          {IconComponent ? (
+            <IconComponent
+              size={20}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+          ) : (
+            <AntDesign
+              name={provider}
+              size={20}
+              color={colorScheme === 'dark' ? 'black' : 'white'}
+            />
+          )}
 
-      <Text>Sign in with {providerDisplayName}</Text>
-    </Button>
+          <Text>Sign in with {providerDisplayName}</Text>
+        </Button>
+      )}
+    </>
   );
 };
 
