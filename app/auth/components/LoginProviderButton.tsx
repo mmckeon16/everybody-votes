@@ -48,11 +48,9 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     } catch (e) {
       if (e.code === 'ERR_REQUEST_CANCELED') {
         setErrorMsg('user cancelled flow');
-
         // handle that the user canceled the sign-in flow
       } else {
         setErrorMsg('handle other error:', e?.code);
-
         // handle other errors
       }
     }

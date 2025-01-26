@@ -76,12 +76,6 @@ export default function Login() {
             />
             <View className="flex flex-row justify-center gap-5">
               <LoginProviderButton
-                provider="facebook"
-                providerDisplayName="Facebook"
-                IconComponent={FacebookIconButton}
-                isSmall={true}
-              />
-              <LoginProviderButton
                 provider="twitter"
                 providerDisplayName="Twitter"
                 isSmall={true}
