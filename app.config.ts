@@ -28,6 +28,9 @@ export default {
       bundleIdentifier: 'com.everybody.polls',
       buildNumber: '1.0.0',
       usesAppleSignIn: true,
+      config: {
+        usesAppleSignIn: true,
+      },
     },
     android: {
       package: 'com.everybody.polls',

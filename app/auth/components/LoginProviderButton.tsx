@@ -20,37 +20,55 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithApple = async () => {
     try {
+      // First, check if Apple Auth is available
+      const isAvailable = await AppleAuthentication.isAvailableAsync();
+      if (!isAvailable) {
+        throw new Error('Apple authentication is not available on this device');
+      }
+
+      // Request native Apple authentication
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-      // Sign in via Supabase Auth.
-      if (credential.identityToken) {
-        const {
-          error,
-          data: { user, url },
-        } = await supabase.auth.signInWithIdToken({
-          provider: 'apple',
-          token: credential.identityToken,
-        });
-        console.log(JSON.stringify({ error, user }, null, 2));
-        if (!error) {
-          await Linking.openURL(url);
-        }
-      } else {
-        setErrorMsg('No identityToken.');
-        throw new Error('No identityToken.');
+
+      if (!credential.identityToken) {
+        throw new Error('No identity token received from Apple');
       }
-    } catch (e) {
-      if (e.code === 'ERR_REQUEST_CANCELED') {
-        setErrorMsg('user cancelled flow');
-        // handle that the user canceled the sign-in flow
-      } else {
-        setErrorMsg('handle other error:', e?.code);
-        // handle other errors
+
+      console.log('Got Apple credential:', {
+        ...credential,
+        identityToken: credential.identityToken.substring(0, 20) + '...',
+      });
+
+      // Sign in with Supabase using the Apple ID token
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: credential.identityToken,
+      });
+
+      if (error) {
+        console.error('Supabase auth error:', error);
+        throw error;
       }
+
+      console.log('Supabase sign in successful:', {
+        user: data.user?.id,
+        session: data.session?.access_token ? 'Present' : 'Missing',
+      });
+    } catch (error) {
+      let errorMessage = 'An unexpected error occurred';
+
+      if (error.code === 'ERR_REQUEST_CANCELED') {
+        errorMessage = 'Sign-in was cancelled';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      console.error('Apple sign-in error:', error);
+      setErrorMsg(errorMessage);
     }
   };
 
