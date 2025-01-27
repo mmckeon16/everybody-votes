@@ -20,7 +20,6 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithApple = async () => {
     try {
-      const redirectUrl = Linking.createURL('');
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -35,7 +34,6 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
           token: credential.identityToken,
-          redirectTo: redirectUrl,
         });
         console.log(JSON.stringify({ error, user }, null, 2));
         if (!error) {
