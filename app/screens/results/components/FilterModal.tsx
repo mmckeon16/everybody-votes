@@ -141,12 +141,18 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   className="w-full"
                 >
                   {demographics.map(({ name, options, id }) => (
-                    <AccordionItem value={name} key={id}>
+                    <AccordionItem
+                      value={name}
+                      key={id}
+                      className={
+                        Platform.OS === 'ios' ? 'border-b border-border' : ''
+                      }
+                    >
                       <AccordionTrigger>
-                        <Text>{name}</Text>
+                        <Text className="text-base font-medium">{name}</Text>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <View className="flex-row flex-wrap">
+                        <View className="flex-row flex-wrap mt-2">
                           {id === 'occupation'
                             ? options?.map(
                                 ({ label, value, subcategories }) => {

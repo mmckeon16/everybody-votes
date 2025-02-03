@@ -29,6 +29,7 @@ import Toast from '~/components/ui/toast';
 import { HomeButton } from '~/components/ui/HomeButton';
 import { AuthProvider } from './context/AuthContext';
 import HeaderActions from './components/HeaderActions';
+import { Text } from '~/components/ui/text';
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -186,9 +187,18 @@ const RootLayout = () => {
               <Stack.Screen
                 name="index"
                 options={{
-                  title: 'Everybody polls',
+                  title: null,
                   headerBackVisible: false,
-                  headerLeft: () => null,
+                  headerLeft: () => (
+                    <Text
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 20,
+                      }}
+                    >
+                      Everybody polls
+                    </Text>
+                  ),
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,

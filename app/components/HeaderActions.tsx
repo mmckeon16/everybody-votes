@@ -1,4 +1,4 @@
-import { View, Pressable } from 'react-native';
+import { View, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '~/components/ui/button';
@@ -20,21 +20,31 @@ export default function HeaderActions() {
   };
 
   return (
-    <View className="flex-row items-center gap-2 pr-5">
+    <View className="flex-row items-center justify-center gap-2 pr-5 min-h-12">
       <ThemeToggle />
       {isAuthenticated ? (
-        <Button variant="ghost" className="h-8 px-2" onPressIn={handleSignOut}>
-          <Text className="text-sm">Logout</Text>
+        <Button
+          variant="ghost"
+          className={Platform.select({
+            ios: 'h-8 px-2 py-0',
+            default: 'h-8 px-2',
+          })}
+          onPressIn={handleSignOut}
+        >
+          <Text className="text-sm leading-none">Logout</Text>
         </Button>
       ) : (
         <Button
           variant="ghost"
-          className="h-8 px-2"
+          className={Platform.select({
+            ios: 'h-8 px-2 py-0',
+            default: 'h-8 px-2',
+          })}
           onPressIn={() => {
             router.push('/auth');
           }}
         >
-          <Text className="text-sm">Login</Text>
+          <Text className="text-sm leading-none">Login</Text>
         </Button>
       )}
     </View>

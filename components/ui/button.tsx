@@ -1,3 +1,5 @@
+
+// button.tsx
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Pressable, Platform, View } from 'react-native';
@@ -15,15 +17,18 @@ const buttonVariants = cva(
           'border border-input bg-background web:hover:bg-accent web:hover:text-accent-foreground active:bg-accent',
         secondary: 'bg-secondary web:hover:opacity-80 active:opacity-80',
         ghost: 'web:hover:bg-accent web:hover:text-accent-foreground active:bg-accent',
-        link: 'web:underline-offset-4 web:hover:underline web:focus:underline ',
+        link: 'web:underline-offset-4 web:hover:underline web:focus:underline',
       },
       size: {
         default: Platform.select({
           web: 'h-10 px-4 py-2',
-          android: 'min-h-12 px-4', // Remove fixed height, use min-height
-          ios: 'h-12 px-5 py-3',
+          android: 'min-h-12 px-4',
+          ios: 'min-h-10 px-4 py-1', // Adjusted for iOS
         }),
-        sm: 'h-9 rounded-md px-3',
+        sm: Platform.select({
+          ios: 'h-8 rounded-md px-3 py-1',
+          default: 'h-9 rounded-md px-3'
+        }),
         lg: 'h-11 rounded-md px-8 native:h-14',
         icon: 'h-10 w-10',
       },
@@ -36,7 +41,7 @@ const buttonVariants = cva(
 );
 
 const buttonTextVariants = cva(
-  'web:whitespace-nowrap text-sm native:text-base font-medium text-foreground web:transition-colors',
+  'web:whitespace-nowrap text-sm native:text-base font-medium text-foreground web:transition-colors leading-none',
   {
     variants: {
       variant: {
@@ -64,55 +69,56 @@ const buttonTextVariants = cva(
 type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
   VariantProps<typeof buttonVariants>;
 
-  const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-    ({ className, variant, size, onPress, children, style, ...props }, ref) => {
-      const layoutClasses = className?.match(/(flex-row|gap-\d+|px-\d+|py-\d+|items-\w+|justify-\w+)/g) || [];
-      const pressableClasses = className?.replace(new RegExp(layoutClasses.join('|'), 'g'), '').trim();
-      
-      return (
-        <TextClassContext.Provider
-          value={cn(
+const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
+  ({ className, variant, size, onPress, children, style, ...props }, ref) => {
+    const layoutClasses = className?.match(/(flex-row|gap-\d+|px-\d+|py-\d+|items-\w+|justify-\w+)/g) || [];
+    const pressableClasses = className?.replace(new RegExp(layoutClasses.join('|'), 'g'), '').trim();
+    
+    return (
+      <TextClassContext.Provider
+        value={cn(
+          props.disabled && 'opacity-50',
+          buttonTextVariants({ variant, size })
+        )}
+      >
+        <Pressable
+          ref={ref}
+          onPress={(e) => {
+            onPress?.(e);
+          }}
+          style={({ pressed }) => [
+            style,
+            pressed && { opacity: 0.7 },
+          ]}
+          className={cn(
             props.disabled && 'opacity-50',
-            buttonTextVariants({ variant, size })
+            buttonVariants({ variant, size }),
+            pressableClasses,
+            'active:opacity-70'
           )}
+          android_ripple={{
+            color: variant === 'outline' || variant === 'ghost' 
+              ? 'rgba(0, 0, 0, 0.1)' 
+              : 'rgba(255, 255, 255, 0.2)',
+            borderless: false,
+            foreground: false
+          }}
+          {...props}
         >
-          <Pressable
-  ref={ref}
-  onPress={(e) => {
-    onPress?.(e);
-  }}
-  style={({ pressed }) => [
-    style,
-    pressed && { opacity: 0.7 },
-  ]}
-  className={cn(
-    props.disabled && 'opacity-50',
-    buttonVariants({ variant, size }),
-    pressableClasses,
-    'active:opacity-70'
-  )}
-  android_ripple={{
-    color: variant === 'outline' || variant === 'ghost' 
-      ? 'rgba(0, 0, 0, 0.1)' 
-      : 'rgba(255, 255, 255, 0.2)',
-    borderless: false,
-    foreground: false
-  }}
-  {...props}
->
-            <View 
-              className={cn(
-                'flex items-center justify-center flex-row',
-                layoutClasses.join(' '),
-              )}
-            >
-              {children}
-            </View>
-          </Pressable>
-        </TextClassContext.Provider>
-      );
-    }
-  );
+          <View 
+            className={cn(
+              'flex items-center justify-center flex-row',
+              layoutClasses.join(' '),
+              Platform.OS === 'ios' ? 'py-0' : '' // Remove padding for iOS
+            )}
+          >
+            {children}
+          </View>
+        </Pressable>
+      </TextClassContext.Provider>
+    );
+  }
+);
 
 Button.displayName = 'Button';
 
