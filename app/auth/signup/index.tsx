@@ -13,25 +13,45 @@ import {
 } from '~/components/ui/card';
 import { Button } from '~/components/ui/button';
 import FeatureIcon from '../components/FeatureIcon';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 const PrivacyScreen = () => {
   const router = useRouter();
+  const { isDarkColorScheme } = useColorScheme();
 
   const features = [
     {
-      icon: <MaterialIcons name="lock" size={24} className="text-lightBlue" />,
+      icon: (
+        <MaterialIcons
+          name="lock"
+          size={24}
+          color={isDarkColorScheme ? '#c208c9' : '#0879C4'}
+        />
+      ),
       title: 'Your Privacy Matters',
       description:
         'We never sell or share your personal information. Your demographic details are only used to show voting patterns in aggregate.',
     },
     {
-      icon: <Feather name="users" size={24} className="text-lightBlue" />,
+      icon: (
+        <Feather
+          name="users"
+          size={24}
+          color={isDarkColorScheme ? '#c208c9' : '#0879C4'}
+        />
+      ),
       title: 'See How Others Think',
       description:
         'Filter results by age, location, and other demographics to discover fascinating patterns in how different groups vote.',
     },
     {
-      icon: <Feather name="pie-chart" size={24} className="text-lightBlue" />,
+      icon: (
+        <Feather
+          name="pie-chart"
+          size={24}
+          color={isDarkColorScheme ? '#c208c9' : '#0879C4'}
+        />
+      ),
       title: 'Predict The Majority',
       description:
         'Test your social intuition! Guess how the majority will vote and see how well you can predict group opinions.',
@@ -48,7 +68,7 @@ const PrivacyScreen = () => {
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 16, // equivalent to p-4
+        padding: 16,
       }}
     >
       <Card className="w-full max-w-sm rounded-2xl">

@@ -2,7 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import { Button } from '~/components/ui/button';
 import { Card, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Progress } from '~/components/ui/progress';
@@ -26,8 +25,7 @@ SplashScreen.setOptions({
 
 export default function Screen() {
   const router = useRouter();
-  const { colorScheme } = useNativewindColorScheme();
-  const { data: activeQuestion, error, isError } = useActiveQuestion();
+  const { data: activeQuestion, isError } = useActiveQuestion();
   const { user_vote, options } = activeQuestion || {};
 
   let userVotedText = null;

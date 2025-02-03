@@ -22,12 +22,15 @@ export const OccupationSelect: React.FC<StepProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = React.useState('');
   const [selectedCategoryLabel, setSelectedCategoryLabel] = React.useState('');
-  const [selectedSubcategoryLabel, setSelectedSubcategoryLabel] = React.useState('');
+  const [
+    selectedSubcategoryLabel,
+    setSelectedSubcategoryLabel,
+  ] = React.useState('');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [otherOccupation, setOtherOccupation] = React.useState('');
-  const [filteredCategories, setFilteredCategories] = React.useState<OccupationCategory[]>(
-    occupationCategories
-  );
+  const [filteredCategories, setFilteredCategories] = React.useState<
+    OccupationCategory[]
+  >(occupationCategories);
 
   React.useEffect(() => {
     if (searchQuery) {
@@ -77,12 +80,14 @@ export const OccupationSelect: React.FC<StepProps> = ({
               />
             </View>
           </View>
-          
+
           {filteredCategories.map(category => (
             <View key={category.value} className="mb-2">
               <SelectGroup>
                 <View className="bg-gray-50 py-2">
-                  <SelectLabel className="text-gray-700">{category.label}</SelectLabel>
+                  <SelectLabel>
+                    <Text>{category.label}</Text>
+                  </SelectLabel>
                 </View>
                 <View className="py-1">
                   {category.subcategories.map(subcategory => (
@@ -97,19 +102,19 @@ export const OccupationSelect: React.FC<StepProps> = ({
               </SelectGroup>
             </View>
           ))}
-          
+
           <View className="mt-2">
             <SelectGroup>
-              <SelectItem 
-                label="Other" 
-                value="other" 
+              <SelectItem
+                label="Other"
+                value="other"
                 className="min-h-12 px-4 py-2 text-base"
               />
             </SelectGroup>
             <SelectGroup>
-              <SelectItem 
-                label="Prefer not to say" 
-                value="prefer_not_to_say" 
+              <SelectItem
+                label="Prefer not to say"
+                value="prefer_not_to_say"
                 className="min-h-12 px-4 py-2 text-base"
               />
             </SelectGroup>
@@ -124,7 +129,9 @@ export const OccupationSelect: React.FC<StepProps> = ({
             {selectedCategory === 'other'
               ? otherOccupation
               : `${selectedCategoryLabel}${
-                  selectedSubcategoryLabel ? ` - ${selectedSubcategoryLabel}` : ''
+                  selectedSubcategoryLabel
+                    ? ` - ${selectedSubcategoryLabel}`
+                    : ''
                 }`}
           </Text>
         </View>

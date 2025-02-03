@@ -17,7 +17,9 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
     <View>{icon}</View>
     <View className="flex-1">
       <Text className="font-semibold">{title}</Text>
-      <Text className="text-gray-600">{description}</Text>
+      <Text className="text-description" tailwind>
+        {description}
+      </Text>
     </View>
   </View>
 );

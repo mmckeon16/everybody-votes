@@ -37,7 +37,9 @@ const Income: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Income Bracket</SelectLabel>
+              <SelectLabel>
+                <Text>Income Bracket</Text>
+              </SelectLabel>
               {incomes.map(({ value, label }) => (
                 <SelectItem label={label} value={value} key={value} />
               ))}
@@ -65,7 +67,9 @@ const Income: React.FC<StepProps> = ({ setProfileData, profileData }) => {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Employment Status</SelectLabel>
+              <SelectLabel>
+                <Text>Employment Status</Text>
+              </SelectLabel>
               {employmentStatus.map(({ value, label }) => (
                 <SelectItem label={label} value={value} key={value} />
               ))}
