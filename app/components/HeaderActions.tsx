@@ -1,4 +1,4 @@
-import { View, Pressable, Platform } from 'react-native';
+import { View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '~/components/ui/button';
@@ -20,7 +20,12 @@ export default function HeaderActions() {
   };
 
   return (
-    <View className="flex-row items-center justify-center gap-2 pr-5 min-h-12">
+    <View
+      className={Platform.select({
+        ios: 'flex flex-row items-center justify-around gap-2 pl-8 h-12',
+        default: 'flex-row items-center justify-center gap-2 pr-5 min-h-12',
+      })}
+    >
       <ThemeToggle />
       {isAuthenticated ? (
         <Button

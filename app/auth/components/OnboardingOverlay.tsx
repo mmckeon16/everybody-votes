@@ -6,15 +6,19 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import FeatureItem from './FeatureIcon';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 const OnboardingOverlay = () => {
+  const { isDarkColorScheme } = useColorScheme();
+
   const features: FeatureItemProps[] = [
     {
       icon: (
         <MaterialIcons
           name="how-to-vote"
           size={20}
-          className="w-6 h-6 text-lightBlue"
+          className="w-6 h-6"
+          color={isDarkColorScheme ? '#c208c9' : '#0879C4'}
         />
       ),
       title: 'Make your voice heard',
@@ -26,7 +30,8 @@ const OnboardingOverlay = () => {
         <FontAwesome6
           name="chart-bar"
           size={20}
-          className="w-6 h-6 text-lightBlue"
+          className="w-6 h-6"
+          color={isDarkColorScheme ? '#c208c9' : '#0879C4'}
         />
       ),
       title: 'Explore detailed insights',
@@ -34,7 +39,12 @@ const OnboardingOverlay = () => {
     },
     {
       icon: (
-        <Feather name="target" size={20} className="w-6 h-6 text-lightBlue" />
+        <Feather
+          name="target"
+          size={20}
+          className="w-6 h-6 "
+          color={isDarkColorScheme ? '#c208c9' : '#0879C4'}
+        />
       ),
       title: 'Test your prediction skills',
       description: 'Predict majority opinions and track your accuracy',
@@ -44,7 +54,8 @@ const OnboardingOverlay = () => {
         <FontAwesome
           name="user-circle"
           size={20}
-          className="w-6 h-6 text-lightBlue"
+          className="w-6 h-6 "
+          color={isDarkColorScheme ? '#c208c9' : '#0879C4'}
         />
       ),
       title: 'Privacy first',

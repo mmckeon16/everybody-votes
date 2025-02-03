@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, Modal, ScrollView, View, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, ScrollView, View, Platform } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useColorScheme } from '~/lib/useColorScheme';
@@ -65,9 +65,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
     return (
       <View
-        className={`flex-row items-center px-2 py-1 ${
-          shouldTakeFullWidth ? 'w-full' : 'w-1/2'
-        }`}
+        className={`${shouldTakeFullWidth ? 'w-full' : 'w-1/2'}`}
         key={value}
       >
         <Checkbox
@@ -89,10 +87,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
               return updatedData;
             });
           }}
+          label={<Label nativeID={value}>{label}</Label>}
         />
-        <Label nativeID={value} className="flex-1 ml-2">
-          {label}
-        </Label>
       </View>
     );
   };
@@ -198,7 +194,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   setFilteredDemographics(userSelectedDemographics);
                   setModalVisible(false);
                 }}
-                className="mt-4"
+                className="mt-4 bg-midnight"
               >
                 <Text>Generate visualization</Text>
               </Button>

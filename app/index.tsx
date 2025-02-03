@@ -53,9 +53,9 @@ export default function Screen() {
         <View className="flex-1 items-center gap-5 pb-10 bg-blueBg">
           <VoteCard />
           <PollResultsCard />
-          <Button size="icon" onPress={handleHomePress}>
+          {/* <Button size="icon" onPress={handleHomePress}>
             <FontAwesome name="home" size={18} color={'white'} />
-          </Button>
+          </Button> */}
         </View>
       )}
     </ScrollView>

@@ -1,21 +1,15 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React from 'react';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import {
-  Card,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '~/components/ui/card';
+import { Card, CardHeader, CardTitle, CardFooter } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import { SkeletonCard } from './SkeletonCard';
 import useLastActiveQuestion from '../hooks/useLastActiveQuestion';
-import { View } from 'react-native';
 import { changeResultsForChart } from '../lib/utils';
 import { useResults } from '../hooks/useResults';
-import GradientBadge from '~/components/ui/GradientBadge';
 import PieChart from 'react-native-pie-chart';
+import GradientBadge from '~/components/ui/GradientBadge';
+import { SkeletonCard } from './SkeletonCard';
 
 export const PollResultsCard = () => {
   const router = useRouter();
@@ -24,17 +18,19 @@ export const PollResultsCard = () => {
 
   const { data: totalResults, isLoading, error } = useResults(lastQuestion?.id);
   const nullData = { question: null, totalVotes: null, results: null };
-  const { data: { totalVotes, results } = nullData } = totalResults || {};
+  const { data: { results } = nullData } = totalResults || {};
 
   const alteredResults = changeResultsForChart(results);
 
-  if (isLoading || !alteredResults)
+  if (isLoading || !alteredResults) {
     return (
       <View className="flex flex-col gap-3 items-center w-full">
         <SkeletonCard />
       </View>
     );
-  if (error || QuestionError) return <Text>Error: {error.message}</Text>;
+  }
+
+  if (error || QuestionError) return <Text>Error: {error?.message}</Text>;
 
   const question = lastQuestion;
   let userVotedText = null;
@@ -43,7 +39,8 @@ export const PollResultsCard = () => {
       options[0]?.id === user_vote ? options[0]?.text : options[1]?.text;
   }
 
-  console.log('altereddata: ', alteredResults);
+  // Calculate dynamic size based on container width
+  const chartSize = 200; // Default size
 
   return (
     <Card className="w-full max-w-sm p-2 rounded-2xl">
@@ -55,19 +52,20 @@ export const PollResultsCard = () => {
         />
         <CardTitle>{question?.text}</CardTitle>
       </CardHeader>
-      <CardDescription className="pb-3">
-        <CardDescription className="pb-3">
-          <View className="w-full aspect-square max-h-[250px] relative overflow-hidden">
-            <View className="absolute inset-0 flex items-center justify-center">
-              <PieChart
-                widthAndHeight={250}
-                series={alteredResults}
-                cover={0.45}
-              />
-            </View>
+
+      <View className="px-4">
+        <View className="w-full flex items-center justify-center py-4">
+          <View style={{ width: chartSize, height: chartSize }}>
+            <PieChart
+              widthAndHeight={chartSize}
+              series={alteredResults}
+              sliceColor={['#2563EB', '#0879C4']}
+              cover={0.45}
+            />
           </View>
-        </CardDescription>
-      </CardDescription>
+        </View>
+      </View>
+
       <CardFooter className="flex-col pb-4">
         <View className="items-center gap-5 w-full">
           {userVotedText && (
@@ -76,10 +74,8 @@ export const PollResultsCard = () => {
             </Text>
           )}
           <Button
-            className="shadow shadow-foreground/5 w-full bg-midnight"
-            onPress={() => {
-              router.push('/screens/results');
-            }}
+            className="shadow w-full bg-midnight"
+            onPress={() => router.push('/screens/results')}
           >
             <Text className="text-white">Explore</Text>
           </Button>
