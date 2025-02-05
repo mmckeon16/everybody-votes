@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -69,11 +69,13 @@ export default function Login() {
               provider="google"
               providerDisplayName="Google"
             />
-            <LoginProviderButton
-              provider="apple"
-              providerDisplayName="Apple"
-              IconComponent={AppleIconButton}
-            />
+            {Platform.OS === 'ios' && (
+              <LoginProviderButton
+                provider="apple"
+                providerDisplayName="Apple"
+                IconComponent={AppleIconButton}
+              />
+            )}
             <View className="flex flex-row justify-center gap-5">
               <LoginProviderButton
                 provider="twitter"

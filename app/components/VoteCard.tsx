@@ -43,6 +43,24 @@ export default function Screen() {
       </View>
     );
   }
+
+  if (!activeQuestion || !options) {
+    return (
+      <Card className="w-full max-w-sm p-2 rounded-2xl">
+        <CardHeader className="pb-3 pt-3 flex gap-3">
+          <CardTitle className="text-center">
+            New question coming soon
+          </CardTitle>
+        </CardHeader>
+        <CardFooter className="flex-col gap-5 pb-4 pt-0">
+          <Text className="text-center text-slate-600">
+            Come back soon to vote on the next question
+          </Text>
+        </CardFooter>
+      </Card>
+    );
+  }
+
   const percentage = getTimeRemainingPercentage(
     activeQuestion?.start_date ?? '',
     activeQuestion?.end_date ?? ''

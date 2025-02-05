@@ -13,9 +13,21 @@ Notifications.setNotificationHandler({
 
 export async function registerForPushNotifications(userId: string) {
   try {
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+        sound: true,
+        enableVibrate: true,
+        showBadge: true,
+      });
+    }
     // Request permission
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
+    const {
+      status: existingStatus,
+    } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
     if (existingStatus !== 'granted') {
@@ -28,10 +40,18 @@ export async function registerForPushNotifications(userId: string) {
     }
 
     // Get the token
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    const token = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId: process.env.EXPO_PROJECT_ID, // Make sure this is set
+      })
+    ).data;
 
+    console.log('token: ', token);
     // First, delete any existing tokens for this user
-    await supabase.from('push_tokens').delete().eq('user_id', userId);
+    await supabase
+      .from('push_tokens')
+      .delete()
+      .eq('user_id', userId);
 
     // Then insert the new token
     const { error } = await supabase.from('push_tokens').insert([
@@ -43,14 +63,6 @@ export async function registerForPushNotifications(userId: string) {
 
     if (error) throw error;
 
-    // Platform-specific setup
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-      });
-    }
-
     return token;
   } catch (error) {
     console.error('Error registering for push notifications:', error);
@@ -60,7 +72,10 @@ export async function registerForPushNotifications(userId: string) {
 
 export async function unregisterPushNotifications(userId: string) {
   try {
-    await supabase.from('push_tokens').delete().eq('user_id', userId);
+    await supabase
+      .from('push_tokens')
+      .delete()
+      .eq('user_id', userId);
   } catch (error) {
     console.error('Error unregistering push notifications:', error);
     // throw error;
