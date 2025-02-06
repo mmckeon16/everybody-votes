@@ -6,6 +6,8 @@
     "start": "expo start",
     "dev": "EXPO_PUBLIC_ENV=development expo start",
     "reset-project": "node ./scripts/reset-project.js",
+    "build:remote:ios": "eas build --platform ios",
+    "submit:remote:ios": "eas submit --platform ios",
     "build:local:android": "npx dotenv -- eas build --platform android --profile production --local --output builds/android/app-$(date +%Y%m%d_%H%M%S).aab",
     "android": "expo start --android",
     "ios": "expo start --ios",
