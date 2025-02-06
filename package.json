@@ -52,11 +52,13 @@
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.3",
     "expo-crypto": "~14.0.2",
+    "expo-device": "^7.0.2",
     "expo-font": "~13.0.1",
     "expo-haptics": "~14.0.0",
     "expo-linear-gradient": "~14.0.2",
     "expo-linking": "~7.0.3",
     "expo-navigation-bar": "^4.0.5",
+    "expo-notifications": "~0.29.12",
     "expo-router": "~4.0.9",
     "expo-splash-screen": "~0.29.18",
     "expo-status-bar": "~2.0.0",
@@ -84,8 +86,7 @@
     "supabase": "^2.0.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss": "^3.4.17",
-    "tailwindcss-animate": "^1.0.7",
-    "expo-notifications": "~0.29.12"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

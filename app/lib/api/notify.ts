@@ -1,30 +1,14 @@
+import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { supabase } from '../supabase';
 
-// Configure how notifications should appear
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
-
 export async function registerForPushNotifications(userId: string) {
-  try {
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-        sound: true,
-        enableVibrate: true,
-        showBadge: true,
-      });
-    }
-    // Request permission
+  let token;
+
+  if (Device.isDevice) {
     const {
       status: existingStatus,
     } = await Notifications.getPermissionsAsync();
@@ -36,37 +20,34 @@ export async function registerForPushNotifications(userId: string) {
     }
 
     if (finalStatus !== 'granted') {
-      throw new Error('Permission not granted for push notifications');
+      console.log('Failed to get push token for push notification!');
+      return;
     }
 
-    // Get the token
-    const token = (
-      await Notifications.getExpoPushTokenAsync({
-        projectId: process.env.EXPO_PROJECT_ID, // Make sure this is set
-      })
-    ).data;
+    // Get the token using your Expo project ID
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig.extra.eas.projectId,
+    });
+  }
 
-    console.log('token: ', token);
-    // First, delete any existing tokens for this user
-    await supabase
-      .from('push_tokens')
-      .delete()
-      .eq('user_id', userId);
+  return token;
+}
 
-    // Then insert the new token
-    const { error } = await supabase.from('push_tokens').insert([
+// Store the token in Supabase, even for non-authenticated users
+export async function storeDeviceToken(token) {
+  try {
+    const { data, error } = await supabase.from('device_tokens').upsert(
       {
-        user_id: userId,
-        token: token,
+        token: token.data,
+        device_id: Device.deviceName || 'unknown',
+        last_active: new Date(),
       },
-    ]);
+      { onConflict: 'token' }
+    );
 
     if (error) throw error;
-
-    return token;
   } catch (error) {
-    console.error('Error registering for push notifications:', error);
-    // throw error;
+    console.error('Error storing push token:', error);
   }
 }
 

@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import {
   registerForPushNotifications,
   unregisterPushNotifications,
+  storeDeviceToken,
 } from '../lib/api/notify';
 import {
   setupNotifications,
@@ -30,15 +31,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
   const router = useRouter();
 
-  const usePushNotifications = (userId: string | null) => {
-    useEffect(() => {
-      if (!userId) return;
-
-      registerForPushNotifications(userId).catch((error) => {
-        console.error('Failed to register for push notifications:', error);
-      });
-    }, [userId]); // Re-run when userId changes (e.g., after login)
-  };
+  useEffect(() => {
+    registerForPushNotifications().then(token => {
+      if (token) {
+        storeDeviceToken(token);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const handleDeepLink = async ({ url }: { url: string }) => {
@@ -47,8 +46,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (url.includes('code=')) {
           const code = url.match(/code=([^&]+)/)?.[1];
           if (code) {
-            const { data, error } =
-              await supabase.auth.exchangeCodeForSession(code);
+            const { data, error } = await supabase.auth.exchangeCodeForSession(
+              code
+            );
             if (error) {
               console.error('Error exchanging code for session:', error);
               return;
@@ -123,8 +123,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (_newSession) {
         setSession(_newSession);
-        const needsProfileCompletion =
-          await checkProfileCompletion(_newSession);
+        const needsProfileCompletion = await checkProfileCompletion(
+          _newSession
+        );
 
         // Add a small delay to ensure state updates have propagated
         setTimeout(() => {
