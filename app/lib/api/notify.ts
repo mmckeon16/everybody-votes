@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { supabase } from '../supabase';
 
-export async function registerForPushNotifications(userId: string) {
+export async function registerForPushNotifications() {
   let token;
 
   if (Device.isDevice) {

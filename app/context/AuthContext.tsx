@@ -193,9 +193,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     hasCompletedProfile,
   };
 
-  // Use the hook to handle push notification setup
-  usePushNotifications(session?.user?.id ?? null);
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
