@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SkeletonCard } from './components/SkeletonCard';
 import { useActiveQuestion } from './hooks/useActiveQuestion';
@@ -8,12 +8,20 @@ import VoteCard from './components/VoteCard';
 import ErrorVoteCard from './components/ErrorVoteCard';
 import { Button } from '~/components/ui/button';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { LogLevel, OneSignal } from 'react-native-onesignal';
+import Constants from 'expo-constants';
 
 export default function Screen() {
   const [appIsReady, setAppIsReady] = useState(false);
   const { isLoading, isError, error } = useActiveQuestion();
   const router = useRouter();
+  if (Platform.OS !== 'web') {
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+    OneSignal.initialize(Constants.expoConfig.extra.oneSignalAppId);
 
+    // Also need enable notifications to complete OneSignal setup
+    OneSignal?.Notifications.requestPermission(true);
+  }
   const handleHomePress = () => {
     router.push('/auth/signup');
   };

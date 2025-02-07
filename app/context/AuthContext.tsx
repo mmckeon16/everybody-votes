@@ -3,15 +3,6 @@ import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
-import {
-  registerForPushNotifications,
-  unregisterPushNotifications,
-  storeDeviceToken,
-} from '../lib/api/notify';
-import {
-  setupNotifications,
-  useNotificationListeners,
-} from '../lib/notifications';
 
 interface AuthContextType {
   session: Session | null;
@@ -30,14 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    registerForPushNotifications().then(token => {
-      if (token) {
-        storeDeviceToken(token);
-      }
-    });
-  }, []);
 
   useEffect(() => {
     const handleDeepLink = async ({ url }: { url: string }) => {
@@ -82,14 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.remove();
     };
   }, []);
-
-  // Set up notifications when the app starts
-  useEffect(() => {
-    setupNotifications();
-  }, []);
-
-  // Use notification listeners
-  useNotificationListeners();
 
   useEffect(() => {
     console.log('Setting up auth listeners...');
@@ -180,9 +155,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     signOut: async () => {
       try {
-        if (session?.user?.id) {
-          await unregisterPushNotifications(session.user.id);
-        }
         await supabase.auth.signOut();
         router.replace('/auth');
       } catch (error) {

@@ -12,6 +12,7 @@ export default {
       eas: {
         projectId: '3812e77d-32fd-47d2-98a0-5b3426e1d1d1',
       },
+      oneSignalAppId: 'fe9857fe-f9b3-4424-b7d5-ba920dfff980',
     },
     updates: {
       url: 'https://u.expo.dev/3812e77d-32fd-47d2-98a0-5b3426e1d1d1',
@@ -91,6 +92,12 @@ export default {
           // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
           url: 'https://sentry.io/',
           authToken: process.env.SENTRY_AUTH_TOKEN,
+        },
+      ],
+      [
+        'onesignal-expo-plugin',
+        {
+          mode: process.env.NODE_ENV || 'development',
         },
       ],
     ],
