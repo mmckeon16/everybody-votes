@@ -4,7 +4,7 @@ This guide covers the setup process for integrating NativeWind styling into a Re
 
 ## Dependencies
 
-Add the following dependencies to your project:
+Add the following dependencies to your project: Test for the video
 
 ### Core Dependencies
 
