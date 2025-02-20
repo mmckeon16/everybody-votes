@@ -17,9 +17,8 @@ export default {
     updates: {
       url: 'https://u.expo.dev/3812e77d-32fd-47d2-98a0-5b3426e1d1d1',
     },
-    runtimeVersion: {
-      policy: 'appVersion',
-    },
+    runtimeVersion: '1.0.0',
+    userInterfaceStyle: 'automatic',
     splash: {
       image: './assets/images/every-body-polls-icon.png', // Make sure this file exists
       resizeMode: 'contain',
@@ -41,10 +40,10 @@ export default {
       },
       versionCode: 1,
       buildProperties: {
-        kotlinVersion: '1.9.22',
         android: {
           compileSdkVersion: 34,
           targetSdkVersion: 34,
+          kotlinVersion: '1.9.25',
         },
       },
       kotlin: {
@@ -64,6 +63,27 @@ export default {
       ],
     },
     plugins: [
+      [
+        'onesignal-expo-plugin',
+        {
+          mode: process.env.NODE_ENV || 'development',
+        },
+      ],
+      [
+        'expo-build-properties',
+        {
+          android: {
+            kotlinVersion: '1.9.25',
+            suppressKotlinVersionCompatibilityCheck: true, // Add this line
+            compileSdkVersion: 35,
+            targetSdkVersion: 35,
+            buildToolsVersion: '35.0.0',
+          },
+          ios: {
+            deploymentTarget: '15.1',
+          },
+        },
+      ],
       [
         'expo-splash-screen',
         {
@@ -92,12 +112,6 @@ export default {
           // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
           url: 'https://sentry.io/',
           authToken: process.env.SENTRY_AUTH_TOKEN,
-        },
-      ],
-      [
-        'onesignal-expo-plugin',
-        {
-          mode: process.env.NODE_ENV || 'development',
         },
       ],
     ],
