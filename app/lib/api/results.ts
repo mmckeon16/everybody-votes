@@ -1,55 +1,16 @@
-const baseUrl =
-  process.env.EXPO_PUBLIC_ENV === 'development'
-    ? 'http://127.0.0.1:54321/functions/v1'
-    : process.env.EXPO_PUBLIC_SUPABASE_URL + '/functions/v1';
+import { apiRequest } from './request';
 
-// result-data/${questionId}
 export const resultsApi = {
-  getResultsForQuestion: async (
-    questionId: string,
-    demographicFilters?: {
-      age?: string | string[];
-      gender?: string | string[];
-      country_residence?: string | string[];
-      race_ethnicity?: string | string[];
-      income_bracket?: string | string[];
-      political_affiliation?: string | string[];
-      occupation?: string | string[];
-      country_origin?: string | string[];
-    },
-    userId?: string
-  ) => {
-    const url = new URL(`${baseUrl}/result-data/${questionId}`);
-    // Add userId to query params if it exists
-    if (userId && !demographicFilters) {
-      url.searchParams.append('userId', userId);
+  getResultsForQuestion: async (questionId: string, demographicFilters?: object, userId?: string) => {
+    const params = new URLSearchParams();
+    if (userId) params.set('userId', userId);
+    for (const [key, value] of Object.entries(demographicFilters ?? {})) {
+      if (value !== undefined && value !== null) {
+        for (const entry of Array.isArray(value) ? value : [value]) params.append(key, String(entry));
+      }
     }
-
-    // Add demographic filters to query params if they exist
-    if (demographicFilters) {
-      console.log('demographicFilters', demographicFilters);
-      Object.entries(demographicFilters).forEach(([key, value]) => {
-        if (value) {
-          console.log('key', key);
-          console.log('value', value);
-          // Handle both single values and arrays
-          if (Array.isArray(value)) {
-            value.forEach((v) => url.searchParams.append(key, v));
-          } else {
-            url.searchParams.append(key, value);
-          }
-        }
-      });
-    }
-    const response = await fetch(url.toString(), {
-      headers: {
-        Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
-      },
-    });
-    const data = await response.json();
-    return {
-      data,
-    };
+    const data = await apiRequest(`result-data/${encodeURIComponent(questionId)}?${params}`);
+    return { data };
   },
 };
 export default resultsApi;

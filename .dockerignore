@@ -1,0 +1,8 @@
+**
+!server/
+!server/**
+!deploy/
+!deploy/**
+**/node_modules
+**/.env
+**/.env.*

@@ -159,3 +159,7 @@ Modify your settings.json to have the following:
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
 ```
+
+## Render backend
+
+The Render recreation is configured in `render.yaml`. See [server/README.md](server/README.md) for deployment, database migrations, authentication, notification hooks, and local verification. The original `supabase/` sources remain as migration history and reference.
