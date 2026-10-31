@@ -1,94 +1,98 @@
 # Initial recreation uses the smallest plans. Render's free Postgres expires
 # after 30 days; select a paid database plan before storing production data.
-services:
-  - type: web
-    name: everybody-polls-api
-    runtime: docker
-    repo: https://github.com/mmckeon16/everybody-votes
-    branch: codex/render-backend
-    region: virginia
-    plan: free
-    dockerfilePath: ./server/Dockerfile
-    dockerContext: .
-    healthCheckPath: /healthz
-    autoDeployTrigger: "off"
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: everybody-polls-db
-          property: connectionString
-      - key: AUTH_HOSTPORT
-        fromService:
-          type: pserv
-          name: everybody-polls-auth
-          property: hostport
-      - key: PUBLIC_API_KEY
-        value: everybody-polls-public
-      - key: INTERNAL_HOOK_TOKEN
-        generateValue: true
-      - key: CORS_ORIGINS
-        value: https://everybodypolls.com,https://www.everybodypolls.com,http://localhost:8081,http://localhost:5173
+projects:
+  - name: Everybody Polls
+    environments:
+      - name: Production
+        services:
+          - type: web
+            name: everybody-polls-api
+            runtime: docker
+            repo: https://github.com/mmckeon16/everybody-votes
+            branch: codex/render-backend
+            region: virginia
+            plan: free
+            dockerfilePath: ./server/Dockerfile
+            dockerContext: .
+            healthCheckPath: /healthz
+            autoDeployTrigger: "off"
+            envVars:
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: everybody-polls-db
+                  property: connectionString
+              - key: AUTH_HOSTPORT
+                fromService:
+                  type: pserv
+                  name: everybody-polls-auth
+                  property: hostport
+              - key: PUBLIC_API_KEY
+                value: everybody-polls-public
+              - key: INTERNAL_HOOK_TOKEN
+                generateValue: true
+              - key: CORS_ORIGINS
+                value: https://everybodypolls.com,https://www.everybodypolls.com,http://localhost:8081,http://localhost:5173
 
-  - type: pserv
-    name: everybody-polls-auth
-    runtime: docker
-    repo: https://github.com/mmckeon16/everybody-votes
-    branch: codex/render-backend
-    region: virginia
-    plan: 0.5c-512mb
-    dockerfilePath: ./deploy/auth.Dockerfile
-    dockerContext: .
-    autoDeployTrigger: "off"
-    envVars:
-      - key: PORT
-        value: "9999"
-      - key: DATABASE_URL
-        fromDatabase:
-          name: everybody-polls-db
-          property: connectionString
-      - key: API_PUBLIC_URL
-        fromService:
-          type: web
-          name: everybody-polls-api
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: GOTRUE_JWT_SECRET
-        generateValue: true
-      - key: GOTRUE_DB_MAX_POOL_SIZE
-        value: "5"
-      - key: GOTRUE_DISABLE_SIGNUP
-        value: "true"
-      - key: GOTRUE_MAILER_AUTOCONFIRM
-        value: "false"
-      - key: GOTRUE_SITE_URL
-        value: https://everybodypolls.com
+          - type: pserv
+            name: everybody-polls-auth
+            runtime: docker
+            repo: https://github.com/mmckeon16/everybody-votes
+            branch: codex/render-backend
+            region: virginia
+            plan: 0.5c-512mb
+            dockerfilePath: ./deploy/auth.Dockerfile
+            dockerContext: .
+            autoDeployTrigger: "off"
+            envVars:
+              - key: PORT
+                value: "9999"
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: everybody-polls-db
+                  property: connectionString
+              - key: API_PUBLIC_URL
+                fromService:
+                  type: web
+                  name: everybody-polls-api
+                  envVarKey: RENDER_EXTERNAL_URL
+              - key: GOTRUE_JWT_SECRET
+                generateValue: true
+              - key: GOTRUE_DB_MAX_POOL_SIZE
+                value: "5"
+              - key: GOTRUE_DISABLE_SIGNUP
+                value: "true"
+              - key: GOTRUE_MAILER_AUTOCONFIRM
+                value: "false"
+              - key: GOTRUE_SITE_URL
+                value: https://everybodypolls.com
 
-  - type: cron
-    name: everybody-polls-jobs
-    runtime: docker
-    repo: https://github.com/mmckeon16/everybody-votes
-    branch: codex/render-backend
-    region: virginia
-    plan: 0.5c-512mb
-    schedule: "* * * * *"
-    dockerfilePath: ./server/Dockerfile
-    dockerContext: .
-    dockerCommand: sh -c 'node migrate.mjs && node jobs.mjs'
-    autoDeployTrigger: "off"
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: everybody-polls-db
-          property: connectionString
-      - key: HOOK_SIGNING_SECRET
-        generateValue: true
-      - key: ONESIGNAL_APP_ID
-        value: fe9857fe-f9b3-4424-b7d5-ba920dfff980
+          - type: cron
+            name: everybody-polls-jobs
+            runtime: docker
+            repo: https://github.com/mmckeon16/everybody-votes
+            branch: codex/render-backend
+            region: virginia
+            plan: 0.5c-512mb
+            schedule: "* * * * *"
+            dockerfilePath: ./server/Dockerfile
+            dockerContext: .
+            dockerCommand: sh -c 'node migrate.mjs && node jobs.mjs'
+            autoDeployTrigger: "off"
+            envVars:
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: everybody-polls-db
+                  property: connectionString
+              - key: HOOK_SIGNING_SECRET
+                generateValue: true
+              - key: ONESIGNAL_APP_ID
+                value: fe9857fe-f9b3-4424-b7d5-ba920dfff980
 
-databases:
-  - name: everybody-polls-db
-    databaseName: everybody_polls
-    user: everybody_polls
-    postgresMajorVersion: "17"
-    region: virginia
-    plan: free
-    ipAllowList: []
+        databases:
+          - name: everybody-polls-db
+            databaseName: everybody_polls
+            user: everybody_polls
+            postgresMajorVersion: "17"
+            region: virginia
+            plan: free
+            ipAllowList: []
