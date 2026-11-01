@@ -30,12 +30,25 @@ metadata. Expo environments contain Supabase client settings, Google client ID,
 and Sentry settings; none contains notification credentials. The Discord URL was
 read from a Supabase Edge Function secret in the original implementation.
 
-The old Supabase hostname `nkaenbgnlfcqzjqnforj.supabase.co` did not resolve during
-initial access checks. No Supabase account is currently connected. Account access
-is needed to inspect remaining project/dashboard metadata; installing/connecting
-the Supabase integration is the available recovery path. Function secret APIs
-may expose only names/digests rather than recoverable values, so project access
-does not guarantee the original secret values can be retrieved.
+The Supabase connection is now working and confirms the original project still
+exists in **Collect Software** (Free), with ref `nkaenbgnlfcqzjqnforj` and status
+`INACTIVE`. The platform lists eight deployed functions, including
+`question-rotation-notification` version 8 and `push-notifications` version 5,
+both last updated January 24, 2025. The deployed Expo sender therefore remained
+listed even after its source was removed from the app repository.
+
+Database queries and migration listing fail because the inactive database is
+unavailable. Function-source download returned an internal MCP error on two
+attempts. Supabase rejected restoration with: “Project has been paused for more
+than 400 days and cannot be restored.” No hosted restore or state change occurred.
+
+A saved database backup is the next recovery source for SQL webhook definitions.
+The connected integration does not expose backup download, Auth configuration,
+or function-secret listing. The Management API's normal function-secret listing
+returns names/digests rather than reusable plaintext, so connecting the account
+does not by itself recover the old Discord URL or API keys. A backup might contain
+SQL-embedded destinations; notification provider credentials may still require
+replacement in Discord/OneSignal.
 
 The Render triggers and delivery logic are implemented. External delivery stays
 unconfigured until a verified Discord webhook URL and/or OneSignal REST API key
