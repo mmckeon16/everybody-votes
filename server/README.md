@@ -15,8 +15,8 @@ hosted Supabase Edge Runtime are no longer required.
   their start/end timestamps, and delivers queued hook events.
 
 The initial Blueprint uses the smallest available plans. **Free Render Postgres
-expires after 30 days.** Choose a paid database plan before storing production
-users or votes. A free API also sleeps when idle. Auth and cron have paid plans;
+expires after 30 days.** Upgrade to a paid database before launching or accepting
+new production votes; keep the private recovery backup until that is complete. A free API also sleeps when idle. Auth and cron have paid plans;
 review Render's current pricing before applying the Blueprint.
 
 ## Current Render deployment
@@ -41,7 +41,7 @@ retain the data. Authentication signups remain disabled until email delivery
 and provider configuration are supplied. External hook destinations and
 OneSignal credentials still need the original settings.
 
-## Deploy
+## Deploy a new environment
 
 1. Push the `codex/render-backend` branch, which contains `render.yaml`.
 2. Create a Render Blueprint from that branch in the intended workspace.
@@ -56,8 +56,16 @@ OneSignal credentials still need the original settings.
    the Expo app. Update the frontpage's `VITE_SUPABASE_URL` and
    `VITE_SUPABASE_ANON_KEY` to the same API URL and public identifier.
 
-There are no production seed users, passwords, polls, or synthetic votes. These
-migrations recreate the schema. Old Supabase data requires a separate export.
+The recovered Supabase snapshot was selectively restored on November 1, 2026.
+Original user/application IDs and poll responses are preserved. The four known
+seed accounts, old sessions, challenge tokens, platform objects, legacy push
+tokens, and historical notification logs were excluded; the private backup
+retains the original archive. Notification queues stayed empty.
+
+`import-backup.mjs` validates the exact inspected backup, derives vote and
+prediction question IDs through their options, and requires an empty destination.
+It refuses to run again on the restored database. See
+`deploy/recovery-import.md` for the restore evidence and safeguards.
 
 ## Authentication and provider setup
 
@@ -65,7 +73,8 @@ Public signups start disabled until delivery/providers are configured. Add SMTP
 settings to the Auth service (`GOTRUE_SMTP_HOST`, `GOTRUE_SMTP_PORT`,
 `GOTRUE_SMTP_USER`, `GOTRUE_SMTP_PASS`, `GOTRUE_SMTP_ADMIN_EMAIL`, and
 `GOTRUE_SMTP_SENDER_NAME`), or configure the original Supabase Auth send-email
-hook. Then set `GOTRUE_DISABLE_SIGNUP=false` in the Blueprint and sync it.
+hook. Then set `GOTRUE_DISABLE_SIGNUP=false` on the existing Auth service and deploy it.
+For a future Blueprint-managed stack, update that value in the Blueprint as well.
 Keep `GOTRUE_MAILER_AUTOCONFIRM=false` for production.
 
 Recreate Google/Apple settings as Auth environment variables, including their
