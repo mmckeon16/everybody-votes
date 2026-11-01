@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-01T22:24:30.734Z",
+  "verifiedAt": "2026-11-01T22:56:38.838Z",
   "account": "collectsoftware",
   "project": "@collectsoftware/everybody-polls",
   "projectId": "3812e77d-32fd-47d2-98a0-5b3426e1d1d1",
@@ -81,6 +81,19 @@
     "expoDoctorChecksTotal": 18,
     "iosMetroHermesExport": true,
     "productionIosNativeGeneration": true,
-    "publicConfigAndBundleOldTokenScanPassed": true
+    "publicConfigAndBundleOldTokenScanPassed": true,
+    "localCloudEquivalentFingerprintsMatch": true
+  },
+  "builds": {
+    "production": {
+      "id": "306fc1da-da41-433f-92ad-2b2081d2e907",
+      "status": "FINISHED",
+      "appVersion": "1.0.0",
+      "appBuildVersion": "1.0.10",
+      "gitCommitHash": "1aeaa6e286c1ed5cd498869f80d3ec0646089c36",
+      "runtimeVersion": "4552604ec675f0cd2cf12f262b242d01162e48ba",
+      "completedAt": "2026-11-01T22:56:05.186Z",
+      "dashboardUrl": "https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/306fc1da-da41-433f-92ad-2b2081d2e907"
+    }
   }
 }

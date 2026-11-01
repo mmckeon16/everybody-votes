@@ -87,6 +87,14 @@ no users, votes, or provider messages. Production and simulator configurations
 also produce matching local/cloud-equivalent fingerprints; release backend
 guards reject loopback and other overrides.
 
+## Cloud archive
+
+The signed production [iOS build 1.0.10](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/306fc1da-da41-433f-92ad-2b2081d2e907)
+finished successfully on November 1, 2026, from commit
+`1aeaa6e286c1ed5cd498869f80d3ec0646089c36`. It uses SDK 54/Xcode 26 and
+the Render backend. The local/cloud runtime compatibility check and native
+archive passed. No App Store submission was made.
+
 ## Website and remaining release work
 
 The refreshed website is published through its existing Netlify/GitHub connection.
@@ -97,7 +105,7 @@ and submit no real responses.
 
 Apple's app record remains `PREPARE_FOR_SUBMISSION`, with an internal TestFlight
 group and no public link. The website therefore shows an iOS preparation status.
-Native archive completion, installation, real-device Apple/OAuth login, and push
+Simulator installation, real-device Apple/OAuth login, and push
 subscription/delivery must be verified before announcing a release. Signups remain
 disabled; other provider callbacks, Discord, email delivery, current poll content,
 and database upgrade are tracked in [TODO.md](../TODO.md).

@@ -33,9 +33,10 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   [deploy/mobile.env.example](deploy/mobile.env.example). Check build-profile
   inheritance and release configuration. Development, preview, and production
   now use Render; the legacy development flag no longer changes the API host.
-- [ ] Complete the new iOS cloud archive and install it for smoke testing. Full
-  type checking, dependency/doctor checks, Metro/Hermes export, and iOS prebuild
-  now pass on SDK 54; device archive completion is tracked separately.
+- [x] Complete the new signed iOS cloud archive. Production build `1.0.10`
+  succeeded on SDK 54/Xcode 26; details are in [deploy/ios-render.md](deploy/ios-render.md).
+- [ ] Install the matching iOS simulator archive and verify launch, the
+  no-active-poll state, and restored results against Render.
 - [ ] Verify real-device Apple login, each enabled OAuth provider, cold/warm
   callback handling, session refresh, sign-out, and profile completion against
   Render. Native configuration checks do not replace real-provider login.
@@ -79,6 +80,12 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
 
 ## App fixes and documentation
 
+- [x] Treat the API's explicit no-active-poll response as empty data rather than
+  an error, so the home screen shows the next-question state. Preserve other
+  HTTP, session, and network failures; eight focused regression checks pass.
+
+- [ ] Pass actual answer labels to the native results-map legend; it still
+  assumes Yes/No. Verify arbitrary community poll choices during the full-flow pass.
 - [ ] Add an explicit no-active-poll state to the prediction screen
   (`app/screens/predict/index.tsx`). The vote screen now has an empty state and
   navigation back home; prediction still needs the same coverage.
