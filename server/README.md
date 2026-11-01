@@ -19,6 +19,28 @@ expires after 30 days.** Choose a paid database plan before storing production
 users or votes. A free API also sleeps when idle. Auth and cron have paid plans;
 review Render's current pricing before applying the Blueprint.
 
+## Current Render deployment
+
+The Everybody Polls project has a Production environment in the existing
+workspace. Resource IDs and the public API URL are recorded in
+`deploy/render-production.json`; client configuration is in
+`deploy/mobile.env.example`.
+
+The resources were provisioned through the Render API because the connected
+connector cannot create private services or apply this complete Blueprint.
+They are not currently managed by a Blueprint. Use the existing resource IDs
+for updates; do not apply the Blueprint as a second stack. `render.yaml` remains
+the validated template for recreating the same architecture in a new environment.
+Changes to that file do not automatically update these live resources.
+
+Auto-deploy is disabled. Push the deployment branch, then deploy the affected
+existing service explicitly. The cron runs `node jobs.mjs`, which applies
+pending migrations before rotating polls and delivering configured hooks.
+The free database expires on **December 1, 2026**; upgrade it before then to
+retain the data. Authentication signups remain disabled until email delivery
+and provider configuration are supplied. External hook destinations and
+OneSignal credentials still need the original settings.
+
 ## Deploy
 
 1. Push the `codex/render-backend` branch, which contains `render.yaml`.

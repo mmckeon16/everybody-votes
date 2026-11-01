@@ -1,0 +1,15 @@
+{
+  "workspaceId": "tea-dbcp1po473hc739p8mlg",
+  "projectId": "prj-dbjnp28u01pc7381f3mg",
+  "environmentId": "evm-dbjnp28u01pc7381f3n0",
+  "apiUrl": "https://everybody-polls-api.onrender.com",
+  "resources": {
+    "database": "dpg-dbjnpkajnfac738ieojg-a",
+    "auth": "srv-dbjnprvb9u1s73ej4pq0",
+    "api": "srv-dbjnpugu01pc7381hhtg",
+    "jobs": "crn-dbjnq2gn74is73almi90"
+  },
+  "branch": "codex/render-backend",
+  "provisioning": "Render API; not currently managed by a Blueprint",
+  "databaseExpiresAt": "2026-12-01T17:54:25.876867Z"
+}

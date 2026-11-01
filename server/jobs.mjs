@@ -2,6 +2,7 @@ import { createHmac } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPool } from './db.mjs';
+import { migrate } from './migrate.mjs';
 
 export function destinations(env) {
   const list = [];
@@ -80,6 +81,7 @@ export async function runJobs(pool, env = process.env) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const pool = createPool();
   try {
+    await migrate(pool);
     const result = await runJobs(pool);
     console.log(JSON.stringify({ event: 'scheduled_jobs', ...result }));
     if (result.failed) process.exitCode = 1;

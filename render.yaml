@@ -76,7 +76,7 @@ projects:
             schedule: "* * * * *"
             dockerfilePath: ./server/Dockerfile
             dockerContext: .
-            dockerCommand: sh -c 'node migrate.mjs && node jobs.mjs'
+            dockerCommand: node jobs.mjs
             autoDeployTrigger: "off"
             envVars:
               - key: DATABASE_URL
