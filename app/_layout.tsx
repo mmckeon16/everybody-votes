@@ -74,28 +74,7 @@ const RootLayout = () => {
   const router = useRouter();
   const navigationRef = useNavigationContainerRef();
 
-  const linking = {
-    prefixes: [
-      'com.everybody.polls://',
-      'everybody-polls://',
-      'exp://',
-      'http://localhost:8081',
-    ],
-    config: {
-      initialRouteName: 'index',
-      screens: {
-        index: '',
-        auth: 'auth',
-        'screens/vote/index': 'vote',
-        'screens/predict/index': 'predict',
-        'screens/results/index': 'results',
-        'screens/thanks': 'thanks',
-        'auth/complete-profile': 'auth/complete-profile',
-        'auth/celebrate': 'auth/celebrate',
-        'screens/splash': 'splash',
-      },
-    },
-  };
+
 
   useEffect(() => {
     const handleDeepLink = (url: string) => {
@@ -171,9 +150,6 @@ const RootLayout = () => {
     return null;
   }
 
-  const headerRightContainerStyle = undefined;
-  // Platform.OS === 'android' ? { paddingRight: 2 } : undefined;
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
@@ -184,13 +160,11 @@ const RootLayout = () => {
               screenOptions={{
                 headerShown: true,
               }}
-              linking={linking}
-              ref={navigationRef}
             >
               <Stack.Screen
                 name="index"
                 options={{
-                  title: null,
+                  title: '',
                   headerBackVisible: false,
                   headerLeft: () => (
                     <Text
@@ -205,7 +179,6 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -231,7 +204,6 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -242,7 +214,6 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -253,7 +224,6 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -264,7 +234,6 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -274,7 +243,6 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen
@@ -285,7 +253,6 @@ const RootLayout = () => {
                   headerRight: () => <HeaderActions />,
                   animation:
                     Platform.OS === 'android' ? 'slide_from_right' : undefined,
-                  headerRightContainerStyle: headerRightContainerStyle,
                 }}
               />
               <Stack.Screen

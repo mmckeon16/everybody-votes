@@ -5,7 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
-import FeatureItem from './FeatureIcon';
+import FeatureItem, { type FeatureItemProps } from './FeatureIcon';
 import { useColorScheme } from '~/lib/useColorScheme';
 
 const OnboardingOverlay = () => {

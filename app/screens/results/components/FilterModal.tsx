@@ -14,11 +14,16 @@ import {
 } from '~/components/ui/accordion';
 import { Checkbox } from '~/components/ui/checkbox';
 import { demographics } from '../constants';
+import type { OccupationCategory } from '../../../types';
+import type { DemographicFilters } from '../../../lib/api/results';
 
 interface FilterModalProps {
-  filteredDemographics: Record<string, string[]>;
-  setFilteredDemographics: (demographics: Record<string, string[]>) => void;
+  filteredDemographics: DemographicFilters;
+  setFilteredDemographics: React.Dispatch<React.SetStateAction<DemographicFilters>>;
 }
+
+const isOccupationCategory = (option: { label: string; value: string }): option is OccupationCategory =>
+  'subcategories' in option && Array.isArray(option.subcategories);
 
 const LONG_LABEL_THRESHOLD = Platform.select({
   android: 17,
@@ -150,7 +155,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                       <AccordionContent>
                         <View className="flex-row flex-wrap mt-2">
                           {id === 'occupation'
-                            ? options?.map(
+                            ? options?.filter(isOccupationCategory).map(
                                 ({ label, value, subcategories }) => {
                                   const selected =
                                     userSelectedDemographics[id] || [];

@@ -5,18 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
 import UserStatsBadge from './UserStatsBadge';
 import MediaQuery, { Breakpoints } from '~/components/ui/MediaQuery';
 import FilterModal from './FilterModal';
+import type { DemographicFilters, PollResult } from '../../../lib/api/results';
 
-interface PollOption {
-  optionId: string;
-  optionText: string;
-  votes: number;
-  percentage: number;
-  responses: any[];
-}
+type PollOption = PollResult & { color: string };
 
 interface PollStats {
   isCorrectPrediction?: boolean;
-  userVotedPerc?: number;
+  userVotedPerc?: string;
   userVotedMajority?: boolean;
   userVotedColor?: string;
   userPredictedColor?: string;
@@ -29,11 +24,11 @@ interface LineChartProps {
   };
   results: PollOption[];
   totalVotes: number;
-  user_prediction: string;
-  user_vote: string;
-  myStats?: PollStats;
-  filteredDemographics: object;
-  setFilteredDemographics: Function;
+  user_prediction: string | null;
+  user_vote: string | null;
+  myStats?: PollStats | null;
+  filteredDemographics: DemographicFilters;
+  setFilteredDemographics: React.Dispatch<React.SetStateAction<DemographicFilters>>;
 }
 
 const LineChart: React.FC<LineChartProps> = ({

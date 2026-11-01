@@ -18,42 +18,35 @@ import {
 } from '~/components/ui/select';
 import { STATE_PATHS } from '../constants';
 import { states } from '../../../auth/constants';
+import type { StateResult, StateVoteOption as VoteOption } from '../../../lib/api/results';
 
-interface VoteOption {
-  text: string;
-  votes: number;
-}
-
-interface StateResult {
-  state: string;
+interface StateVotingData {
   totalVotes: number;
-  [key: string]: VoteOption | string | number; // For dynamic UUID keys
+  options: VoteOption[];
 }
+
+const isVoteOption = (value: unknown): value is VoteOption =>
+  typeof value === 'object' && value !== null &&
+  'votes' in value && typeof value.votes === 'number' &&
+  'text' in value && typeof value.text === 'string';
 
 interface USVoteHeatMapProps {
   stateResults: StateResult[];
 }
 
-const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
+const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults = [] }) => {
   const [activeState, setActiveState] = useState<string | null>('AK');
   const svgRef = useRef<View>(null);
   const [svgLayout, setSvgLayout] = useState({ width: 0, height: 0 });
 
   // Convert array to map for easier lookup
-  const votingData = stateResults.reduce((acc, curr) => {
-    const options = Object.entries(curr).reduce((optAcc, [key, value]) => {
-      if (typeof value === 'object' && 'votes' in value && 'text' in value) {
-        optAcc[key] = value;
-      }
-      return optAcc;
-    }, {} as Record<string, VoteOption>);
-
+  const votingData = stateResults.reduce<Record<string, StateVotingData>>((acc, curr) => {
     acc[curr.state] = {
       totalVotes: curr.totalVotes,
-      ...options,
+      options: Object.values(curr).filter(isVoteOption),
     };
     return acc;
-  }, {} as Record<string, { totalVotes: number } & Record<string, VoteOption>>);
+  }, {});
 
   const getOption1Percentage = (
     stateData?: typeof votingData[string]
@@ -61,17 +54,14 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
     if (!stateData) return 0;
 
     // Get the first option's votes
-    const options = Object.values(stateData).filter(
-      (value): value is VoteOption =>
-        typeof value === 'object' && 'votes' in value && 'text' in value
-    );
+    const options = stateData.options;
 
     if (options.length === 0 || stateData.totalVotes === 0) return 0;
     return (options[0].votes / stateData.totalVotes) * 100;
   };
 
   const getStateColor = (stateData?: typeof votingData[string]): string => {
-    if (!stateData) return '#CCCCCC';
+    if (!stateData || stateData.totalVotes === 0) return '#CCCCCC';
     const option1Percentage = getOption1Percentage(stateData);
 
     const startColor = {
@@ -98,13 +88,7 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
   };
 
   // Get option texts from the first state result
-  const firstStateWithData = stateResults[0];
-  const options = Object.entries(firstStateWithData)
-    .filter(
-      ([_, value]): value is [string, VoteOption] =>
-        typeof value === 'object' && 'text' in value && 'votes' in value
-    )
-    .map(([_, value]) => value);
+  const options = Object.values(stateResults[0] ?? {}).filter(isVoteOption);
 
   const option1Text = options[0]?.text || 'Yes';
   const option2Text = options[1]?.text || 'No';
@@ -121,6 +105,7 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
 
     const { locationX, locationY } = event.nativeEvent;
     const { width, height } = svgLayout;
+    if (width <= 0 || height <= 0) return;
 
     // Create normalized coordinates (0-1 range)
     const normalizedX = locationX / width;
@@ -244,9 +229,8 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
                   <Text className="font-bold text-lg">{activeState}</Text>
                   <Select
                     id="state"
-                    defaultOpen={false}
-                    onValueChange={({ value }) => {
-                      setActiveState(value);
+                    onValueChange={option => {
+                      if (option) setActiveState(option.value);
                     }}
                   >
                     <SelectTrigger className="w-max" />
@@ -280,16 +264,9 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
                     </SelectContent>
                   </Select>
                 </View>
-                {activeState && votingData[activeState] ? (
+                {activeState && votingData[activeState]?.totalVotes > 0 ? (
                   <View>
-                    {Object.entries(votingData[activeState])
-                      .filter(
-                        ([_, value]): value is [string, VoteOption] =>
-                          typeof value === 'object' &&
-                          'text' in value &&
-                          'votes' in value
-                      )
-                      .map(([_, option], index) => (
+                    {votingData[activeState].options.map((option, index) => (
                         <Text key={index} className="text-sm">
                           {option.text}:{' '}
                           {(

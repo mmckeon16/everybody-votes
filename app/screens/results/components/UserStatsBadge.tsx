@@ -5,17 +5,16 @@ import { CheckCircle, Target } from 'lucide-react-native';
 
 interface PollStats {
   isCorrectPrediction?: boolean;
-  userVotedPerc?: number;
+  userVotedPerc?: string;
   userVotedMajority?: boolean;
   userVotedColor?: string;
   userPredictedColor?: string;
 }
 interface UserStatsBadgeProps {
   optionId: string;
-  totalVotes: number;
-  user_prediction: string;
-  user_vote: string;
-  myStats?: PollStats;
+  user_prediction: string | null;
+  user_vote: string | null;
+  myStats?: PollStats | null;
 }
 
 const UserStatsBadge: React.FC<UserStatsBadgeProps> = ({

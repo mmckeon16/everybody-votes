@@ -23,7 +23,7 @@ const FacebookIconButton: React.FC<IconProps> = ({ size, color }) => {
 };
 
 const AppleIconButton: React.FC<IconProps> = ({ size, color }) => {
-  return <AntDesign name="apple1" size={size} color={color} />;
+  return <AntDesign name="apple" size={size} color={color} />;
 };
 
 export default function Login() {

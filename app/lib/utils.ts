@@ -1,4 +1,5 @@
 import { RGB } from '../types';
+import type { Slice } from 'react-native-pie-chart';
 
 /**
  * Formats the time remaining until the given end date
@@ -95,9 +96,11 @@ export function addColorToResults<T>(
   } else return null;
 }
 
-export function changeResultsForChart<T>(
-  results: T[]
-): (T & { optionText: string; percentage: number })[] | null {
+export function changeResultsForChart(
+  results: { percentage: number }[] | null | undefined
+): Slice[] | null {
+  if (!results) return null;
+
   const data = addColorToResults(results);
   if (data) {
     return data.map(result => ({
@@ -234,7 +237,7 @@ export function formatFilters(filters: FilterObject): string {
 
   // Format all other filters
   (Object.entries(filters) as [keyof FilterObject, string[]][])
-    .filter(([key]) => key !== 'age')
+    .filter((entry): entry is [Exclude<keyof FilterObject, 'age'>, string[]] => entry[0] !== 'age')
     .forEach(([key, values]) => {
       if (values && values.length > 0) {
         const displayName = displayNames[key] || key;

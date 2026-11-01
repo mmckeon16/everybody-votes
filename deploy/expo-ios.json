@@ -1,0 +1,86 @@
+{
+  "verifiedAt": "2026-11-01T22:24:30.734Z",
+  "account": "collectsoftware",
+  "project": "@collectsoftware/everybody-polls",
+  "projectId": "3812e77d-32fd-47d2-98a0-5b3426e1d1d1",
+  "relatedProjects": [
+    {
+      "name": "Better Saunum",
+      "id": "863a4a83-791d-4450-937b-e78db6e689eb",
+      "fullName": "@collectsoftware/better-saunum",
+      "account": "collectsoftware"
+    },
+    {
+      "name": "Guitar Rudiments",
+      "id": "b9ad1112-1495-47a5-931f-277020789900",
+      "fullName": "@collectsoftware/learn-guitar",
+      "account": "collectsoftware"
+    },
+    {
+      "name": "Recollect",
+      "id": "2d6f42f7-8c17-4f27-9c69-7ce868abdb74",
+      "fullName": "@collectsoftware/recollect-ai",
+      "account": "collectsoftware"
+    },
+    {
+      "name": "Everybody Polls",
+      "id": "3812e77d-32fd-47d2-98a0-5b3426e1d1d1",
+      "fullName": "@collectsoftware/everybody-polls",
+      "account": "collectsoftware"
+    }
+  ],
+  "bundleIdentifier": "com.everybody.polls",
+  "appleTeamId": "KF8643NB33",
+  "appStoreConnectAppId": "6740153201",
+  "buildTarget": {
+    "expoSdk": 54,
+    "iosImage": "macos-sequoia-15.6-xcode-26.0",
+    "runtimeVersionPolicy": "fingerprint",
+    "node": "22.22.0"
+  },
+  "renderApiUrl": "https://everybody-polls-api.onrender.com",
+  "remoteEnvironments": [
+    {
+      "environment": "production",
+      "renderUrlMatches": true,
+      "publicIdentifierMatches": true
+    },
+    {
+      "environment": "preview",
+      "renderUrlMatches": true,
+      "publicIdentifierMatches": true
+    },
+    {
+      "environment": "development",
+      "renderUrlMatches": true,
+      "publicIdentifierMatches": true
+    }
+  ],
+  "signing": {
+    "repaired": true,
+    "entitlementsUnchanged": true,
+    "capabilitiesUnchanged": true,
+    "validUntil": "2027-05-11T18:54:09.000Z"
+  },
+  "website": {
+    "url": "https://www.everybodypolls.com",
+    "host": "Netlify",
+    "siteId": "51a78d78-c076-4c81-a429-c8c31093436f",
+    "commit": "420c5ba789fc06c1ab5e2c50bdf3a023aa92f650",
+    "renderBrowserVerificationPassed": true
+  },
+  "release": {
+    "submitted": false,
+    "realDeviceSignInTested": false,
+    "publicTestFlightLink": null
+  },
+  "localVerification": {
+    "typescript": true,
+    "expoCompatibleDependencies": true,
+    "expoDoctorChecksPassed": 18,
+    "expoDoctorChecksTotal": 18,
+    "iosMetroHermesExport": true,
+    "productionIosNativeGeneration": true,
+    "publicConfigAndBundleOldTokenScanPassed": true
+  }
+}

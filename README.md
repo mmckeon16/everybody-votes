@@ -4,21 +4,27 @@ Make your voice heard!
 
 This is an app to vote on questions and see the results. See results based on demographics.
 
-This is a mono repo containing both a React Native Expo application and Supabase Edge Functions.
+This repository contains the React Native Expo app and its Render backend. The
+original Supabase Edge Functions remain as historical reference.
 
-The project uses [Expo](https://expo.dev) for the mobile app (created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app)) and Supabase for the backend services.
+The app uses [Expo](https://expo.dev). Render hosts its Node API, PostgreSQL,
+private Supabase Auth, and scheduled poll jobs. Start with
+[server/README.md](server/README.md) for the deployed backend and
+[deploy/ios-render.md](deploy/ios-render.md) for the iOS configuration.
 
 ## Project Structure
 
 - `/app` - React Native Expo application
-- `/supabase/functions` - Supabase Edge Functions
+- `/server` - Render API, migrations, recovery importer, and jobs
+- `/deploy` - Deployment settings and recovery/runbooks
+- `/supabase/functions` - Historical Supabase Edge Functions
 
 ## Get started
 
 1. Install dependencies
 
    ```bash
-   npm install
+   npm ci
    ```
 
 2. Start the app
@@ -36,7 +42,10 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Supabase Setup
+## Historical Supabase local development
+
+These commands are for the original local backend. The deployed application uses
+Render; they are not the production deployment path.
 
 1. Install Supabase CLI
 
@@ -74,15 +83,12 @@ You can start developing by editing the files inside the **app** directory. This
    cp .env.sample .env
    ```
 
-2. Update `.env` with your Supabase credentials:
-   - Find your credentials in the Supabase dashboard under Project Settings > API
-   - Update the following values:
-   ```
-   EXPO_PUBLIC_SUPABASE_URL=your_project_url
-   EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-   ```
+2. The template uses the current Render API and public application identifier.
+   For release builds, use the matching EAS project environment and build profile.
+   Keep provider credentials, database URLs, and Sentry upload tokens out of
+   `EXPO_PUBLIC_*` values and app `extra`.
 
-## Supabase Edge Functions
+## Historical Supabase Edge Functions
 
 To develop and deploy Edge Functions:
 
@@ -116,6 +122,20 @@ This command will move the starter code to the **app-example** directory and cre
 NOTE: we've done this, and removed the sample project code
 
 ## Generating Builds
+
+### iOS
+
+Everybody Polls is already linked to `@collectsoftware/everybody-polls`.
+Preview/production builds target the Render backend. See
+[the iOS runbook](deploy/ios-render.md) for signing, runtime compatibility, and
+verification details.
+
+```bash
+eas build --platform ios --profile production
+```
+
+Use `ios-simulator` for a simulator archive. Store distribution and real-device
+provider testing are separate from producing the native archive.
 
 ### Android
 

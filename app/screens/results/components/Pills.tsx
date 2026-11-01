@@ -1,60 +1,26 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import {
-  DemographicKey,
-  PillData,
-  DemographicPillsProps,
-} from '../../../types';
+import type { DemographicFilters } from '../../../lib/api/results';
 
-const formatAgeRanges = (ages: number[]): PillData[] => {
-  if (!ages || ages.length === 0) return [];
-  const sortedAges = [...ages].sort((a, b) => a - b);
-  const ranges: PillData[] = [];
-  let rangeStart = sortedAges[0];
-  let prev = sortedAges[0];
+interface PillData {
+  category: string;
+  displayText: string;
+  originalValue: string;
+}
 
-  for (let i = 1; i <= sortedAges.length; i++) {
-    const current = sortedAges[i];
-    if (current !== prev + 1 || i === sortedAges.length) {
-      const displayText =
-        prev === rangeStart ? `${rangeStart}` : `${rangeStart}-${prev}`;
-      ranges.push({
-        category: 'age',
-        displayText,
-        originalValue: rangeStart, // We store the start of the range as the value
-      });
-      rangeStart = current;
-    }
-    prev = current;
-  }
-  return ranges;
-};
+interface DemographicPillsProps {
+  data: DemographicFilters;
+  onRemove?: (category: string, originalValue: string) => void;
+}
 
-const formatValue = (
-  category: DemographicKey,
-  values: number[] | string[] | undefined
-): PillData[] => {
-  if (!values || values.length === 0) return [];
-
-  switch (category) {
-    case 'age':
-      return formatAgeRanges(values as number[]);
-    case 'state':
-      return (values as string[]).map(value => ({
-        category,
-        displayText: value,
-        originalValue: value,
-      }));
-    default:
-      return (values as string[]).map(value => ({
-        category,
-        displayText: value
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' '),
-        originalValue: value,
-      }));
-  }
+const formatValue = (category: string, values: string[] | undefined): PillData[] => {
+  return (values ?? []).map(value => ({
+    category,
+    displayText: category === 'age' || category === 'state'
+      ? value
+      : value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+    originalValue: value,
+  }));
 };
 
 const DemographicPills: React.FC<DemographicPillsProps> = ({
@@ -65,10 +31,7 @@ const DemographicPills: React.FC<DemographicPillsProps> = ({
     return null;
   }
 
-  const allPills = (Object.entries(data) as [
-    DemographicKey,
-    string[] | number[]
-  ][]).reduce<PillData[]>((acc, [category, values]) => {
+  const allPills = Object.entries(data).reduce<PillData[]>((acc, [category, values]) => {
     const formattedValues = formatValue(category, values);
     return [...acc, ...formattedValues];
   }, []);

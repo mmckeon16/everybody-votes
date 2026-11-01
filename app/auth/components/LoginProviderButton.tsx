@@ -56,9 +56,14 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
     } catch (error) {
       let errorMessage = 'An unexpected error occurred';
 
-      if (error.code === 'ERR_REQUEST_CANCELED') {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'ERR_REQUEST_CANCELED'
+      ) {
         errorMessage = 'Sign-in was cancelled';
-      } else if (error.message) {
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
 

@@ -7,9 +7,20 @@ import { ChevronDown } from '~/lib/icons/ChevronDown';
 import { ChevronUp } from '~/lib/icons/ChevronUp';
 import { cn } from '~/lib/utils';
 
-type Option = SelectPrimitive.Option;
+type Option = NonNullable<SelectPrimitive.Option>;
 
-const Select = SelectPrimitive.Root;
+type SelectProps = Omit<React.ComponentProps<typeof SelectPrimitive.Root>, 'onValueChange'> & {
+  onValueChange?: (option: Option) => void;
+};
+
+const Select = ({ onValueChange, ...props }: SelectProps) => (
+  <SelectPrimitive.Root
+    {...props}
+    onValueChange={option => {
+      if (option) onValueChange?.(option);
+    }}
+  />
+);
 
 const SelectGroup = SelectPrimitive.Group;
 

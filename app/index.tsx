@@ -15,13 +15,14 @@ export default function Screen() {
   const [appIsReady, setAppIsReady] = useState(false);
   const { isLoading, isError, error } = useActiveQuestion();
   const router = useRouter();
-  if (Platform.OS !== 'web') {
-    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-    OneSignal.initialize(Constants.expoConfig.extra.oneSignalAppId);
-
-    // Also need enable notifications to complete OneSignal setup
-    OneSignal?.Notifications.requestPermission(true);
-  }
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    const appId = Constants.expoConfig?.extra?.oneSignalAppId;
+    if (typeof appId !== 'string' || !appId) return;
+    OneSignal.Debug.setLogLevel(__DEV__ ? LogLevel.Verbose : LogLevel.None);
+    OneSignal.initialize(appId);
+    void OneSignal.Notifications.requestPermission(true);
+  }, []);
   const handleHomePress = () => {
     router.push('/auth/signup');
   };

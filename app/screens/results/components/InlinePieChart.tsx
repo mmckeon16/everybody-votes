@@ -10,7 +10,7 @@ import Animated, {
   useDerivedValue,
   Easing,
 } from 'react-native-reanimated';
-import { DemographicKey } from '../../../types';
+import type { DemographicFilters } from '../../../lib/api/results';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -26,8 +26,8 @@ interface DonutChartProps {
   strokeWidth?: number;
   totalVotes?: number;
   totalFilteredVotes?: number;
-  filters?: object;
-  setFilters: Function;
+  filters?: DemographicFilters;
+  setFilters: React.Dispatch<React.SetStateAction<DemographicFilters>>;
 }
 
 const AnimatedDonutChart: React.FC<DonutChartProps> = ({
@@ -36,7 +36,7 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   strokeWidth = 15,
   totalVotes,
   totalFilteredVotes,
-  filters = null,
+  filters = {},
   setFilters,
 }) => {
   const radius = (size - strokeWidth) / 2;
@@ -63,8 +63,8 @@ const AnimatedDonutChart: React.FC<DonutChartProps> = ({
   }, [data]);
 
   const handleRemove = (
-    category: DemographicKey,
-    originalValue: string | number
+    category: string,
+    originalValue: string
   ) => {
     setFilters(prev => ({
       ...prev,

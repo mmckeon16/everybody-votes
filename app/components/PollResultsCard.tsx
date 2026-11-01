@@ -56,12 +56,15 @@ export const PollResultsCard = () => {
       <View className="px-4">
         <View className="w-full flex items-center justify-center py-4">
           <View style={{ width: chartSize, height: chartSize }}>
-            <PieChart
-              widthAndHeight={chartSize}
-              series={alteredResults}
-              sliceColor={['#2563EB', '#0879C4']}
-              cover={0.45}
-            />
+            {alteredResults.some(slice => slice.value > 0) ? (
+              <PieChart
+                widthAndHeight={chartSize}
+                series={alteredResults}
+                cover={0.45}
+              />
+            ) : (
+              <Text className="text-center">No votes yet</Text>
+            )}
           </View>
         </View>
       </View>

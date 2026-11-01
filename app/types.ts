@@ -1,3 +1,4 @@
+import type { Provider } from '@supabase/supabase-js';
 export interface Option {
   id: string;
   text: string;
@@ -80,10 +81,10 @@ export interface IconProps {
 }
 
 export interface ProviderButtonProps {
-  provider: string;
+  provider: Extract<Provider, 'google' | 'apple' | 'twitter' | 'github'>;
   providerDisplayName: string;
-  IconComponent: React.FC<IconProps>;
-  isSmall: boolean;
+  IconComponent?: React.FC<IconProps> | null;
+  isSmall?: boolean;
 }
 
 export interface ActiveQuestion {

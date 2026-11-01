@@ -29,17 +29,23 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
 
 ## App and website cutover
 
-- [ ] Point Expo/EAS build environments at Render using
+- [x] Point Expo/EAS build environments at Render using
   [deploy/mobile.env.example](deploy/mobile.env.example). Check build-profile
-  inheritance and development URL overrides before producing a release;
-  `EXPO_PUBLIC_ENV=development` forces API requests to loopback.
-- [ ] Build and install iOS and Android clients. Verify real-device Apple login,
-  each enabled OAuth provider, cold/warm callback handling, session refresh,
-  sign-out, and profile completion against the Render backend. Full app type
-  checking and native builds remain pending; focused callback checks passed.
-- [ ] Update the sibling `everybody-polls-frontpage` deployment's
+  inheritance and release configuration. Development, preview, and production
+  now use Render; the legacy development flag no longer changes the API host.
+- [ ] Complete the new iOS cloud archive and install it for smoke testing. Full
+  type checking, dependency/doctor checks, Metro/Hermes export, and iOS prebuild
+  now pass on SDK 54; device archive completion is tracked separately.
+- [ ] Verify real-device Apple login, each enabled OAuth provider, cold/warm
+  callback handling, session refresh, sign-out, and profile completion against
+  Render. Native configuration checks do not replace real-provider login.
+- [ ] Rebuild and verify Android after the iOS pass; Android validation is deferred.
+- [x] Update the sibling `everybody-polls-frontpage` deployment's
   `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, build/deploy it, and verify
-  shared result links and demographic filters against Render.
+  shared result links against Render. The refreshed site is live at
+  https://www.everybodypolls.com; real positive/empty results and production
+  browser-to-Render requests passed checks. Further filter coverage remains in
+  the complete app-flow task below.
 - [ ] Register a controlled device with OneSignal and verify permission,
   subscription, APNs/FCM setup, and delivery to that test device. The non-sending estimate
   currently reports zero reachable push subscriptions. Avoid a test broadcast
@@ -51,18 +57,19 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   demographic filters, sharing, and poll rotation. Backend integration tests
   already pass; client-to-Render verification is still pending. Include account
   switching and post-vote UI refresh to check session-scoped cached data.
-- [ ] Wire the website's iOS/Android download buttons in
-  `src/components/sections/HeroSection.tsx` to the released app store pages.
+- [ ] Add a verified iOS App Store/TestFlight link when a public release is ready.
+  The refreshed website now uses honest sample links and an iOS preparation
+  status. Apple's existing app record has no public TestFlight link.
 
 ## Production and release
 
 - [ ] Upgrade the existing Render database before launch/new production votes
   and before its **December 1, 2026** expiry. Verify backup retention and recovery
   for newly collected Render data; preserve the private original recovery archive.
-- [ ] Rotate the Sentry upload token committed in `eas.json`, remove its literals
-  from tracked build profiles, and keep the replacement in build secrets. Remove
-  `SENTRY_AUTH_TOKEN` from `app.config.ts` public `extra`; it belongs only in the
-  build/upload process. Never copy token values into issues or this checklist.
+- [ ] Rotate the Sentry upload token previously committed in `eas.json` and
+  replace the stored EAS build secret. Its current literals and public app-config
+  references have been removed; historical exposure still requires rotation.
+  Never copy token values into issues or this checklist.
 - [ ] Review and merge [PR #7](https://github.com/mmckeon16/everybody-votes/pull/7),
   confirm the intended release/deploy branch, and document the release procedure.
   Auto-deploy is currently off; the existing resources are managed through the
@@ -72,19 +79,33 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
 
 ## App fixes and documentation
 
-- [ ] Add an explicit no-active-poll state to the vote
-  and prediction screens (`app/screens/vote/index.tsx` and
-  `app/screens/predict/index.tsx`) instead of leaving empty screens between polls.
-- [ ] Move OneSignal initialization/permission setup out of the home screen's
+- [ ] Add an explicit no-active-poll state to the prediction screen
+  (`app/screens/predict/index.tsx`). The vote screen now has an empty state and
+  navigation back home; prediction still needs the same coverage.
+- [x] Move OneSignal initialization/permission setup out of the home screen's
   render body (`app/index.tsx`) and reduce verbose production logging.
 - [ ] Finish the authenticated account-deletion flow. The website's
   `src/pages/Delete.tsx` currently shows a disabled placeholder; verify the
   backend and app behavior and finish this release gap before relaunch.
-- [ ] Refresh the root development instructions so Render is the current backend
+- [x] Refresh the root development instructions so Render is the current backend
   path and the original Supabase setup is clearly historical/local reference.
 
 ## Completed
 
+- [x] Upgrade the iOS app to Expo SDK 54 with compatible tracked dependencies,
+  an Xcode 26 EAS image, a simulator profile, and fingerprinted runtime updates.
+  Type checking, Expo doctor 18/18, iOS export, and native generation pass.
+- [x] Remove the upload-token literals from current tracked config and public
+  Expo configuration; scan the iOS export for the old literals. Token rotation
+  remains pending above.
+- [x] Confirm Everybody Polls already belongs to `collectsoftware`, alongside
+  Better Saunum, Guitar Rudiments, and Recollect. Preserve the existing project
+  and iOS bundle identifiers.
+- [x] Renew the app and OneSignal extension App Store signing profiles using the
+  existing valid team certificate. Entitlements/capabilities are unchanged;
+  signing expires May 11, 2027.
+- [x] Refresh and publish the community polling website, including a clearly
+  labeled vote/predict/reveal sample and Render-backed shared results.
 - [x] Create a separate Render project with API, private Auth, Postgres, and cron.
 - [x] Apply Auth/application migrations and pass backend integration checks.
 - [x] Recover and selectively restore the original accounts, identities, polls,
