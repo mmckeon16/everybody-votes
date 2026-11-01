@@ -38,8 +38,11 @@ existing service explicitly. The cron runs `node jobs.mjs`, which applies
 pending migrations before rotating polls and delivering configured hooks.
 The free database expires on **December 1, 2026**; upgrade it before then to
 retain the data. Authentication signups remain disabled until email delivery
-and provider configuration are supplied. External hook destinations and
-OneSignal credentials still need the original settings.
+and provider configuration are supplied. OneSignal has a dedicated app API key
+on the cron service and uses the verified `Total Subscriptions` segment. Discord
+still needs its webhook URL. The non-sending audience estimate currently reports
+zero reachable push subscriptions; devices must subscribe before delivery can
+reach anyone.
 
 ## Deploy a new environment
 
@@ -107,7 +110,14 @@ known. No external messages are sent without configuration.
 | `QUESTION_ACTIVATED_WEBHOOK_URL` | POST activation payloads to the original replacement webhook |
 | `HOOK_SIGNING_SECRET` | HMAC-SHA256 of the raw body in `X-Hook-Signature` |
 | `DISCORD_WEBHOOK_URL` | Send rotation success/failure notifications to Discord |
-| `ONESIGNAL_REST_API_KEY` + `ONESIGNAL_APP_ID` | Notify subscribed users when a question becomes active |
+| `ONESIGNAL_REST_API_KEY` + `ONESIGNAL_APP_ID` | Notify subscribed push subscriptions when a question becomes active |
+| `ONESIGNAL_SEGMENT` | Exact existing segment name; this app uses `Total Subscriptions` |
+
+The sender uses `ONESIGNAL_SEGMENT` when supplied and retains `Subscribed Users`
+as a compatibility fallback. The current app has no segment with that fallback
+name. `Total Subscriptions` was verified as active, default, and unfiltered;
+`target_channel: push` keeps delivery scoped to subscribed push endpoints.
+Credential and recipient-estimate checks create no messages.
 
 Secrets go in Render environment variables, never source or the Blueprint.
 Optional settings omitted from `render.yaml` can be added to the cron service

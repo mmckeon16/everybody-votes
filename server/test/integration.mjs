@@ -128,7 +128,7 @@ test('failed hooks retry from persisted delivery state without repeating success
 });
 
 test('recovered Discord reports and OneSignal pushes retry rejected receipts independently', async () => {
-  const env = { DISCORD_WEBHOOK_URL: 'https://discord.invalid/local-test', ONESIGNAL_REST_API_KEY: 'local-test-key', ONESIGNAL_APP_ID: randomUUID() };
+  const env = { DISCORD_WEBHOOK_URL: 'https://discord.invalid/local-test', ONESIGNAL_REST_API_KEY: 'local-test-key', ONESIGNAL_APP_ID: randomUUID(), ONESIGNAL_SEGMENT: 'Total Subscriptions' };
   let rejectPush = true, discordCalls = 0, pushCalls = 0;
   const send = async (url, request) => {
     const body = JSON.parse(request.body);
@@ -145,6 +145,8 @@ test('recovered Discord reports and OneSignal pushes retry rejected receipts ind
     pushCalls++;
     assert.equal(request.headers.Authorization, 'Key local-test-key');
     assert.equal(body.app_id, env.ONESIGNAL_APP_ID);
+    assert.deepEqual(body.included_segments, ['Total Subscriptions']);
+    assert.equal(body.target_channel, 'push');
     assert.equal(body.headings.en, 'New Poll!');
     assert.match(body.contents.en, /^New question available: ".*". Available until /);
     assert.equal(body.idempotency_key, request.headers['Idempotency-Key']);

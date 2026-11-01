@@ -70,11 +70,20 @@ The backup contains no Discord webhook URL, no OneSignal reference or API key,
 and no Vault secret rows. It does contain the original Edge Function invocation
 credential; that old service-role JWT remains private and is not reused by the
 Render backend. Notification-provider secrets were kept outside the database
-and still require recovery/replacement through Discord/OneSignal account access.
+and required recovery/replacement through provider account access. A replacement
+app-scoped OneSignal key named `Render Everybody Polls` is now saved directly in
+the Render cron environment. The Discord webhook URL remains unrecovered.
 
-The Render triggers and delivery logic are implemented. External delivery stays
-unconfigured until a verified Discord webhook URL and/or OneSignal REST API key
-are available. Old Expo push support is not re-enabled: it was deliberately
+The Render triggers and delivery logic are implemented. OneSignal is configured
+on the cron with its dedicated key, existing app ID, and `ONESIGNAL_SEGMENT=Total
+Subscriptions`. The segment is active, default, and has no filters. The former
+`Subscribed Users` name is absent in this app, so the sender now accepts an exact
+segment name from configuration. A non-sending recipient estimate returned HTTP
+200 with zero reachable push subscriptions. Read-only checks also confirmed no
+pending hook events, deliveries, active polls, or currently eligible polls before
+enabling the key. Discord remains unconfigured.
+
+Old Expo push support is not re-enabled: it was deliberately
 removed from the latest mobile app. No real notification was sent during recovery
 tests. Receivers must deduplicate generic events by event ID; OneSignal requests retain
 the same idempotency key during retries.
@@ -89,3 +98,9 @@ fresh PostgreSQL 17/GoTrue rehearsal verified rollback, trigger restoration,
 repeat-import refusal, Auth account/identity reads, API aggregates, and zero
 notification side effects. Live post-import checks returned HTTP 200 for health,
 all 13 historical polls, and a sampled result whose aggregate matched the source.
+
+OneSignal credential verification used only app/segment metadata and the
+non-sending recipient-estimate endpoint; no notification was created. The key
+value was transferred directly to Render without logging or saving it locally.
+Existing keys were not rotated. The payload integration test uses the verified
+segment name and retains push targeting, recovered content, and idempotency.

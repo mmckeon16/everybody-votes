@@ -87,6 +87,8 @@ projects:
                 generateValue: true
               - key: ONESIGNAL_APP_ID
                 value: fe9857fe-f9b3-4424-b7d5-ba920dfff980
+              - key: ONESIGNAL_SEGMENT
+                value: Total Subscriptions
 
         databases:
           - name: everybody-polls-db

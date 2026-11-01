@@ -24,7 +24,7 @@ export function notificationPayload(destination, event, env) {
     }] };
   }
   if (destination === 'onesignal') {
-    return { app_id: env.ONESIGNAL_APP_ID, included_segments: ['Subscribed Users'], target_channel: 'push',
+    return { app_id: env.ONESIGNAL_APP_ID, included_segments: [env.ONESIGNAL_SEGMENT || 'Subscribed Users'], target_channel: 'push',
       headings: { en: 'New Poll!' },
       contents: { en: `New question available: "${log.record.text}". Available until ${date(log.record.end_date)}` },
       data: { questionId: log.record.id }, idempotency_key: event.id };
