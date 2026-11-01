@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import * as Linking from 'expo-linking';
@@ -21,39 +22,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
   const router = useRouter();
+  const handledAuthCodes = useRef(new Set<string>());
 
   useEffect(() => {
-    const handleDeepLink = async ({ url }: { url: string }) => {
-      console.log('Got deep link:', url);
-      try {
-        if (url.includes('code=')) {
-          const code = url.match(/code=([^&]+)/)?.[1];
-          if (code) {
-            const { data, error } = await supabase.auth.exchangeCodeForSession(
-              code
-            );
-            if (error) {
-              console.error('Error exchanging code for session:', error);
-              return;
-            }
-            if (data?.session) {
-              setSession(data.session);
-              const needsProfileCompletion = await checkProfileCompletion(
-                data.session
-              );
+    // The web SDK already reads and exchanges PKCE callbacks from the browser URL.
+    if (Platform.OS === 'web') return;
 
-              // Add a small delay to ensure state updates have propagated
-              setTimeout(() => {
-                if (needsProfileCompletion) {
-                  console.log('Redirecting to signup from deep link...');
-                  router.replace('/auth/signup');
-                } else {
-                  console.log('Redirecting to home from deep link...');
-                  router.replace('/');
-                }
-              }, 100);
+    let active = true;
+    const handleDeepLink = async ({ url }: { url: string }) => {
+      if (!active) return;
+      try {
+        const code = Linking.parse(url).queryParams?.code;
+        if (
+          typeof code !== 'string' ||
+          !code ||
+          handledAuthCodes.current.has(code)
+        ) {
+          return;
+        }
+        // An initial URL and a URL event can report the same single-use code.
+        handledAuthCodes.current.add(code);
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!active) return;
+        if (error) {
+          console.error('Error exchanging code for session:', error);
+          return;
+        }
+        if (data?.session) {
+          setSession(data.session);
+          const needsProfileCompletion = await checkProfileCompletion(
+            data.session
+          );
+
+          // Add a small delay to ensure state updates have propagated
+          setTimeout(() => {
+            if (!active) return;
+            if (needsProfileCompletion) {
+              console.log('Redirecting to signup from deep link...');
+              router.replace('/auth/signup');
+            } else {
+              console.log('Redirecting to home from deep link...');
+              router.replace('/');
             }
-          }
+          }, 100);
         }
       } catch (error) {
         console.error('Error handling deep link:', error);
@@ -61,7 +72,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const subscription = Linking.addEventListener('url', handleDeepLink);
+    Linking.getInitialURL()
+      .then(url => {
+        if (url) return handleDeepLink({ url });
+      })
+      .catch(error => {
+        console.error('Error reading initial auth link:', error);
+      });
     return () => {
+      active = false;
       subscription.remove();
     };
   }, []);

@@ -10,7 +10,7 @@ not recorded here.
 | Scheduled poll rotation | Repo migration says 12:00 UTC; recovered database actually scheduled 15:00 UTC and inserted a rotation log after deactivation | Cron checks every minute against poll timestamps and records only actual changes or failures |
 | Rotation log created | `question-rotation-notification` sent a Discord report containing execution time, deactivation count, new question text/period, or an error | Durable `question.rotation` events with a snapshot of the activated question; delivery uses `DISCORD_WEBHOOK_URL` |
 | Question becomes active | Earlier versions invoked `push-notifications` and sent “New Poll!” through Expo to saved push tokens | Durable `question.activated` event; current sender uses the app's latest OneSignal integration |
-| Authentication hooks | No enabled custom Auth hook or custom SMTP configuration found in the repo | Dashboard-only Auth settings remain unverified |
+| Authentication hooks | Paused-project Auth export confirms all seven custom Auth hooks disabled and no custom SMTP | No custom Auth hooks to recreate; native Apple configured, other recovered providers staged pending callback registration |
 
 The downloaded May 4, 2025 database backup confirms the installed binding:
 `question_rotation_logs_hook` fires AFTER INSERT on
@@ -55,7 +55,7 @@ listed even after its source was removed from the app repository.
 Database queries and migration listing fail because the inactive database is
 unavailable. Function-source download returned an internal MCP error on two
 attempts. Supabase rejected restoration with: “Project has been paused for more
-than 400 days and cannot be restored.” No Supabase hosted restore or state change occurred.
+than 400 days and cannot be restored.” No Supabase project restore or configuration change occurred.
 
 The database backup was downloaded successfully through the authenticated
 Dashboard and inspected as SQL text without executing or restoring it. A private
@@ -104,3 +104,33 @@ non-sending recipient-estimate endpoint; no notification was created. The key
 value was transferred directly to Render without logging or saving it locally.
 Existing keys were not rotated. The payload integration test uses the verified
 segment name and retains push targeting, recovered content, and idempotency.
+
+## Recovered Auth configuration
+
+The Management API successfully exported the paused project's Auth configuration
+on November 1, 2026. Access used a temporary token restricted to this single
+project and Auth Config Read. The token was deleted immediately after export and
+verified absent from the account token list. The private configuration is archived
+outside Git with the original backup; no signing key or session was reused.
+
+All seven custom Auth hooks were disabled. The source had no custom SMTP, so
+there is no custom signup-email hook or SMTP credential to recover. Google,
+GitHub, Twitter, and native Apple were enabled in the original app. Google,
+GitHub, and legacy Twitter credentials were transferred into Render with those
+providers disabled pending registration of the new callback. Google's public
+OAuth endpoint confirms `redirect_uri_mismatch` for that new callback; Cloud
+requires fresh identity verification before access to the existing project/client
+can be checked.
+
+Native Apple uses the recovered accepted-client-ID list, which includes the
+current iOS bundle ID, with nonce checking retained and no Apple secret. A
+disposable instance of the pinned GoTrue 2.195.0 confirmed Apple enabled in
+settings and rejected dummy ID tokens at validation, creating no users/sessions.
+The deployed Auth settings also return Apple enabled and Google/GitHub/Twitter
+disabled. Real device login remains untested. Signups stay disabled.
+
+The exact app-return allowlist now includes `com.everybody.polls://index`,
+localhost's web origin, and the production website origins. Client callback
+changes reconcile the native URL scheme with app configuration and keep callback
+codes/credentials out of logs. Cloud/provider callback registration and native
+app rebuilding remain separate requirements before cutover.

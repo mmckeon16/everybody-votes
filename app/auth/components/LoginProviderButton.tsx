@@ -38,11 +38,6 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         throw new Error('No identity token received from Apple');
       }
 
-      console.log('Got Apple credential:', {
-        ...credential,
-        identityToken: credential.identityToken.substring(0, 20) + '...',
-      });
-
       // Sign in with Supabase using the Apple ID token
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
@@ -74,12 +69,12 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 
   const signInWithProvider = async () => {
     try {
-      const redirectUrl = Platform.select({
-        web: 'http://localhost:8081',
-        android: 'everybody-polls://index', // Explicitly set the route
-        ios: 'everybody-polls://index',
-        default: Linking.createURL('index'), // Add specific path
-      });
+      const redirectUrl =
+        Platform.OS === 'web'
+          ? typeof window !== 'undefined'
+            ? window.location.origin
+            : 'https://everybodypolls.com'
+          : 'com.everybody.polls://index';
       console.log('Starting OAuth with redirect URL:', redirectUrl);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
@@ -95,7 +90,11 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       if (Platform.OS !== 'web' && data?.url) {
         await Linking.openURL(data.url);
         // Note: Don't add navigation here as it will be handled by the deep link handler
-      } else if (Platform.OS === 'web' && data?.url) {
+      } else if (
+        Platform.OS === 'web' &&
+        typeof window !== 'undefined' &&
+        data?.url
+      ) {
         // Handle web platform differently if needed
         window.location.href = data.url;
       }

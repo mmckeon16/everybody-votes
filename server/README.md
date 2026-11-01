@@ -72,22 +72,34 @@ It refuses to run again on the restored database. See
 
 ## Authentication and provider setup
 
-Public signups start disabled until delivery/providers are configured. Add SMTP
-settings to the Auth service (`GOTRUE_SMTP_HOST`, `GOTRUE_SMTP_PORT`,
-`GOTRUE_SMTP_USER`, `GOTRUE_SMTP_PASS`, `GOTRUE_SMTP_ADMIN_EMAIL`, and
-`GOTRUE_SMTP_SENDER_NAME`), or configure the original Supabase Auth send-email
-hook. Then set `GOTRUE_DISABLE_SIGNUP=false` on the existing Auth service and deploy it.
-For a future Blueprint-managed stack, update that value in the Blueprint as well.
-Keep `GOTRUE_MAILER_AUTOCONFIRM=false` for production.
+The paused project's Auth configuration was recovered through a single-project
+Auth Config Read token, then that token was revoked. All custom Auth hooks were
+disabled and no custom SMTP was configured. Private provider settings are archived
+outside Git with the recovery backup; secret values are stored on Render.
 
-Recreate Google/Apple settings as Auth environment variables, including their
-client IDs and secrets. Enable each provider only after setting its credentials:
-`GOTRUE_EXTERNAL_GOOGLE_ENABLED`, `GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID`,
-`GOTRUE_EXTERNAL_GOOGLE_SECRET`, and the corresponding `APPLE` settings.
-Register `https://YOUR-API-SERVICE.onrender.com/auth/v1/callback` with the OAuth
-provider. Adjust `GOTRUE_URI_ALLOW_LIST` for production app/web redirects.
-Native Apple login still uses the existing Supabase `signInWithIdToken` API.
-Provider credentials and dashboard-only hooks cannot be recovered from Git.
+Native Apple is configured with the original accepted client IDs, including the
+app's iOS bundle ID, `GOTRUE_EXTERNAL_APPLE_ENABLED=true`, and normal nonce checking.
+The app uses `signInWithIdToken`, which needs no Apple client secret. The pinned
+Auth image passed configuration and invalid-token checks locally; deployed
+settings confirm Apple enabled. A real device login has not been tested. Browser Apple OAuth would need separate credentials.
+
+Google, GitHub, and legacy Twitter client IDs/secrets are staged on the existing
+Auth service with their `GOTRUE_EXTERNAL_<PROVIDER>_ENABLED=false` flags. Register
+`https://everybody-polls-api.onrender.com/auth/v1/callback` in each provider's app,
+then enable and deploy the appropriate provider. Google currently reports
+`redirect_uri_mismatch`; its Cloud console requires fresh identity verification
+before access to the existing project/client can be checked. Do not replace or rotate the recovered app credentials.
+
+`GOTRUE_URI_ALLOW_LIST` accepts the matching native `com.everybody.polls://index`
+callback, `http://localhost:8081`, and the production website origins. Add any
+additional web deployment origin deliberately before using it for login.
+
+Signups remain disabled. To enable email workflows, supply SMTP settings on Auth
+(`GOTRUE_SMTP_HOST`, `GOTRUE_SMTP_PORT`, `GOTRUE_SMTP_USER`, `GOTRUE_SMTP_PASS`,
+`GOTRUE_SMTP_ADMIN_EMAIL`, and `GOTRUE_SMTP_SENDER_NAME`), or configure an email
+sending hook. Keep `GOTRUE_MAILER_AUTOCONFIRM=false` for production. Enable
+`GOTRUE_DISABLE_SIGNUP=false` only after required provider/email delivery setup
+is complete; deploy the existing Auth service to apply it.
 
 Do not change the generated `GOTRUE_JWT_SECRET` after users have signed in unless
 you intentionally want to invalidate their sessions.

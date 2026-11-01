@@ -75,7 +75,12 @@ const RootLayout = () => {
   const navigationRef = useNavigationContainerRef();
 
   const linking = {
-    prefixes: ['everybody-polls://', 'exp://', 'http://localhost:8081'],
+    prefixes: [
+      'com.everybody.polls://',
+      'everybody-polls://',
+      'exp://',
+      'http://localhost:8081',
+    ],
     config: {
       initialRouteName: 'index',
       screens: {
@@ -96,8 +101,6 @@ const RootLayout = () => {
     const handleDeepLink = (url: string) => {
       if (url && isNavigationReady) {
         const parsed = Linking.parse(url);
-        console.log('Parsed URL:', parsed);
-
         const path = parsed.path;
         if (path) {
           try {
