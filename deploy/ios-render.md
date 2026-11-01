@@ -28,6 +28,11 @@ and [Apple's upload requirements](https://developer.apple.com/news/upcoming-requ
 older native binaries. Production uses remote build numbers and automatic
 incrementing; the last completed historical iOS build was `1.0.8`.
 
+Each build profile sets `APP_VARIANT` explicitly. The same value controls release
+backend checks and OneSignal mode locally and on EAS, so runtime fingerprints
+match. The default is production; use `APP_VARIANT=development` when running a
+custom local backend. The simulator profile inherits preview settings.
+
 ```sh
 npm ci
 npm run typecheck
@@ -78,7 +83,9 @@ check, Expo doctor 18/18, the iOS Metro/Hermes export, and production iOS native
 generation. Generated bundle IDs and entitlements match the renewed profiles.
 Resolved public configuration and the exported bundle were checked in memory
 for the previous upload-token literals; none were present. These checks create
-no users, votes, or provider messages.
+no users, votes, or provider messages. Production and simulator configurations
+also produce matching local/cloud-equivalent fingerprints; release backend
+guards reject loopback and other overrides.
 
 ## Website and remaining release work
 

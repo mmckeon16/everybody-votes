@@ -1,8 +1,8 @@
-# Everybody Votes
+# Everybody Polls
 
-Make your voice heard!
-
-This is an app to vote on questions and see the results. See results based on demographics.
+A community polling app inspired by Everybody Votes. Pick a side on everyday
+questions, predict what everyone else will choose, and discover the results
+together. Results can be explored by demographic group.
 
 This repository contains the React Native Expo app and its Render backend. The
 original Supabase Edge Functions remain as historical reference.

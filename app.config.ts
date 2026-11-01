@@ -2,7 +2,9 @@ const renderBackendUrl = 'https://everybody-polls-api.onrender.com';
 const renderPublicApiKey = 'everybody-polls-public';
 const backendUrl = (process.env.EXPO_PUBLIC_SUPABASE_URL || renderBackendUrl).replace(/\/+$/, '');
 const publicApiKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || renderPublicApiKey;
-const isReleaseBuild = ['preview', 'production', 'ios-simulator'].includes(process.env.EAS_BUILD_PROFILE || '');
+// Profile env is available both to local EAS configuration and to the cloud builder.
+const appVariant = process.env.APP_VARIANT || 'production';
+const isReleaseBuild = appVariant !== 'development';
 
 if (isReleaseBuild && (backendUrl !== renderBackendUrl || publicApiKey !== renderPublicApiKey)) {
   throw new Error('Preview and production builds must use the Everybody Polls Render backend configuration.');
@@ -75,11 +77,7 @@ export default {
       [
         'onesignal-expo-plugin',
         {
-          mode:
-            process.env.EAS_BUILD_PROFILE === 'development' ||
-            (!isReleaseBuild && process.env.NODE_ENV !== 'production')
-              ? 'development'
-              : 'production',
+          mode: appVariant === 'development' ? 'development' : 'production',
         },
       ],
       [
