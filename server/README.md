@@ -90,6 +90,14 @@ then enable and deploy the appropriate provider. Google currently reports
 `redirect_uri_mismatch`; its Cloud console requires fresh identity verification
 before access to the existing project/client can be checked. Do not replace or rotate the recovered app credentials.
 
+Add the Render callback while retaining existing provider callback entries. The
+original GitHub OAuth app is not listed under the current personal account; its
+owning account or organization still needs to be located. Keep legacy Twitter
+OAuth 1.0a (`twitter`, `GOTRUE_EXTERNAL_TWITTER_*`, API Key/API Secret) rather than
+replacing it with X OAuth 2.0 credentials. See the provider settings guides for
+[GitHub](https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/modifying-an-oauth-app)
+and [Twitter/X](https://supabase.com/docs/guides/auth/social-sign-in/auth-twitter).
+
 `GOTRUE_URI_ALLOW_LIST` accepts the matching native `com.everybody.polls://index`
 callback, `http://localhost:8081`, and the production website origins. Add any
 additional web deployment origin deliberately before using it for login.
