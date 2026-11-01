@@ -31,7 +31,8 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
 
 - [ ] Point Expo/EAS build environments at Render using
   [deploy/mobile.env.example](deploy/mobile.env.example). Check build-profile
-  inheritance and development URL overrides before producing a release.
+  inheritance and development URL overrides before producing a release;
+  `EXPO_PUBLIC_ENV=development` forces API requests to loopback.
 - [ ] Build and install iOS and Android clients. Verify real-device Apple login,
   each enabled OAuth provider, cold/warm callback handling, session refresh,
   sign-out, and profile completion against the Render backend. Full app type
@@ -40,7 +41,7 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, build/deploy it, and verify
   shared result links and demographic filters against Render.
 - [ ] Register a controlled device with OneSignal and verify permission,
-  subscription, and delivery to that test device. The non-sending estimate
+  subscription, APNs/FCM setup, and delivery to that test device. The non-sending estimate
   currently reports zero reachable push subscriptions. Avoid a test broadcast
   to the production audience.
 - [ ] Schedule an approved current poll before live voting. All 13 recovered
@@ -48,7 +49,10 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   eligibility, and rotation with controlled test data first.
 - [ ] Run the complete app flow: login/signup, profile, vote, prediction, results,
   demographic filters, sharing, and poll rotation. Backend integration tests
-  already pass; client-to-Render verification is still pending.
+  already pass; client-to-Render verification is still pending. Include account
+  switching and post-vote UI refresh to check session-scoped cached data.
+- [ ] Wire the website's iOS/Android download buttons in
+  `src/components/sections/HeroSection.tsx` to the released app store pages.
 
 ## Production and release
 
@@ -66,15 +70,16 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
 - [ ] Verify production health/error and hook-failure monitoring, and decide
   whether the API's current idle sleep is acceptable for launch.
 
-## Product followups
+## App fixes and documentation
 
-- [ ] Add an explicit no-active-poll state to the vote screen
-  (`app/screens/vote/index.tsx`) instead of leaving an empty screen between polls.
+- [ ] Add an explicit no-active-poll state to the vote
+  and prediction screens (`app/screens/vote/index.tsx` and
+  `app/screens/predict/index.tsx`) instead of leaving empty screens between polls.
 - [ ] Move OneSignal initialization/permission setup out of the home screen's
   render body (`app/index.tsx`) and reduce verbose production logging.
 - [ ] Finish the authenticated account-deletion flow. The website's
   `src/pages/Delete.tsx` currently shows a disabled placeholder; verify the
-  backend and app behavior before exposing a working deletion action.
+  backend and app behavior and finish this release gap before relaunch.
 - [ ] Refresh the root development instructions so Render is the current backend
   path and the original Supabase setup is clearly historical/local reference.
 
