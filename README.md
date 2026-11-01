@@ -163,3 +163,5 @@ Modify your settings.json to have the following:
 ## Render backend
 
 The Render recreation is configured in `render.yaml`. See [server/README.md](server/README.md) for deployment, database migrations, authentication, notification hooks, and local verification. The original `supabase/` sources remain as migration history and reference.
+
+Remaining setup and release work is tracked in [TODO.md](TODO.md).
