@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPool } from './db.mjs';
 import { migrate } from './migrate.mjs';
+import { notificationPayload } from './notifications.mjs';
 
 export function destinations(env) {
   const list = [];
@@ -29,28 +30,19 @@ export async function deliverHooks(pool, env = process.env, fetchImpl = fetch) {
         ORDER BY e.created_at, e.id LIMIT 50`, [target.name])).rows;
       for (const event of pending) {
         const headers = { 'Content-Type': 'application/json', 'Idempotency-Key': event.id };
-        let payload = { id: event.id, event: event.event_type, created_at: event.created_at, ...event.payload };
-        if (target.name === 'discord') {
-          payload = { username: 'Question Rotation Bot', embeds: [{
-            title: event.payload.success ? 'Question Rotation Successful' : 'Question Rotation Failed',
-            color: event.payload.success ? 5763719 : 15548997,
-            fields: [{ name: 'Questions Deactivated', value: String(event.payload.deactivated_questions), inline: true },
-              { name: 'Activated Question', value: event.payload.activated_question_id ?? 'None', inline: true }],
-            timestamp: event.created_at,
-          }] };
-        } else if (target.name === 'onesignal') {
-          headers.Authorization = `Key ${env.ONESIGNAL_REST_API_KEY}`;
-          payload = { app_id: env.ONESIGNAL_APP_ID, included_segments: ['Subscribed Users'], target_channel: 'push',
-            headings: { en: 'New poll available' }, contents: { en: event.payload.record.text },
-            data: { questionId: event.payload.record.id }, idempotency_key: event.id };
-        }
+        const payload = notificationPayload(target.name, event, env);
+        if (target.name === 'onesignal') headers.Authorization = `Key ${env.ONESIGNAL_REST_API_KEY}`;
         const body = JSON.stringify(payload);
         if (env.HOOK_SIGNING_SECRET && target.name === 'question-webhook') headers['X-Hook-Signature'] = 'sha256=' + createHmac('sha256', env.HOOK_SIGNING_SECRET).update(body).digest('hex');
         try {
           const result = await fetchImpl(target.url, { method: 'POST', headers, body, redirect: 'error', signal: AbortSignal.timeout(10000) });
           if (!result.ok) throw new Error(`HTTP ${result.status}`);
-          // Drain the body before releasing the HTTP connection.
-          await result.arrayBuffer();
+          const reply = await result.text();
+          // OneSignal can return HTTP 200 with an errors array and no message ID.
+          if (target.name === 'onesignal') {
+            const receipt = JSON.parse(reply);
+            if (!receipt.id) throw new Error('Notification provider rejected delivery');
+          }
           await client.query(`UPDATE public.hook_deliveries SET delivered_at = now(), attempts = attempts + 1, last_error = NULL
             WHERE event_id = $1 AND destination = $2`, [event.id, target.name]);
           delivered++;

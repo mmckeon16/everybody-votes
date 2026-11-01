@@ -123,9 +123,11 @@ ORDER BY available_at;
 ```
 
 Additional dashboard-only Auth hooks or database webhooks require their original
-trigger, destination, and signing settings. The old `push-notifications` Edge
-Function was referenced only in commented SQL and its implementation is absent
-from the source repo; the optional OneSignal sender replaces that delivery path.
+trigger, destination, and signing settings. The deleted `push-notifications` implementation was recovered from Git history.
+It originally sent Expo pushes and was removed when the mobile app switched to
+OneSignal. See `deploy/hook-recovery.md` for source evidence and recovery results.
+Discord reports preserve the original question text, question period, execution
+time, and failure fields using a snapshot captured with each rotation event.
 
 ## API behavior
 

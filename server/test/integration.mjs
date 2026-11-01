@@ -38,7 +38,7 @@ after(async () => {
 });
 
 test('migrations are tracked once and readiness checks both database and auth', async () => {
-  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM render_schema_migrations')).rows[0].n, 2);
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM render_schema_migrations')).rows[0].n, 3);
   assert.equal((await fetch(baseUrl + '/healthz')).status, 200);
 });
 test('Supabase-compatible signup, password login and user lookup work through gateway', async () => {
@@ -96,6 +96,11 @@ test('rotation deactivates expired polls, activates a due poll, and queues hooks
   assert.equal((await pool.query('SELECT id FROM questions WHERE is_active')).rows[0].id, dueId);
   assert.equal((await pool.query("SELECT count(*)::integer AS n FROM hook_events WHERE event_type = 'question.activated' AND payload->'record'->>'id' = $1", [dueId])).rows[0].n, 1);
   assert.equal((await pool.query('SELECT count(*)::integer AS n FROM question_rotation_logs')).rows[0].n, 1);
+  const event = (await pool.query("SELECT payload FROM hook_events WHERE event_type = 'question.rotation'")).rows[0];
+  assert.equal(event.payload.questions.id, dueId);
+  assert.equal(event.payload.questions.text, 'Next poll');
+  assert.ok(event.payload.questions.start_date);
+  assert.ok(event.payload.questions.end_date);
 });
 test('failed hooks retry from persisted delivery state without repeating successful deliveries', async () => {
   let accepted = false, calls = 0;
@@ -120,4 +125,38 @@ test('failed hooks retry from persisted delivery state without repeating success
   assert.equal(retried.delivered, 2);
   await deliverHooks(pool, env);
   assert.equal(calls, 4);
+});
+
+test('recovered Discord reports and OneSignal pushes retry rejected receipts independently', async () => {
+  const env = { DISCORD_WEBHOOK_URL: 'https://discord.invalid/local-test', ONESIGNAL_REST_API_KEY: 'local-test-key', ONESIGNAL_APP_ID: randomUUID() };
+  let rejectPush = true, discordCalls = 0, pushCalls = 0;
+  const send = async (url, request) => {
+    const body = JSON.parse(request.body);
+    if (url === env.DISCORD_WEBHOOK_URL) {
+      discordCalls++;
+      const fields = Object.fromEntries(body.embeds[0].fields.map(field => [field.name, field.value]));
+      assert.equal(fields['New Active Question'], 'Next poll');
+      assert.match(fields['Question Period'], /^From .* to /);
+      assert.ok(fields['Execution Time']);
+      assert.deepEqual(body.allowed_mentions.parse, []);
+      return new Response(null, { status: 204 });
+    }
+    assert.equal(url, 'https://api.onesignal.com/notifications');
+    pushCalls++;
+    assert.equal(request.headers.Authorization, 'Key local-test-key');
+    assert.equal(body.app_id, env.ONESIGNAL_APP_ID);
+    assert.equal(body.headings.en, 'New Poll!');
+    assert.match(body.contents.en, /^New question available: ".*". Available until /);
+    assert.equal(body.idempotency_key, request.headers['Idempotency-Key']);
+    return new Response(JSON.stringify(rejectPush ? { errors: ['No subscribed devices'] } : { id: randomUUID() }), { status: 200 });
+  };
+  assert.deepEqual(await deliverHooks(pool, env, send), { delivered: 1, failed: 2 });
+  assert.equal(discordCalls, 1);
+  assert.equal(pushCalls, 2);
+  await pool.query("UPDATE hook_deliveries SET available_at = now() WHERE destination = 'onesignal'");
+  rejectPush = false;
+  assert.deepEqual(await deliverHooks(pool, env, send), { delivered: 2, failed: 0 });
+  assert.equal(discordCalls, 1);
+  assert.equal(pushCalls, 4);
+  assert.deepEqual(await deliverHooks(pool, env, send), { delivered: 0, failed: 0 });
 });
