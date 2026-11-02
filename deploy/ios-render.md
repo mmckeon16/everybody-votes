@@ -87,13 +87,32 @@ no users, votes, or provider messages. Production and simulator configurations
 also produce matching local/cloud-equivalent fingerprints; release backend
 guards reject loopback and other overrides.
 
-## Cloud archive
+## Cloud archives and native smoke test
 
-The signed production [iOS build 1.0.10](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/306fc1da-da41-433f-92ad-2b2081d2e907)
+The signed production [iOS build 1.0.11](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/95d07cf6-436e-43d5-a790-0ac0bbe9ec82)
+and matching [simulator archive](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/84180e77-1baf-4355-ba11-1ced7c818aaa)
 finished successfully on November 1, 2026, from commit
-`1aeaa6e286c1ed5cd498869f80d3ec0646089c36`. It uses SDK 54/Xcode 26 and
-the Render backend. The local/cloud runtime compatibility check and native
-archive passed. No App Store submission was made.
+`9876d683d098bd78ffa2ed7e54bb50836576f607`. Both use SDK 54/Xcode 26,
+the Render backend, and runtime `4552604ec675f0cd2cf12f262b242d01162e48ba`.
+No App Store submission was made.
+
+A clean install on a dedicated iPhone 16 Pro simulator (iOS 18.4) verified cold
+launch, the no-current-poll home state, restored historical results, the native
+Explore button, zero-vote totals, and map fallback. Its compiled bundle contains
+the Render URL/public identifier and the empty-poll fix. Expo records one
+successful embedded launch and zero failed launches. The simulator's native
+bundle version remains `1.0.0`; EAS reports the paired remote build as `1.0.11`.
+The signed production archive uses remote build numbering.
+
+The smoke test caught the API's normal no-active-poll response being shown as an
+error. The client now treats only the explicit `404 No active question found`
+response as empty data; eight regression checks preserve other HTTP, session,
+and network errors. The final archives embed this correction.
+
+An iOS-only preview update was also published for the matching runtime. Host
+manifest and bundle downloads returned HTTP 200, but the simulator's update
+transport timed out. The final native smoke test used the fixed embedded archive.
+Physical-device update delivery remains on the release checklist.
 
 ## Website and remaining release work
 
@@ -105,7 +124,7 @@ and submit no real responses.
 
 Apple's app record remains `PREPARE_FOR_SUBMISSION`, with an internal TestFlight
 group and no public link. The website therefore shows an iOS preparation status.
-Simulator installation, real-device Apple/OAuth login, and push
+Real-device Apple/OAuth login, update delivery, and push
 subscription/delivery must be verified before announcing a release. Signups remain
 disabled; other provider callbacks, Discord, email delivery, current poll content,
 and database upgrade are tracked in [TODO.md](../TODO.md).

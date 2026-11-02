@@ -134,3 +134,8 @@ localhost's web origin, and the production website origins. Client callback
 changes reconcile the native URL scheme with app configuration and keep callback
 codes/credentials out of logs. Cloud/provider callback registration and native
 app rebuilding remain separate requirements before cutover.
+
+On November 1, the original Google OAuth project was opened directly after the
+iOS cutover. Google reported that the current browser account lacks project
+access. Use the owning account before completing any verification and adding the
+Render callback. Discord recovery is deferred at the user's request.

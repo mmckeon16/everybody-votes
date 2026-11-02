@@ -8,16 +8,18 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
 
 ## Provider setup
 
-- [ ] Complete Google Cloud's fresh identity verification, confirm access to the
-  original OAuth project/client, and register
+- [ ] Sign in with an account that can access the original Google OAuth
+  project/client, complete any fresh identity verification, and register
   `https://everybody-polls-api.onrender.com/auth/v1/callback`. Google currently
-  rejects this callback. Preserve existing callback entries, then enable Google
+  rejects this callback; the current browser account lacks access to the original
+  Cloud project. Preserve existing callback entries, then enable Google
   on Auth, deploy, and verify login with a controlled account.
 - [ ] Locate the owning account or organization for the original GitHub and
   Twitter apps, register the same Render callback, then enable/deploy and verify
   each provider. The current personal GitHub account does not list the source
   OAuth app. Keep Twitter on its recovered OAuth 1.0a API Key/API Secret setup.
-- [ ] Complete Discord sign-in and recover or recreate the poll-rotation webhook
+- [ ] Discord is deferred at the user's request. Complete Discord sign-in and
+  recover or recreate the poll-rotation webhook
   in its intended channel. Store `DISCORD_WEBHOOK_URL` on the existing cron
   service. Review queued events before enabling delivery; use a designated test
   channel for any delivery check.
@@ -33,10 +35,11 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   [deploy/mobile.env.example](deploy/mobile.env.example). Check build-profile
   inheritance and release configuration. Development, preview, and production
   now use Render; the legacy development flag no longer changes the API host.
-- [x] Complete the new signed iOS cloud archive. Production build `1.0.10`
+- [x] Complete the new signed iOS cloud archive. Production build `1.0.11`
   succeeded on SDK 54/Xcode 26; details are in [deploy/ios-render.md](deploy/ios-render.md).
-- [ ] Install the matching iOS simulator archive and verify launch, the
-  no-active-poll state, and restored results against Render.
+- [x] Install the matching iOS simulator archive and verify a clean launch, the
+  no-active-poll state, native Explore navigation, and historical zero-vote
+  results/map fallback against Render. The final archive embeds the fix.
 - [ ] Verify real-device Apple login, each enabled OAuth provider, cold/warm
   callback handling, session refresh, sign-out, and profile completion against
   Render. Native configuration checks do not replace real-provider login.
@@ -47,6 +50,11 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   https://www.everybodypolls.com; real positive/empty results and production
   browser-to-Render requests passed checks. Further filter coverage remains in
   the complete app-flow task below.
+- [ ] Respect denied notification permission without showing an automatic
+  Settings prompt on every home-screen mount; verify the intended opt-in flow.
+- [ ] Verify EAS update download/relaunch on a controlled physical iOS device.
+  Host preview manifest/bundle delivery passed; the local simulator timed out,
+  so native smoke testing uses the fixed embedded archive.
 - [ ] Register a controlled device with OneSignal and verify permission,
   subscription, APNs/FCM setup, and delivery to that test device. The non-sending estimate
   currently reports zero reachable push subscriptions. Avoid a test broadcast

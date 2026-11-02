@@ -87,8 +87,10 @@ Google, GitHub, and legacy Twitter client IDs/secrets are staged on the existing
 Auth service with their `GOTRUE_EXTERNAL_<PROVIDER>_ENABLED=false` flags. Register
 `https://everybody-polls-api.onrender.com/auth/v1/callback` in each provider's app,
 then enable and deploy the appropriate provider. Google currently reports
-`redirect_uri_mismatch`; its Cloud console requires fresh identity verification
-before access to the existing project/client can be checked. Do not replace or rotate the recovered app credentials.
+`redirect_uri_mismatch`. The current browser account lacks access to the original
+Google Cloud project; sign in with its owning account and complete any fresh
+identity verification before editing the existing OAuth client. Do not replace
+or rotate the recovered app credentials.
 
 Add the Render callback while retaining existing provider callback entries. The
 original GitHub OAuth app is not listed under the current personal account; its
