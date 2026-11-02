@@ -139,3 +139,12 @@ On November 1, the original Google OAuth project was opened directly after the
 iOS cutover. Google reported that the current browser account lacks project
 access. Use the owning account before completing any verification and adding the
 Render callback. Discord recovery is deferred at the user's request.
+
+A follow-up through the signed-in Collect Software browser profile reached the
+original Google Cloud project `everybody-votes-444721`. Render's callback was
+added to the existing `web client prod`, saved, and verified after reopening the
+client. The original origins, Supabase callback, and credentials are preserved.
+Render's staged client/secret/redirect match the recovered source; live settings
+still show Google disabled, Apple enabled, and signups disabled. Google enable
+and Auth deploy remain pending explicit approval; no real provider login was
+performed. See [google-auth.json](google-auth.json).

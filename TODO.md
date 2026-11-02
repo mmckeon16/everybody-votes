@@ -8,12 +8,14 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
 
 ## Provider setup
 
-- [ ] Sign in with an account that can access the original Google OAuth
-  project/client, complete any fresh identity verification, and register
-  `https://everybody-polls-api.onrender.com/auth/v1/callback`. Google currently
-  rejects this callback; the current browser account lacks access to the original
-  Cloud project. Preserve existing callback entries, then enable Google
-  on Auth, deploy, and verify login with a controlled account.
+- [x] Access the original Google Cloud project through the Collect Software
+  browser profile and register Render's callback on the existing `web client prod`.
+  The saved callback was reread; original origins, callbacks, and credentials
+  were preserved. Evidence: [deploy/google-auth.json](deploy/google-auth.json).
+- [ ] Enable the staged Google provider on the existing Render Auth service,
+  deploy only Auth, and verify its settings and login with a controlled existing
+  account. Production enable/deploy is awaiting explicit approval. Google is
+  currently disabled; Apple remains enabled and signups remain disabled.
 - [ ] Locate the owning account or organization for the original GitHub and
   Twitter apps, register the same Render callback, then enable/deploy and verify
   each provider. The current personal GitHub account does not list the source
