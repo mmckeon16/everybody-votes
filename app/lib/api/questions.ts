@@ -12,7 +12,14 @@ export const questionsApi = {
       throw error;
     }
   },
-  getLastActiveQuestion: (userId?: string) => apiRequest(`last-active-question${userId ? `?userId=${encodeURIComponent(userId)}` : ''}`),
+  getLastActiveQuestion: async (userId?: string) => {
+    try {
+      return await apiRequest(`last-active-question${userId ? `?userId=${encodeURIComponent(userId)}` : ''}`);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404 && error.message === 'No previous questions found') return null;
+      throw error;
+    }
+  },
   getQuestionHistory: () => apiRequest('questions/history'),
   submitVote: async ({ questionId, optionId }: { questionId: string; optionId: string }) => {
     const { data: { session } } = await supabase.auth.getSession();

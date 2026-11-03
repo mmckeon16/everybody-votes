@@ -16,7 +16,6 @@ export function useOnboarding() {
         profileData,
         userId
       );
-      console.log('Onboarding submission response:', response);
 
       if (response.error) {
         throw new Error(response.error);
@@ -35,7 +34,6 @@ export function useOnboarding() {
       });
     },
     onSuccess: () => {
-      console.log('Onboarding submission successful');
       Toast.show({
         type: 'success',
         text1: 'Success',

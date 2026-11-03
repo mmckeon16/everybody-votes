@@ -1,8 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { votingApi } from '../lib/api/vote';
 import Toast from 'react-native-toast-message';
 
 export function useVote() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       optionId,
@@ -39,7 +40,12 @@ export function useVote() {
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: async (_data, { userId, questionId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['activeQuestion', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['lastActiveQuestion', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['results', questionId] }),
+      ]);
       Toast.show({
         type: 'success',
         text1: 'Success',

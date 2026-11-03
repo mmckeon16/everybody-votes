@@ -8,10 +8,12 @@ export const backendUrl = (
 export const publicApiKey =
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'everybody-polls-public';
 
+export const authStorageKey = `sb-${new URL(backendUrl).hostname.split('.')[0]}-auth-token`;
 
 export const supabase = createClient(backendUrl, publicApiKey, {
   auth: {
     storage: AsyncStorage,
+    storageKey: authStorageKey,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,

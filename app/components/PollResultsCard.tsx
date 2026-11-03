@@ -13,16 +13,36 @@ import { SkeletonCard } from './SkeletonCard';
 
 export const PollResultsCard = () => {
   const router = useRouter();
-  const { data: lastQuestion, error: QuestionError } = useLastActiveQuestion();
+  const { data: lastQuestion, isLoading: questionLoading, error: QuestionError, refetch: refetchQuestion } = useLastActiveQuestion();
   const { user_vote, options } = lastQuestion || {};
 
-  const { data: totalResults, isLoading, error } = useResults(lastQuestion?.id);
+  const { data: totalResults, isLoading, error, refetch: refetchResults } = useResults(lastQuestion?.id);
   const nullData = { question: null, totalVotes: null, results: null };
   const { data: { results } = nullData } = totalResults || {};
 
   const alteredResults = changeResultsForChart(results);
 
-  if (isLoading || !alteredResults) {
+  if (error || QuestionError) {
+    return (
+      <Card className="w-full max-w-sm p-4 rounded-2xl gap-3">
+        <Text>We couldn’t load the previous results.</Text>
+        <Button variant="outline" onPress={() => { void refetchQuestion(); void refetchResults(); }}>
+          <Text>Try again</Text>
+        </Button>
+      </Card>
+    );
+  }
+
+  if (!questionLoading && !lastQuestion) {
+    return (
+      <Card className="w-full max-w-sm p-4 rounded-2xl gap-3">
+        <CardTitle>Results are coming soon</CardTitle>
+        <Text>The community reveal appears after the first poll closes.</Text>
+      </Card>
+    );
+  }
+
+  if (questionLoading || isLoading || !alteredResults) {
     return (
       <View className="flex flex-col gap-3 items-center w-full">
         <SkeletonCard />
@@ -30,13 +50,11 @@ export const PollResultsCard = () => {
     );
   }
 
-  if (error || QuestionError) return <Text>Error: {error?.message}</Text>;
-
   const question = lastQuestion;
   let userVotedText = null;
   if (question?.user_vote) {
     userVotedText =
-      options[0]?.id === user_vote ? options[0]?.text : options[1]?.text;
+      options?.find((option: { id: string; text: string }) => option.id === user_vote)?.text;
   }
 
   // Calculate dynamic size based on container width

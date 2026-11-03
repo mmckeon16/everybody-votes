@@ -185,7 +185,8 @@ resubmitting a vote.
 `DELETE /functions/v1/account` requires the current access token and exactly
 `{"confirmation":"DELETE"}`. It derives the account from Auth, rejects a body
 user ID, and transactionally removes that user and cascading profile, vote,
-prediction, push-token, identity, session, and refresh-token rows. Protected
+prediction, push-token, identity, session, refresh-token, and user-linked Auth audit rows. Historical
+backups and platform logs follow their separate retention policy. Protected
 writes lock the user row, so a request authenticated before deletion cannot
 recreate data afterward. The public Auth gateway never exposes admin routes.
 Options must belong to an open question. Results expose aggregates rather than
@@ -220,7 +221,8 @@ node polls.mjs publish UUID START_ISO END_ISO
 Publishing makes the poll eligible for rotation and queues activation/rotation
 hooks when it becomes active. Configured notification destinations can then
 send messages; do not use production publishing as a notification test. The
-operator and scheduled worker share a transaction advisory lock. A published
+operator and scheduled worker share a transaction advisory lock. Publishing
+rejects overlap with open or scheduled voting windows; one poll can start exactly when another ends. A published
 poll cannot be republished through this tool.
 
 ## Local verification

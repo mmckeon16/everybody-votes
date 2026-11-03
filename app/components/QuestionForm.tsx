@@ -52,6 +52,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
               <View key={option.id} className="w-full">
                 <Button
                   variant="outline"
+                  disabled={disabled}
                   className={`w-full border-b border-border ${
                     selectedOption?.id === option.id ? 'bg-lightBlue' : ''
                   }`}

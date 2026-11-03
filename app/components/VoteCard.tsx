@@ -26,12 +26,12 @@ SplashScreen.setOptions({
 export default function Screen() {
   const router = useRouter();
   const { data: activeQuestion, isError } = useActiveQuestion();
-  const { user_vote, options } = activeQuestion || {};
+  const { user_vote, user_prediction, options } = activeQuestion || {};
 
   let userVotedText = null;
   if (user_vote) {
     userVotedText =
-      options[0]?.id === user_vote ? options[0]?.text : options[1]?.text;
+      options.find((option: { id: string; text: string }) => option.id === user_vote)?.text;
   }
 
   const hasEndDatePassed = new Date() > new Date(activeQuestion?.end_date);
@@ -100,12 +100,19 @@ export default function Screen() {
             </View>
             <View className="items-center">
               {userVotedText ? (
-                <Text>
-                  You voted{' '}
-                  <Text className="text-lightBlue font-bold">
-                    {userVotedText}
+                <View className="items-center gap-3 w-full">
+                  <Text>
+                    You voted{' '}
+                    <Text className="text-lightBlue font-bold">{userVotedText}</Text>
                   </Text>
-                </Text>
+                  {user_prediction ? (
+                    <Text className="text-center">Prediction saved. Come back after this poll closes for the reveal.</Text>
+                  ) : (
+                    <Button className="w-full bg-lightBlue" onPress={() => router.push('/screens/predict')}>
+                      <Text className="text-white">Make your prediction</Text>
+                    </Button>
+                  )}
+                </View>
               ) : (
                 <Button
                   className="shadow shadow-foreground/5 w-full bg-lightBlue"

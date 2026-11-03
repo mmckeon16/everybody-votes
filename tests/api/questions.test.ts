@@ -63,8 +63,12 @@ test.each([
   });
 });
 
-test('previous-poll absence retains its existing error behavior', async () => {
+test('previous-poll absence is empty data while other failures stay errors', async () => {
   respond(404, { error: 'No previous questions found' });
+  await expect(questionsApi.getLastActiveQuestion()).resolves.toBeNull();
+  respond(500, { error: 'No previous questions found' });
+  await expect(questionsApi.getLastActiveQuestion()).rejects.toBeInstanceOf(ApiError);
+  respond(404, { error: 'Not found' });
   await expect(questionsApi.getLastActiveQuestion()).rejects.toBeInstanceOf(ApiError);
 });
 

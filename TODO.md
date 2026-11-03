@@ -1,6 +1,6 @@
 # Everybody Polls todo
 
-Updated November 1, 2026. The Render backend is running and the original data is
+Updated November 2, 2026. The Render backend is running and the original data is
 restored. Remaining work covers provider setup, client cutover, and release
 verification. Deployment details are in [server/README.md](server/README.md);
 recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
@@ -14,8 +14,10 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   were preserved. Evidence: [deploy/google-auth.json](deploy/google-auth.json).
 - [ ] Enable the staged Google provider on the existing Render Auth service,
   deploy only Auth, and verify its settings and login with a controlled existing
-  account. Production enable/deploy is awaiting explicit approval. Google is
-  currently disabled; Apple remains enabled and signups remain disabled.
+  account. Include the website's `/delete` OAuth return path in the Auth redirect
+  allowlist and test the browser return as part of that enablement. Production
+  enable/deploy is awaiting explicit approval. Google is currently disabled;
+  Apple remains enabled and signups remain disabled.
 - [ ] Locate the owning account or organization for the original GitHub and
   Twitter apps, register the same Render callback, then enable/deploy and verify
   each provider. The current personal GitHub account does not list the source
@@ -52,8 +54,11 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   https://www.everybodypolls.com; real positive/empty results and production
   browser-to-Render requests passed checks. Further filter coverage remains in
   the complete app-flow task below.
-- [ ] Respect denied notification permission without showing an automatic
-  Settings prompt on every home-screen mount; verify the intended opt-in flow.
+- [x] Respect denied notification permission without an automatic Settings
+  prompt on home-screen mount. Enable notifications and Open device Settings
+  are explicit actions; SDK permission requests use `fallbackToSettings=false`.
+  Mounted/denied/cleanup behavior passes rendered regression tests. Physical
+  device permission and delivery checks remain below.
 - [ ] Verify EAS update download/relaunch on a controlled physical iOS device.
   Host preview manifest/bundle delivery passed; the local simulator timed out,
   so native smoke testing uses the fixed embedded archive.
@@ -61,9 +66,15 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   subscription, APNs/FCM setup, and delivery to that test device. The non-sending estimate
   currently reports zero reachable push subscriptions. Avoid a test broadcast
   to the production audience.
-- [ ] Schedule an approved current poll before live voting. All 13 recovered
-  polls are historical/inactive. Check activation, close time, prediction
-  eligibility, and rotation with controlled test data first.
+- [x] Create the first new community poll on Render as a draft: **A free day:
+  beach or mountains?** Choices: Beach / Mountains. It has no dates, is excluded
+  from the public API/rotation, and queues no notifications. The 13 recovered
+  polls and all original responses remain unchanged. Evidence:
+  [deploy/community-poll.json](deploy/community-poll.json).
+- [ ] Publish that draft with approved opening/closing dates after provider
+  login, database retention, and device/release checks are ready. The operator
+  tool rejects conflicting open/future voting windows; publishing can notify
+  the production push audience.
 - [ ] Run the complete app flow: login/signup, profile, vote, prediction, results,
   demographic filters, sharing, and poll rotation. Backend integration tests
   already pass; client-to-Render verification is still pending. Include account
@@ -94,16 +105,24 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   an error, so the home screen shows the next-question state. Preserve other
   HTTP, session, and network failures; eight focused regression checks pass.
 
-- [ ] Pass actual answer labels to the native results-map legend; it still
-  assumes Yes/No. Verify arbitrary community poll choices during the full-flow pass.
-- [ ] Add an explicit no-active-poll state to the prediction screen
-  (`app/screens/predict/index.tsx`). The vote screen now has an empty state and
-  navigation back home; prediction still needs the same coverage.
+- [x] Pass actual ordered answer labels to the native results map, including
+  zero-state data and arbitrary Beach/Mountains choices.
+- [x] Handle missing, ended, failed, already-predicted, and vote-first states
+  on the prediction screen. Protect authenticated/profile-complete routes,
+  stop submissions at the deadline, and offer recovery navigation.
 - [x] Move OneSignal initialization/permission setup out of the home screen's
   render body (`app/index.tsx`) and reduce verbose production logging.
-- [ ] Finish the authenticated account-deletion flow. The website's
-  `src/pages/Delete.tsx` currently shows a disabled placeholder; verify the
-  backend and app behavior and finish this release gap before relaunch.
+- [x] Implement authenticated self-deletion on Render and the website, plus
+  the app's Account menu (available before profile completion). Require explicit
+  permanent-deletion confirmation; remove only the session owner's data, sessions,
+  legacy refresh tokens, and user-linked Auth audit rows. Disposable real-Auth
+  tests verify old-session rejection, an in-flight write race, and another
+  account's preservation. The website's real local-backend browser flow passes;
+  the live page has verified mobile layout/current sign-in options.
+- [x] Scope app query caches to the signed-in account, refresh vote/prediction
+  data after submission, and allow prediction resumption from home. Keep profile
+  errors retryable, guard pending actions, and remove demographic debug logs.
+  Verification and remaining release limits: [deploy/poll-flow.md](deploy/poll-flow.md).
 - [x] Refresh the root development instructions so Render is the current backend
   path and the original Supabase setup is clearly historical/local reference.
 

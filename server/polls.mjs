@@ -33,6 +33,11 @@ export async function publishPoll(pool, { id, startDate, endDate }) {
     if (!question?.is_draft) throw new Error('Only an existing draft can be published');
     const choices = await client.query('SELECT id FROM public.options WHERE question_id = $1', [id]);
     if (choices.rowCount !== 2) throw new Error('A community poll needs exactly two choices');
+    const conflict = await client.query(`SELECT id FROM public.questions
+      WHERE NOT is_draft AND id <> $1 AND end_date > now()
+        AND start_date < $3::timestamptz AND end_date > $2::timestamptz
+      LIMIT 1 FOR SHARE`, [id, start.toISOString(), end.toISOString()]);
+    if (conflict.rowCount) throw new Error('The voting window overlaps a published poll');
     const scheduled = await client.query(`UPDATE public.questions SET is_draft = false, start_date = $2, end_date = $3
       WHERE id = $1 AND $3::timestamptz > now() RETURNING id, text, start_date, end_date, is_draft`, [id, start.toISOString(), end.toISOString()]);
     if (!scheduled.rowCount) throw new Error('The poll must close in the future');

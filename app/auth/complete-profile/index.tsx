@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView } from 'react-native';
 import { Progress } from '~/components/ui/progress';
 import { useRouter } from 'expo-router';
@@ -6,6 +6,7 @@ import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { useAccountGuard } from '~/lib/use-account-guard';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import Age from '../components/age';
 import Gender from '../components/gender';
@@ -29,8 +30,11 @@ const STEPS = {
 
 export default function CompleteProfile() {
   const { session } = useAuth();
+  const { capture, isMounted } = useAccountGuard(session?.user.id);
   const router = useRouter();
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const submissionInFlight = useRef(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [profileData, setProfileData] = useState<ProfileData>({
     age: '',
@@ -58,7 +62,6 @@ export default function CompleteProfile() {
           // Get user metadata from social provider
           const metadata = user.user_metadata;
           //   metadata?.location?.country_code || prev.countryResidence,
-          console.log(metadata);
           setProfileData(prev => ({
             ...prev,
             // Pre-fill data if available from social provider
@@ -102,45 +105,36 @@ export default function CompleteProfile() {
   };
 
   const handleSubmit = async () => {
+    if (submissionInFlight.current) return;
+    const isCurrentAccount = capture();
+    if (!isCurrentAccount()) return;
+    submissionInFlight.current = true;
+    setSubmitting(true);
+    setError('');
     try {
       if (!session?.user?.id) {
         throw new Error('No authenticated user found');
       }
-
-      console.log('profileData', profileData);
 
       await mutateAsync({
         profileData,
         userId: session.user.id,
       });
 
-      // Update user metadata to mark profile as completed;
-      // This is a workaround to get the profile status to update
-      // because the auth state change listener doesn't trigger when we set it from the backend
-      const { data, error } = await supabase.auth.updateUser({
-        data: { completed_profile: true },
-      });
-
+      if (!isCurrentAccount()) return;
+      // Onboarding wrote the metadata on the server. Read it into the current SDK session;
+      // never apply the old form's metadata to whichever account signed in afterward.
+      const { data, error } = await supabase.auth.refreshSession();
+      if (!isCurrentAccount()) return;
       if (error) throw error;
-
-      console.log('Profile status refreshed, attempting navigation...');
-
-      // Add a small delay before navigation
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Try both navigation methods
-      // why is this needed?
-      try {
-        await router.push('/auth/celebrate');
-      } catch (navError) {
-        console.error('Navigation error:', navError);
-        // Fallback navigation
-        router.replace('/auth/celebrate');
+      if (!data.session) throw new Error('Your profile was saved. Please sign in again to continue.');
+      if (data.session.user.id !== session.user.id) return;
+      if (!data.session.user.user_metadata?.completed_profile) {
+        throw new Error('Your profile was saved. Please try again to refresh your sign-in.');
       }
-
-      console.log('Navigation completed');
+      router.replace('/auth/celebrate');
     } catch (err) {
-      console.error('Error in handleSubmit:', err);
+      if (!isCurrentAccount()) return;
       setError(
         err instanceof Error ? err.message : 'An unexpected error occurred'
       );
@@ -150,7 +144,9 @@ export default function CompleteProfile() {
         text2: err instanceof Error ? err.message : 'Failed to submit profile',
         position: 'bottom',
       });
-      router.push('/');
+    } finally {
+      submissionInFlight.current = false;
+      if (isMounted()) setSubmitting(false);
     }
   };
   const renderStep = () => {
@@ -197,6 +193,7 @@ export default function CompleteProfile() {
         <Button
           variant="outline"
           className="shadow shadow-foreground/5"
+          disabled={submitting}
           onPress={() => setCurrentStep(currentStep - 1)}
         >
           <Text>Previous</Text>
@@ -211,7 +208,7 @@ export default function CompleteProfile() {
             variant="outline"
             className="shadow shadow-foreground/5"
             onPress={() => setCurrentStep(currentStep + 1)}
-            disabled={!isStepValid()}
+            disabled={submitting || !isStepValid()}
           >
             <Text>Next</Text>
           </Button>
@@ -221,9 +218,9 @@ export default function CompleteProfile() {
           variant="outline"
           className="shadow shadow-foreground/5"
           onPress={handleSubmit}
-          disabled={!isStepValid()}
+          disabled={submitting || !isStepValid()}
         >
-          <Text>Complete</Text>
+          <Text>{submitting ? 'Saving…' : 'Complete'}</Text>
         </Button>
       )}
     </View>

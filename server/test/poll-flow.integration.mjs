@@ -44,6 +44,13 @@ test('community poll: draft → publish → profile → vote → predict → clo
     assert.equal(question.id, id);
     assert.deepEqual(question.options.map(option => option.text).sort(), ['Beach', 'Mountains']);
     const choices = Object.fromEntries(question.options.map(option => [option.text, option.id]));
+    const followingId = randomUUID();
+    await createPollDraft(pool, { id: followingId, text: 'Next community poll?', options: ['One', 'Two'] });
+    await assert.rejects(publishPoll(pool, { id: followingId, startDate: new Date().toISOString(), endDate: new Date(Date.now() + 3600000).toISOString() }), /overlaps a published poll/);
+    const unpublished = (await pool.query('SELECT is_draft, start_date, end_date FROM public.questions WHERE id = $1', [followingId])).rows[0];
+    assert.deepEqual(unpublished, { is_draft: true, start_date: null, end_date: null });
+    // Adjacent windows are valid; only overlap can silently prevent activation.
+    await publishPoll(pool, { id: followingId, startDate: question.end_date, endDate: new Date(Date.parse(question.end_date) + 86400000).toISOString() });
     const sessions = [];
     for (const [index, state] of ['NY', 'CA', 'NY'].entries()) {
       const signup = await fetch(base + '/auth/v1/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: `render-community-${randomUUID()}@example.com`, password: 'local-test-password-123' }) });

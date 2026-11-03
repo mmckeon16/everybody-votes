@@ -1,0 +1,32 @@
+{
+  "verifiedAt": "2026-11-03T02:07:24.820Z",
+  "databaseId": "dpg-dbjnpkajnfac738ieojg-a",
+  "question": {
+    "id": "c7d112d0-3e20-4e44-8da6-5be82714899a",
+    "text": "A free day: beach or mountains?",
+    "is_draft": true,
+    "is_active": false,
+    "start_date": null,
+    "end_date": null
+  },
+  "options": [
+    {
+      "id": "2a38a5ab-a92b-4783-b523-0e60d7f970d1",
+      "text": "Beach"
+    },
+    {
+      "id": "00b95d6d-4639-46c6-bd28-3659145dd841",
+      "text": "Mountains"
+    }
+  ],
+  "preservedCounts": {
+    "users": 12,
+    "votes": 23,
+    "predictions": 23,
+    "profiles": 12,
+    "hook_events": 0,
+    "hook_deliveries": 0
+  },
+  "notificationsQueued": 0,
+  "status": "draft"
+}

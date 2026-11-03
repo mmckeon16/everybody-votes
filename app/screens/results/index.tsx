@@ -5,6 +5,7 @@ import { Text } from '~/components/ui/text';
 import FilteredResultsCard from './components/FilteredResultsCard';
 import LineChart from './components/LineChart';
 import StateMap from './components/StateMap';
+import ShareResultsButton from './components/ShareResultsButton';
 
 import { useLastActiveQuestion } from '~/app/hooks/useLastActiveQuestion';
 import { addColorToResults, analyzeVoteData } from '../../lib/utils';
@@ -79,7 +80,8 @@ export default function Results() {
             totalVotes={totalVotes}
           />
         )}
-        <StateMap stateResults={stateResults} />
+        <StateMap stateResults={stateResults} results={results} />
+        <ShareResultsButton question={question} />
       </View>
     </ScrollView>
   );

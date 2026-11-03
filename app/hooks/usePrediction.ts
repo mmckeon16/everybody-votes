@@ -1,8 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { predictionsApi } from '../lib/api/predictions';
 import Toast from 'react-native-toast-message';
 
 export function usePrediction() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       optionId,
@@ -42,7 +43,12 @@ export function usePrediction() {
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: async (_data, { userId, questionId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['activeQuestion', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['lastActiveQuestion', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['results', questionId] }),
+      ]);
       Toast.show({
         type: 'success',
         text1: 'Success',

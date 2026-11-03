@@ -3,11 +3,11 @@ import { resultsApi } from '../lib/api/results';
 import { useAuth } from '../context/AuthContext';
 
 export function useResults(questionId: string, demographicsFilter?: object) {
-  const queryKey = demographicsFilter
-    ? ['results', questionId, 'filtered', JSON.stringify(demographicsFilter)]
-    : ['results', questionId, 'unfiltered'];
-
   const { session, isLoading } = useAuth();
+  const userId = session?.user?.id ?? null;
+  const queryKey = demographicsFilter
+    ? ['results', questionId, userId, 'filtered', JSON.stringify(demographicsFilter)]
+    : ['results', questionId, userId, 'unfiltered'];
 
   return useQuery({
     queryKey,
