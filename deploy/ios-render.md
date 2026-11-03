@@ -109,7 +109,7 @@ preserving its guest data and denied notification permission. Cold launch loaded
 the new embedded update, the no-current-poll home, and a recovered historical poll.
 Notification denial shows the explicit Open device Settings button without an
 automatic permission/Settings prompt. The compiled bundle contains Render's URL,
-the public identifier, and the new account/Settings/share code. Expo records a
+the public identifier, and the new account/Settings/share code. Expo records
 two successful embedded launches with zero failed launches. Evidence is in
 [expo-ios.json](expo-ios.json).
 
