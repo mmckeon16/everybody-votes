@@ -81,10 +81,17 @@ export function createApi({ pool, authUrl, env = process.env, fetchImpl = fetch 
     if (requestedId && requestedId !== user.id) throw new HttpError(403, 'Cannot act for another user');
     return user;
   }
+  async function lockUserForWrite(client, userId) {
+    // Serialize writes with account deletion, including requests authenticated before deletion began.
+    const current = await client.query('SELECT id FROM auth.users WHERE id = $1 FOR KEY SHARE', [userId]);
+    if (!current.rowCount) throw new HttpError(401, 'Invalid or expired session');
+  }
   async function questionData(client, question, user) {
     const options = (await client.query('SELECT id, text FROM public.options WHERE question_id = $1 ORDER BY id', [question.id])).rows;
-    const mine = user ? (await client.query('SELECT option_id FROM public.answers WHERE question_id = $1 AND user_id = $2', [question.id, user.id])).rows[0] : null;
-    return { ...question, options, user_vote: mine?.option_id ?? null };
+    const mine = user ? (await client.query(`SELECT
+      (SELECT option_id FROM public.answers WHERE question_id = $1 AND user_id = $2) AS user_vote,
+      (SELECT option_id FROM public.predictions WHERE question_id = $1 AND user_id = $2) AS user_prediction`, [question.id, user.id])).rows[0] : null;
+    return { ...question, options, user_vote: mine?.user_vote ?? null, user_prediction: mine?.user_prediction ?? null };
   }
 
   return createServer(async (request, response) => {
@@ -122,6 +129,25 @@ export function createApi({ pool, authUrl, env = process.env, fetchImpl = fetch 
         response.writeHead(upstream.status);
         return response.end(body);
       }
+      if (path === '/functions/v1/account' && request.method === 'DELETE') {
+        const user = await userFor(request, null, true);
+        const body = await readJson(request);
+        if (!body || Array.isArray(body) || body.confirmation !== 'DELETE' || Object.keys(body).some(key => key !== 'confirmation')) {
+          throw new HttpError(400, 'Confirm account deletion with DELETE');
+        }
+        await transaction(pool, async client => {
+          const current = await client.query('SELECT id FROM auth.users WHERE id = $1 FOR UPDATE', [user.id]);
+          if (!current.rowCount) throw new HttpError(401, 'Invalid or expired session');
+          // Include legacy refresh tokens without session_id; modern tokens also cascade through sessions.
+          await client.query('DELETE FROM auth.refresh_tokens WHERE user_id = $1', [user.id]);
+          // GoTrue audit entries have no user FK and may contain email/name or admin target traits.
+          await client.query(`DELETE FROM auth.audit_log_entries
+            WHERE payload->>'actor_id' = $1 OR payload->'traits'->>'user_id' = $1`, [user.id]);
+          // Auth identities/sessions and all owned public data have ON DELETE CASCADE foreign keys.
+          await client.query('DELETE FROM auth.users WHERE id = $1', [user.id]);
+        });
+        return send(response, 200, { deleted: true });
+      }
       if (path === '/functions/v1/question-rotation-notification' && request.method === 'POST') {
         if (!equalSecret(request.headers['x-hook-token'], env.INTERNAL_HOOK_TOKEN)) throw new HttpError(401, 'Invalid hook token');
         return send(response, 200, await deliverHooks(pool, env));
@@ -129,19 +155,19 @@ export function createApi({ pool, authUrl, env = process.env, fetchImpl = fetch 
       if (['/functions/v1/active-question', '/functions/v1/last-active-question'].includes(path) && request.method === 'GET') {
         const user = await userFor(request, url.searchParams.get('userId'));
         const active = path.endsWith('/active-question');
-        const question = (await pool.query(`SELECT * FROM public.questions WHERE ${active ? 'is_active AND start_date <= now() AND end_date > now()' : 'end_date <= now()'} ORDER BY ${active ? 'start_date' : 'end_date DESC'} LIMIT 1`)).rows[0];
+        const question = (await pool.query(`SELECT * FROM public.questions WHERE ${active ? 'NOT is_draft AND is_active AND start_date <= now() AND end_date > now()' : 'NOT is_draft AND end_date <= now()'} ORDER BY ${active ? 'start_date' : 'end_date DESC'} LIMIT 1`)).rows[0];
         if (!question) throw new HttpError(404, active ? 'No active question found' : 'No previous questions found');
         return send(response, 200, await questionData(pool, question, user));
       }
       if (path === '/functions/v1/questions/history' && request.method === 'GET') {
         const user = await userFor(request, url.searchParams.get('userId'));
-        const questions = (await pool.query('SELECT * FROM public.questions WHERE end_date <= now() ORDER BY end_date DESC LIMIT 50')).rows;
+        const questions = (await pool.query('SELECT * FROM public.questions WHERE NOT is_draft AND end_date <= now() ORDER BY end_date DESC LIMIT 50')).rows;
         return send(response, 200, await Promise.all(questions.map(question => questionData(pool, question, user))));
       }
       if (path.startsWith('/functions/v1/result-data/') && request.method === 'GET') {
         const questionId = uuid(path.split('/').at(-1));
         const user = await userFor(request, url.searchParams.get('userId'));
-        const question = (await pool.query('SELECT id, text FROM public.questions WHERE id = $1', [questionId])).rows[0];
+        const question = (await pool.query('SELECT id, text FROM public.questions WHERE id = $1 AND NOT is_draft', [questionId])).rows[0];
         if (!question) throw new HttpError(404, 'Question not found');
         const values = [questionId];
         const filters = buildFilters(url.searchParams, values);
@@ -171,8 +197,9 @@ export function createApi({ pool, authUrl, env = process.env, fetchImpl = fetch 
         const questionId = uuid(body.questionId), optionId = uuid(body.optionId);
         const isVote = path.endsWith('/submit-vote');
         const data = await transaction(pool, async client => {
+          await lockUserForWrite(client, user.id);
           const eligible = await client.query(`SELECT q.id FROM public.questions q JOIN public.options o ON o.question_id = q.id
-            WHERE q.id = $1 AND o.id = $2 AND q.is_active AND q.start_date <= now() AND q.end_date > now() FOR SHARE OF q`, [questionId, optionId]);
+            WHERE q.id = $1 AND o.id = $2 AND NOT q.is_draft AND q.is_active AND q.start_date <= now() AND q.end_date > now() FOR SHARE OF q`, [questionId, optionId]);
           if (!eligible.rowCount) throw new HttpError(400, 'Question is closed or option is invalid');
           if (!(await client.query('SELECT 1 FROM public.demographics WHERE user_id = $1', [user.id])).rowCount) throw new HttpError(403, 'Complete your profile before voting');
           if (!isVote && !(await client.query('SELECT 1 FROM public.answers WHERE user_id = $1 AND question_id = $2', [user.id, questionId])).rowCount) throw new HttpError(400, 'Vote before making a prediction');
@@ -188,6 +215,7 @@ export function createApi({ pool, authUrl, env = process.env, fetchImpl = fetch 
         const user = await userFor(request, profile.user_id, true);
         if (!Number.isInteger(profile.age) || profile.age < 1 || profile.age > 115 || profileFields.some(field => typeof profile[field] !== 'string' || !profile[field].trim() || profile[field].length > 200)) throw new HttpError(400, 'Invalid demographic profile');
         await transaction(pool, async client => {
+          await lockUserForWrite(client, user.id);
           const fields = ['user_id', 'age', ...profileFields];
           const values = [user.id, profile.age, ...profileFields.map(field => profile[field].trim())];
           await client.query(`INSERT INTO public.demographics(${fields.join(',')}) VALUES (${values.map((_, index) => '$' + (index + 1)).join(',')})

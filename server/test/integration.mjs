@@ -38,7 +38,7 @@ after(async () => {
 });
 
 test('migrations are tracked once and readiness checks both database and auth', async () => {
-  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM render_schema_migrations')).rows[0].n, 3);
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM render_schema_migrations')).rows[0].n, 4);
   assert.equal((await fetch(baseUrl + '/healthz')).status, 200);
 });
 test('Supabase-compatible signup, password login and user lookup work through gateway', async () => {
@@ -161,4 +161,97 @@ test('recovered Discord reports and OneSignal pushes retry rejected receipts ind
   assert.equal(discordCalls, 1);
   assert.equal(pushCalls, 4);
   assert.deepEqual(await deliverHooks(pool, env, send), { delivered: 0, failed: 0 });
+});
+
+
+test('self-delete removes only the authenticated account and rejects all old sessions and in-flight writes', { timeout: 20000 }, async () => {
+  const signup = await fetch(baseUrl + '/auth/v1/signup', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: `delete-${randomUUID()}@example.com`, password: 'local-delete-test-password-123' }),
+  });
+  assert.equal(signup.status, 200);
+  const first = await signup.json();
+  const ownId = first.user.id;
+  const ownHeaders = { Authorization: `Bearer ${first.access_token}`, 'Content-Type': 'application/json' };
+  const login = await fetch(baseUrl + '/auth/v1/token?grant_type=password', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: first.user.email, password: 'local-delete-test-password-123' }),
+  });
+  assert.equal(login.status, 200);
+  const second = await login.json();
+  const ownProfile = { ...profile(), user_id: ownId };
+  assert.equal((await fetch(baseUrl + '/functions/v1/submit-onboarding', { method: 'POST', headers: ownHeaders, body: JSON.stringify({ onboarding: ownProfile }) })).status, 200);
+  await pool.query('INSERT INTO public.answers(user_id, question_id, option_id) VALUES ($1, $2, $3)', [ownId, questionId, optionId]);
+  await pool.query('INSERT INTO public.predictions(user_id, question_id, option_id) VALUES ($1, $2, $3)', [ownId, questionId, optionId]);
+  await pool.query('INSERT INTO public.push_tokens(user_id, token) VALUES ($1, $2)', [ownId, 'local-test-' + randomUUID()]);
+  await pool.query('INSERT INTO auth.refresh_tokens(user_id, token, revoked, created_at, updated_at) VALUES ($1, $2, false, now(), now())', [ownId, randomUUID()]);
+  assert.ok((await pool.query('SELECT count(*)::integer AS n FROM auth.sessions WHERE user_id = $1', [ownId])).rows[0].n >= 2);
+  assert.ok((await pool.query('SELECT count(*)::integer AS n FROM auth.identities WHERE user_id = $1', [ownId])).rows[0].n > 0);
+  const survivorAuditId = randomUUID();
+  for (const [id, payload] of [
+    [randomUUID(), { actor_id: ownId, actor_username: first.user.email, action: 'test-own-account' }],
+    [randomUUID(), { actor_id: userId, traits: { user_id: ownId, user_email: first.user.email }, action: 'test-admin-target' }],
+    [survivorAuditId, { actor_id: userId, action: 'test-survivor' }],
+  ]) await pool.query('INSERT INTO auth.audit_log_entries(id, payload, created_at) VALUES ($1, $2::json, now())', [id, JSON.stringify(payload)]);
+  const last = await (await fetch(baseUrl + '/functions/v1/last-active-question', { headers: ownHeaders })).json();
+  assert.equal(last.user_vote, optionId);
+  assert.equal(last.user_prediction, optionId);
+
+  const remove = (body, requestHeaders = ownHeaders) => fetch(baseUrl + '/functions/v1/account', { method: 'DELETE', headers: requestHeaders, body: JSON.stringify(body) });
+  assert.equal((await remove({ confirmation: 'DELETE' }, { 'Content-Type': 'application/json', Authorization: 'Bearer everybody-polls-public' })).status, 401);
+  assert.equal((await remove({ confirmation: 'delete' })).status, 400);
+  assert.equal((await remove({ confirmation: 'DELETE', userId })).status, 400);
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM auth.users WHERE id IN ($1, $2)', [ownId, userId])).rows[0].n, 2);
+
+  let validated, release;
+  const authValidated = new Promise(resolve => { validated = resolve; });
+  const holdAuthResult = new Promise(resolve => { release = resolve; });
+  const delayed = createApi({ pool, authUrl: process.env.TEST_AUTH_URL, env: {}, fetchImpl: async (url, options) => {
+    const result = await fetch(url, options);
+    if (url.endsWith('/user') && result.ok) { validated(); await holdAuthResult; }
+    return result;
+  } });
+  delayed.listen(0, '127.0.0.1'); await once(delayed, 'listening');
+  let pendingWrite;
+  try {
+    pendingWrite = fetch(`http://127.0.0.1:${delayed.address().port}/functions/v1/submit-onboarding`, {
+      method: 'POST', headers: ownHeaders, body: JSON.stringify({ onboarding: ownProfile }), signal: AbortSignal.timeout(10000),
+    });
+    await authValidated;
+    const deleted = await remove({ confirmation: 'DELETE' });
+    assert.equal(deleted.status, 200);
+    assert.deepEqual(await deleted.json(), { deleted: true });
+    release();
+    assert.equal((await pendingWrite).status, 401);
+  } finally {
+    release();
+    if (pendingWrite) await pendingWrite.catch(() => {});
+    delayed.closeAllConnections();
+    await new Promise(resolve => delayed.close(resolve));
+  }
+
+  for (const table of ['users', 'identities', 'sessions']) {
+    const column = table === 'users' ? 'id' : 'user_id';
+    assert.equal((await pool.query(`SELECT count(*)::integer AS n FROM auth.${table} WHERE ${column} = $1`, [ownId])).rows[0].n, 0);
+  }
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM auth.refresh_tokens WHERE user_id = $1', [ownId])).rows[0].n, 0);
+  assert.equal((await pool.query(`SELECT count(*)::integer AS n FROM auth.audit_log_entries
+    WHERE payload->>'actor_id' = $1 OR payload->'traits'->>'user_id' = $1`, [ownId])).rows[0].n, 0);
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM auth.audit_log_entries WHERE id = $1', [survivorAuditId])).rows[0].n, 1);
+  for (const table of ['demographics', 'answers', 'predictions', 'push_tokens']) {
+    assert.equal((await pool.query(`SELECT count(*)::integer AS n FROM public.${table} WHERE user_id = $1`, [ownId])).rows[0].n, 0);
+  }
+  for (const accessToken of [first.access_token, second.access_token]) {
+    const staleHeaders = { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
+    assert.equal((await fetch(baseUrl + '/functions/v1/submit-onboarding', { method: 'POST', headers: staleHeaders, body: JSON.stringify({ onboarding: ownProfile }) })).status, 401);
+    assert.equal((await fetch(baseUrl + '/functions/v1/submit-vote', { method: 'POST', headers: staleHeaders, body: JSON.stringify({ questionId, optionId }) })).status, 401);
+    assert.equal((await fetch(baseUrl + '/functions/v1/submit-prediction', { method: 'POST', headers: staleHeaders, body: JSON.stringify({ questionId, optionId }) })).status, 401);
+    assert.equal((await fetch(baseUrl + '/functions/v1/account', { method: 'DELETE', headers: staleHeaders, body: JSON.stringify({ confirmation: 'DELETE' }) })).status, 401);
+    assert.notEqual((await fetch(baseUrl + '/auth/v1/user', { headers: staleHeaders })).status, 200);
+  }
+  for (const refreshToken of [first.refresh_token, second.refresh_token]) {
+    assert.equal((await fetch(baseUrl + '/auth/v1/token?grant_type=refresh_token', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: refreshToken }) })).status, 400);
+  }
+  assert.equal((await fetch(baseUrl + '/auth/v1/user', { headers: headers() })).status, 200);
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM public.answers WHERE user_id = $1', [userId])).rows[0].n, 1);
 });

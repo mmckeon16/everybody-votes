@@ -10,7 +10,7 @@ let status = 1;
 try {
   execFileSync('docker', [...compose, 'up', '-d', '--build', '--wait'], { cwd: root, stdio: 'inherit', timeout: 180000 });
   const port = (service, number) => execFileSync('docker', [...compose, 'port', service, String(number)], { cwd: root, encoding: 'utf8' }).trim();
-  const result = spawnSync(process.execPath, ['--test', 'test/integration.mjs'], {
+  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', 'test/integration.mjs', 'test/poll-flow.integration.mjs'], {
     cwd: serverRoot, stdio: 'inherit', timeout: 60000,
     env: { ...process.env,
       TEST_DATABASE_URL: `postgres://render_owner:local-test-owner-password@${port('database', 5432)}/polls_test`,

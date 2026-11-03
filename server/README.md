@@ -178,12 +178,50 @@ Existing active/last-question, onboarding, vote, prediction, results, and
 notification function paths are preserved. Writes verify a real Auth session
 and use its user ID; a caller-supplied user ID cannot impersonate someone else.
 Votes and predictions are unique per user/question at the database level.
+The active/previous question payload includes both `user_vote` and
+`user_prediction`, so the app can resume an unfinished prediction without
+resubmitting a vote.
+
+`DELETE /functions/v1/account` requires the current access token and exactly
+`{"confirmation":"DELETE"}`. It derives the account from Auth, rejects a body
+user ID, and transactionally removes that user and cascading profile, vote,
+prediction, push-token, identity, session, and refresh-token rows. Protected
+writes lock the user row, so a request authenticated before deletion cannot
+recreate data afterward. The public Auth gateway never exposes admin routes.
 Options must belong to an open question. Results expose aggregates rather than
 respondent IDs or individual demographic records.
 
 The manual notification path requires `X-Hook-Token` matching
 `INTERNAL_HOOK_TOKEN`. It only drains configured hooks. Scheduled delivery uses
 the cron service directly and needs no public privileged endpoint.
+
+## Community poll drafts
+
+Unpublished polls use `is_draft=true` with no start/end dates. Drafts are excluded
+from public question/history/results endpoints and cannot become active, even
+when the scheduled worker runs. Existing recovered polls remain published and
+inactive. Keep the first new poll in draft until provider login, database
+retention, and the launch schedule are ready.
+
+The operator tool uses a trusted server-side `DATABASE_URL`; it has no public
+creation/publishing endpoint. After applying migrations, create a draft with a
+stable UUID (repeating the identical request is safe):
+
+```sh
+node polls.mjs draft UUID "A free day: beach or mountains?" "Beach" "Mountains"
+```
+
+When ready to open voting, supply the approved UTC start/end timestamps:
+
+```sh
+node polls.mjs publish UUID START_ISO END_ISO
+```
+
+Publishing makes the poll eligible for rotation and queues activation/rotation
+hooks when it becomes active. Configured notification destinations can then
+send messages; do not use production publishing as a notification test. The
+operator and scheduled worker share a transaction advisory lock. A published
+poll cannot be republished through this tool.
 
 ## Local verification
 
@@ -213,8 +251,11 @@ Find ports with `docker compose -p everybody-render-check -f
 deploy/compose.test.yaml port database 5432` and `port auth 9999`. The integration
 suite requires a fresh disposable database and tests real Auth signup/login,
 migration reruns, impersonation rejection, concurrent votes, results filters,
-rotation events, and persisted webhook retries. It sends only to a local test
-HTTP server. It never resets an existing database.
+rotation events, and persisted webhook retries. It also verifies authenticated
+self-deletion, revocation of both sessions and refresh tokens, an in-flight write
+that races deletion, and a complete three-account community poll: draft,
+publish, profile, vote, prediction, close, personal/public reveal, and demographic
+filters. It sends only to a local test HTTP server or mocked provider transports. It never resets an existing database.
 
 Remove only the disposable test resources when finished:
 
