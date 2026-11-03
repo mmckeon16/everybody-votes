@@ -1,0 +1,83 @@
+{
+  "source_file": "db_cluster-04-05-2025@16-09-28.backup.gz",
+  "inspected_without_executing_sql": true,
+  "database_hook": {
+    "source_line": 6404,
+    "trigger_name": "question_rotation_logs_hook",
+    "timing": "AFTER",
+    "events": [
+      "INSERT"
+    ],
+    "table": "public.question_rotation_logs",
+    "for_each": "ROW",
+    "when_filter": null,
+    "function": "supabase_functions.http_request",
+    "destination": "https://nkaenbgnlfcqzjqnforj.supabase.co/functions/v1/question-rotation-notification",
+    "method": "POST",
+    "header_names": [
+      "Content-type",
+      "Authorization"
+    ],
+    "authorization": "[REDACTED; service_role JWT]",
+    "timeout_ms": 5000,
+    "query_params": {},
+    "generated_post_body": {
+      "old_record": null,
+      "record": "Inserted question_rotation_logs row",
+      "type": "INSERT",
+      "table": "question_rotation_logs",
+      "schema": "public"
+    }
+  },
+  "cron": {
+    "copy_header_line": 5088,
+    "jobid": 1,
+    "jobname": "rotate-questions",
+    "schedule": "0 15 * * *",
+    "active": true,
+    "database": "postgres",
+    "command": "select rotate_active_question();",
+    "timezone": "Not specified in backup DDL; server setting not established",
+    "observed_run_history": {
+      "count": 118,
+      "hour_utc": 15
+    }
+  },
+  "rotation_function": {
+    "source_line": 1013,
+    "name": "public.rotate_active_question()",
+    "language": "plpgsql",
+    "owner": "postgres",
+    "steps": [
+      "Set current_ts = now().",
+      "Deactivate every question WHERE is_active=true AND end_date<current_ts; count changed rows.",
+      "Continue only if at least one question was deactivated.",
+      "Activate one inactive question with the earliest start_date greater than the end_date of a remaining active question, or greater than current_ts if no active question remains.",
+      "Insert question_rotation_logs with deactivated_questions=count, activated_question_id=selected id, success=true.",
+      "Exception handler attempts to insert success=false/error_message=SQLERRM and reraises; transaction rollback can discard that log."
+    ],
+    "limitations": [
+      "No activation when zero expired active questions were deactivated.",
+      "A successful log may have a null activated_question_id if no matching next question exists.",
+      "Selection can activate a question whose start_date is in the future."
+    ]
+  },
+  "other_application_triggers": [
+    {
+      "source_line": 6397,
+      "name": "demographics_updated_at",
+      "event": "BEFORE UPDATE",
+      "table": "public.demographics",
+      "function": "public.handle_updated_at()"
+    },
+    {
+      "source_line": 6411,
+      "name": "set_push_tokens_timestamp",
+      "event": "BEFORE UPDATE",
+      "table": "public.push_tokens",
+      "function": "public.moddatetime(...)"
+    }
+  ],
+  "plaintext_discord_webhook_found": false,
+  "onesignal_name_or_credential_reference_found": false
+}

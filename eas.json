@@ -8,26 +8,50 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "SENTRY_AUTH_TOKEN": "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"
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://everybody-polls-api.onrender.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "everybody-polls-public"
       },
       "channel": "development",
-      "environment": "development"
+      "environment": "development",
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-26.0"
+      },
+      "node": "22.22.0"
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "SENTRY_AUTH_TOKEN": "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"
+        "APP_VARIANT": "preview",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://everybody-polls-api.onrender.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "everybody-polls-public"
       },
       "channel": "preview",
-      "environment": "preview"
+      "environment": "preview",
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-26.0"
+      },
+      "node": "22.22.0"
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "SENTRY_AUTH_TOKEN": "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"
+        "APP_VARIANT": "production",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://everybody-polls-api.onrender.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "everybody-polls-public"
       },
       "channel": "production",
-      "environment": "production"
+      "environment": "production",
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-26.0"
+      },
+      "node": "22.22.0"
+    },
+    "ios-simulator": {
+      "extends": "preview",
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {

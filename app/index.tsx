@@ -1,30 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, ScrollView } from 'react-native';
 import { SkeletonCard } from './components/SkeletonCard';
 import { useActiveQuestion } from './hooks/useActiveQuestion';
 import PollResultsCard from './components/PollResultsCard';
 import VoteCard from './components/VoteCard';
 import ErrorVoteCard from './components/ErrorVoteCard';
-import { Button } from '~/components/ui/button';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { LogLevel, OneSignal } from 'react-native-onesignal';
-import Constants from 'expo-constants';
+import NotificationPreferences from './components/NotificationPreferences';
 
 export default function Screen() {
   const [appIsReady, setAppIsReady] = useState(false);
   const { isLoading, isError, error } = useActiveQuestion();
-  const router = useRouter();
-  if (Platform.OS !== 'web') {
-    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-    OneSignal.initialize(Constants.expoConfig.extra.oneSignalAppId);
-
-    // Also need enable notifications to complete OneSignal setup
-    OneSignal?.Notifications.requestPermission(true);
-  }
-  const handleHomePress = () => {
-    router.push('/auth/signup');
-  };
   useEffect(() => {
     async function prepare() {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -41,6 +26,7 @@ export default function Screen() {
       <View className="flex-1 p-6 bg-blueBg flex flex-col gap-3 items-center w-full">
         <ErrorVoteCard />
         <PollResultsCard />
+        <NotificationPreferences />
       </View>
     );
   }
@@ -61,9 +47,7 @@ export default function Screen() {
         <View className="flex-1 items-center gap-5 pb-10 bg-blueBg">
           <VoteCard />
           <PollResultsCard />
-          {/* <Button size="icon" onPress={handleHomePress}>
-            <FontAwesome name="home" size={18} color={'white'} />
-          </Button> */}
+          <NotificationPreferences />
         </View>
       )}
     </ScrollView>

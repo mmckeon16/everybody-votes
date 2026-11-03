@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-11-02T01:02:12.576Z",
+  "googleCloudProjectId": "everybody-votes-444721",
+  "oauthClientName": "web client prod",
+  "callbackUrl": "https://everybody-polls-api.onrender.com/auth/v1/callback",
+  "callbackPersisted": true,
+  "existingOriginsAndRedirectsPreserved": true,
+  "existingCredentialsPreserved": true,
+  "renderAuthServiceId": "srv-dbjnprvb9u1s73ej4pq0",
+  "stagedRedirectMatches": true,
+  "googleEnabled": false,
+  "appleEnabled": true,
+  "signupsDisabled": true,
+  "nextStep": "Enable staged Google provider, deploy only existing Auth service, and verify controlled login",
+  "realProviderLoginTested": false
+}

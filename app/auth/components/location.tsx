@@ -22,9 +22,9 @@ import {
 } from '../constants';
 
 const Location: React.FC<StepProps> = ({ setProfileData, profileData }) => {
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [filteredStates, setFilteredStates] = React.useState<Array>(states);
+  const [filteredStates, setFilteredStates] = React.useState<typeof states>(states);
   const [showOtherStatus, setShowOtherStatus] = useState(false);
   const [activeStatusSelect, setActiveStatusSelect] = useState<
     'main' | 'other'

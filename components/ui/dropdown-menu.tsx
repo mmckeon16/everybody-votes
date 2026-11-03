@@ -53,8 +53,12 @@ const DropdownMenuSubTrigger = React.forwardRef<
         )}
         {...props}
       >
-        <>{children}</>
-        <Icon size={18} className='ml-auto text-foreground' />
+        {state => (
+          <>
+            {typeof children === 'function' ? children(state) : children}
+            <Icon size={18} className='ml-auto text-foreground' />
+          </>
+        )}
       </DropdownMenuPrimitive.SubTrigger>
     </TextClassContext.Provider>
   );
@@ -80,7 +84,7 @@ const DropdownMenuSubContent = React.forwardRef<
     />
   );
 });
-DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName;
+DropdownMenuSubContent.displayName = 'DropdownMenuSubContent';
 
 const DropdownMenuContent = React.forwardRef<
   DropdownMenuPrimitive.ContentRef,
@@ -99,7 +103,7 @@ const DropdownMenuContent = React.forwardRef<
             ? StyleSheet.flatten([
                 Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined,
                 overlayStyle,
-              ] as ViewStyle)
+              ])
             : Platform.OS !== 'web'
             ? StyleSheet.absoluteFill
             : undefined
@@ -158,12 +162,16 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     checked={checked}
     {...props}
   >
-    <View className='absolute left-2 flex h-3.5 w-3.5 items-center justify-center'>
-      <DropdownMenuPrimitive.ItemIndicator>
-        <Check size={14} strokeWidth={3} className='text-foreground' />
-      </DropdownMenuPrimitive.ItemIndicator>
-    </View>
-    <>{children}</>
+    {state => (
+      <>
+        <View className='absolute left-2 flex h-3.5 w-3.5 items-center justify-center'>
+          <DropdownMenuPrimitive.ItemIndicator>
+            <Check size={14} strokeWidth={3} className='text-foreground' />
+          </DropdownMenuPrimitive.ItemIndicator>
+        </View>
+        {typeof children === 'function' ? children(state) : children}
+      </>
+    )}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
 DropdownMenuCheckboxItem.displayName = DropdownMenuPrimitive.CheckboxItem.displayName;
@@ -181,12 +189,16 @@ const DropdownMenuRadioItem = React.forwardRef<
     )}
     {...props}
   >
-    <View className='absolute left-2 flex h-3.5 w-3.5 items-center justify-center'>
-      <DropdownMenuPrimitive.ItemIndicator>
-        <View className='bg-foreground h-2 w-2 rounded-full' />
-      </DropdownMenuPrimitive.ItemIndicator>
-    </View>
-    <>{children}</>
+    {state => (
+      <>
+        <View className='absolute left-2 flex h-3.5 w-3.5 items-center justify-center'>
+          <DropdownMenuPrimitive.ItemIndicator>
+            <View className='bg-foreground h-2 w-2 rounded-full' />
+          </DropdownMenuPrimitive.ItemIndicator>
+        </View>
+        {typeof children === 'function' ? children(state) : children}
+      </>
+    )}
   </DropdownMenuPrimitive.RadioItem>
 ));
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName;

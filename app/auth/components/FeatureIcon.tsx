@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text } from '~/components/ui/text';
 
-interface FeatureItemProps {
+export interface FeatureItemProps {
   icon: React.ReactNode;
   title: string;
   description: string;
@@ -17,7 +17,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
     <View>{icon}</View>
     <View className="flex-1">
       <Text className="font-semibold">{title}</Text>
-      <Text className="text-description" tailwind>
+      <Text className="text-description">
         {description}
       </Text>
     </View>

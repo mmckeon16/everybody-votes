@@ -18,42 +18,32 @@ import {
 } from '~/components/ui/select';
 import { STATE_PATHS } from '../constants';
 import { states } from '../../../auth/constants';
+import type { PollResult, StateResult, StateVoteOption as VoteOption } from '../../../lib/api/results';
+import { stateVoteOptions } from '~/lib/state-vote-options';
 
-interface VoteOption {
-  text: string;
-  votes: number;
-}
-
-interface StateResult {
-  state: string;
+interface StateVotingData {
   totalVotes: number;
-  [key: string]: VoteOption | string | number; // For dynamic UUID keys
+  options: VoteOption[];
 }
 
 interface USVoteHeatMapProps {
   stateResults: StateResult[];
+  results: Pick<PollResult, 'optionId' | 'optionText'>[];
 }
 
-const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
+const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults = [], results }) => {
   const [activeState, setActiveState] = useState<string | null>('AK');
   const svgRef = useRef<View>(null);
   const [svgLayout, setSvgLayout] = useState({ width: 0, height: 0 });
 
   // Convert array to map for easier lookup
-  const votingData = stateResults.reduce((acc, curr) => {
-    const options = Object.entries(curr).reduce((optAcc, [key, value]) => {
-      if (typeof value === 'object' && 'votes' in value && 'text' in value) {
-        optAcc[key] = value;
-      }
-      return optAcc;
-    }, {} as Record<string, VoteOption>);
-
+  const votingData = stateResults.reduce<Record<string, StateVotingData>>((acc, curr) => {
     acc[curr.state] = {
       totalVotes: curr.totalVotes,
-      ...options,
+      options: stateVoteOptions(curr, results),
     };
     return acc;
-  }, {} as Record<string, { totalVotes: number } & Record<string, VoteOption>>);
+  }, {});
 
   const getOption1Percentage = (
     stateData?: typeof votingData[string]
@@ -61,17 +51,14 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
     if (!stateData) return 0;
 
     // Get the first option's votes
-    const options = Object.values(stateData).filter(
-      (value): value is VoteOption =>
-        typeof value === 'object' && 'votes' in value && 'text' in value
-    );
+    const options = stateData.options;
 
     if (options.length === 0 || stateData.totalVotes === 0) return 0;
     return (options[0].votes / stateData.totalVotes) * 100;
   };
 
   const getStateColor = (stateData?: typeof votingData[string]): string => {
-    if (!stateData) return '#CCCCCC';
+    if (!stateData || stateData.totalVotes === 0 || results.length !== 2) return '#CCCCCC';
     const option1Percentage = getOption1Percentage(stateData);
 
     const startColor = {
@@ -97,18 +84,6 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
     return `rgb(${r}, ${g}, ${b})`;
   };
 
-  // Get option texts from the first state result
-  const firstStateWithData = stateResults[0];
-  const options = Object.entries(firstStateWithData)
-    .filter(
-      ([_, value]): value is [string, VoteOption] =>
-        typeof value === 'object' && 'text' in value && 'votes' in value
-    )
-    .map(([_, value]) => value);
-
-  const option1Text = options[0]?.text || 'Yes';
-  const option2Text = options[1]?.text || 'No';
-
   const handleLayout = (event: LayoutChangeEvent) => {
     setSvgLayout({
       width: event.nativeEvent.layout.width,
@@ -121,6 +96,7 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
 
     const { locationX, locationY } = event.nativeEvent;
     const { width, height } = svgLayout;
+    if (width <= 0 || height <= 0) return;
 
     // Create normalized coordinates (0-1 range)
     const normalizedX = locationX / width;
@@ -244,9 +220,8 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
                   <Text className="font-bold text-lg">{activeState}</Text>
                   <Select
                     id="state"
-                    defaultOpen={false}
-                    onValueChange={({ value }) => {
-                      setActiveState(value);
+                    onValueChange={option => {
+                      if (option) setActiveState(option.value);
                     }}
                   >
                     <SelectTrigger className="w-max" />
@@ -280,16 +255,9 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
                     </SelectContent>
                   </Select>
                 </View>
-                {activeState && votingData[activeState] ? (
+                {activeState && votingData[activeState]?.totalVotes > 0 ? (
                   <View>
-                    {Object.entries(votingData[activeState])
-                      .filter(
-                        ([_, value]): value is [string, VoteOption] =>
-                          typeof value === 'object' &&
-                          'text' in value &&
-                          'votes' in value
-                      )
-                      .map(([_, option], index) => (
+                    {votingData[activeState].options.map((option, index) => (
                         <Text key={index} className="text-sm">
                           {option.text}:{' '}
                           {(
@@ -309,16 +277,23 @@ const USVoteHeatMap: React.FC<USVoteHeatMapProps> = ({ stateResults }) => {
           )}
         </View>
 
-        <View className="flex-row justify-center gap-8">
-          <View className="flex-row items-center">
-            <View className="w-4 h-4 bg-lightBlue rounded" />
-            <Text className="ml-2 text-sm">{option1Text}</Text>
+        {results.length === 2 ? (
+          <View className="flex-row flex-wrap justify-center gap-4">
+            {results.map((option, index) => (
+              <View key={option.optionId} className="flex-row items-center flex-1">
+                <View style={{ width: 16, height: 16, borderRadius: 4, backgroundColor: index === 0 ? '#0879C4' : '#C208C9' }} />
+                <Text className="ml-2 text-sm" style={{ flexShrink: 1 }}>{option.optionText}</Text>
+              </View>
+            ))}
           </View>
-          <View className="flex-row items-center">
-            <View className="w-4 h-4 bg-midnight rounded" />
-            <Text className="ml-2 text-sm">{option2Text}</Text>
-          </View>
-        </View>
+        ) : results.length === 0 ? (
+          <Text className="text-sm text-center">No poll options are available.</Text>
+        ) : (
+          <Text className="text-sm text-center">Select a state to explore each answer.</Text>
+        )}
+        {stateResults.length === 0 && (
+          <Text className="text-sm text-center">No responses with a recorded state yet.</Text>
+        )}
       </View>
     </Card>
   );

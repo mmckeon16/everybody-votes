@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Vote, ChartBar, Target, UserCircle2 } from 'lucide-react-native';
 
-const OnboardingOverlay = ({ onSignUpClick }) => {
+const OnboardingOverlay = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   return (
     <View className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white">

@@ -4,6 +4,7 @@ interface QuestionFormProps {
   options: Option[];
   onSubmit: (selectedOption: Option) => void;
   submitText?: string;
+  disabled?: boolean;
 }
 
 import React, { useState } from 'react';
@@ -26,11 +27,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
   onSubmit,
   submitText = 'Vote',
   description = '',
+  disabled = false,
 }) => {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
   const handleSubmit = (): void => {
-    if (selectedOption) {
+    if (selectedOption && !disabled) {
       onSubmit(selectedOption);
     }
   };
@@ -50,6 +52,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
               <View key={option.id} className="w-full">
                 <Button
                   variant="outline"
+                  disabled={disabled}
                   className={`w-full border-b border-border ${
                     selectedOption?.id === option.id ? 'bg-lightBlue' : ''
                   }`}
@@ -77,7 +80,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
           variant="outline"
           className="shadow shadow-foreground/5"
           onPress={handleSubmit}
-          disabled={!selectedOption}
+          disabled={disabled || !selectedOption}
         >
           <Text>{submitText}</Text>
         </Button>

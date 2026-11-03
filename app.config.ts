@@ -1,13 +1,26 @@
+const renderBackendUrl = 'https://everybody-polls-api.onrender.com';
+const renderPublicApiKey = 'everybody-polls-public';
+const backendUrl = (process.env.EXPO_PUBLIC_SUPABASE_URL || renderBackendUrl).replace(/\/+$/, '');
+const publicApiKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || renderPublicApiKey;
+// Profile env is available both to local EAS configuration and to the cloud builder.
+const appVariant = process.env.APP_VARIANT || 'production';
+const isReleaseBuild = appVariant !== 'development';
+
+if (isReleaseBuild && (backendUrl !== renderBackendUrl || publicApiKey !== renderPublicApiKey)) {
+  throw new Error('Preview and production builds must use the Everybody Polls Render backend configuration.');
+}
+
 export default {
   expo: {
     name: 'Everybody Polls',
+    icon: './assets/images/every-body-polls-icon.png',
     slug: 'everybody-polls',
+    owner: 'collectsoftware',
     scheme: 'com.everybody.polls',
     extra: {
-      EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
-      EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+      EXPO_PUBLIC_SUPABASE_URL: backendUrl,
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: publicApiKey,
       EXPO_PUBLIC_SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN,
-      SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
       EXPO_PUBLIC_GOOGLE_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
       eas: {
         projectId: '3812e77d-32fd-47d2-98a0-5b3426e1d1d1',
@@ -17,7 +30,7 @@ export default {
     updates: {
       url: 'https://u.expo.dev/3812e77d-32fd-47d2-98a0-5b3426e1d1d1',
     },
-    runtimeVersion: '1.0.0',
+    runtimeVersion: { policy: 'fingerprint' },
     userInterfaceStyle: 'automatic',
     splash: {
       image: './assets/images/every-body-polls-icon.png', // Make sure this file exists
@@ -26,11 +39,9 @@ export default {
     },
     ios: {
       bundleIdentifier: 'com.everybody.polls',
+      appleTeamId: 'KF8643NB33',
       buildNumber: '1.0.0',
       usesAppleSignIn: true,
-      config: {
-        usesAppleSignIn: true,
-      },
     },
     android: {
       package: 'com.everybody.polls',
@@ -66,7 +77,7 @@ export default {
       [
         'onesignal-expo-plugin',
         {
-          mode: process.env.NODE_ENV || 'development',
+          mode: appVariant === 'development' ? 'development' : 'production',
         },
       ],
       [
@@ -111,21 +122,9 @@ export default {
           // If you are using a self-hosted instance, update the value of the url property
           // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
           url: 'https://sentry.io/',
-          authToken: process.env.SENTRY_AUTH_TOKEN,
         },
       ],
     ],
-    hooks: {
-      postPublish: [
-        {
-          file: 'sentry-expo/upload-sourcemaps',
-          config: {
-            organization: 'collect-software',
-            project: 'everybody-polls',
-            authToken: process.env.SENTRY_AUTH_TOKEN,
-          },
-        },
-      ],
-    },
+    // Sentry upload scripts read SENTRY_AUTH_TOKEN from the EAS build environment.
   },
 };

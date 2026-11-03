@@ -17,8 +17,12 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
 }) => {
   const { colorScheme } = useNativewindColorScheme();
   const [errorMsg, setErrorMsg] = useState('');
+  const [pending, setPending] = useState(false);
 
   const signInWithApple = async () => {
+    if (pending) return;
+    setPending(true);
+    setErrorMsg('');
     try {
       // First, check if Apple Auth is available
       const isAvailable = await AppleAuthentication.isAvailableAsync();
@@ -38,11 +42,6 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         throw new Error('No identity token received from Apple');
       }
 
-      console.log('Got Apple credential:', {
-        ...credential,
-        identityToken: credential.identityToken.substring(0, 20) + '...',
-      });
-
       // Sign in with Supabase using the Apple ID token
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
@@ -50,37 +49,40 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       });
 
       if (error) {
-        console.error('Supabase auth error:', error);
         throw error;
       }
 
-      console.log('Supabase sign in successful:', {
-        user: data.user?.id,
-        session: data.session?.access_token ? 'Present' : 'Missing',
-      });
     } catch (error) {
       let errorMessage = 'An unexpected error occurred';
 
-      if (error.code === 'ERR_REQUEST_CANCELED') {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'ERR_REQUEST_CANCELED'
+      ) {
         errorMessage = 'Sign-in was cancelled';
-      } else if (error.message) {
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
 
-      console.error('Apple sign-in error:', error);
       setErrorMsg(errorMessage);
+    } finally {
+      setPending(false);
     }
   };
 
   const signInWithProvider = async () => {
+    if (pending) return;
+    setPending(true);
+    setErrorMsg('');
     try {
-      const redirectUrl = Platform.select({
-        web: 'http://localhost:8081',
-        android: 'everybody-polls://index', // Explicitly set the route
-        ios: 'everybody-polls://index',
-        default: Linking.createURL('index'), // Add specific path
-      });
-      console.log('Starting OAuth with redirect URL:', redirectUrl);
+      const redirectUrl =
+        Platform.OS === 'web'
+          ? typeof window !== 'undefined'
+            ? window.location.origin
+            : 'https://everybodypolls.com'
+          : 'com.everybody.polls://index';
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
@@ -95,19 +97,25 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
       if (Platform.OS !== 'web' && data?.url) {
         await Linking.openURL(data.url);
         // Note: Don't add navigation here as it will be handled by the deep link handler
-      } else if (Platform.OS === 'web' && data?.url) {
+      } else if (
+        Platform.OS === 'web' &&
+        typeof window !== 'undefined' &&
+        data?.url
+      ) {
         // Handle web platform differently if needed
         window.location.href = data.url;
       }
     } catch (error) {
-      console.error(`Error signing in with ${providerDisplayName}:`, error);
+      setErrorMsg(error instanceof Error ? error.message : 'Sign-in is unavailable. Please try again.');
+    } finally {
+      setPending(false);
     }
   };
   return (
     <>
-      {errorMsg}
+      {!!errorMsg && <Text accessibilityRole="alert">{errorMsg}</Text>}
       {isSmall ? (
-        <Button onPress={signInWithProvider} size="icon">
+        <Button onPress={signInWithProvider} size="icon" disabled={pending}>
           {IconComponent ? (
             <IconComponent
               size={20}
@@ -123,6 +131,7 @@ const LoginProviderButton: React.FC<ProviderButtonProps> = ({
         </Button>
       ) : (
         <Button
+          disabled={pending}
           onPress={provider === 'apple' ? signInWithApple : signInWithProvider}
           className="flex flex-row gap-2 py-2"
         >

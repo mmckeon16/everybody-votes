@@ -90,10 +90,14 @@ const AccordionTrigger = React.forwardRef<
               className
             )}
           >
-            {children}
-            <Animated.View style={chevronStyle}>
-              <ChevronDown size={18} className="text-foreground shrink-0" />
-            </Animated.View>
+            {state => (
+              <>
+                {typeof children === 'function' ? children(state) : children}
+                <Animated.View style={chevronStyle}>
+                  <ChevronDown size={18} className="text-foreground shrink-0" />
+                </Animated.View>
+              </>
+            )}
           </Pressable>
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>

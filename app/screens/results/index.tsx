@@ -5,45 +5,20 @@ import { Text } from '~/components/ui/text';
 import FilteredResultsCard from './components/FilteredResultsCard';
 import LineChart from './components/LineChart';
 import StateMap from './components/StateMap';
+import ShareResultsButton from './components/ShareResultsButton';
 
 import { useLastActiveQuestion } from '~/app/hooks/useLastActiveQuestion';
 import { addColorToResults, analyzeVoteData } from '../../lib/utils';
+import type { DemographicFilters } from '../../lib/api/results';
 
 export default function Results() {
-  const [filteredDemographics, setFilteredDemographics] = useState(null);
-  const { data: lastQuestion } = useLastActiveQuestion();
-
+  const [filteredDemographics, setFilteredDemographics] = useState<DemographicFilters>({});
+  const { data: lastQuestion, isLoading: isQuestionLoading, error: questionError } = useLastActiveQuestion();
   const { data: totalResults, isLoading, error } = useResults(lastQuestion?.id);
-  console.log('Data from totalResults....');
-  console.log(totalResults);
-  const nullData = { question: null, totalVotes: null, results: null };
-  const {
-    data: {
-      question,
-      totalVotes,
-      results,
-      user_vote,
-      user_prediction,
-      stateResults,
-    } = nullData,
-  } = totalResults || {};
+  const resultData = totalResults?.data;
+  const isPopulatedFilter = Object.values(filteredDemographics).some(values => values.length > 0);
 
-  let isPopulatedFilter = null;
-  if (filteredDemographics) {
-    isPopulatedFilter = Object.values(filteredDemographics).some(
-      arr => arr.length > 0
-    );
-  }
-
-  if (isLoading || !totalResults) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (error) {
+  if (error || questionError) {
     return (
       <View className="flex justify-center items-center">
         <Text>Failed to load results</Text>
@@ -51,10 +26,31 @@ export default function Results() {
     );
   }
 
-  const coloredResults = addColorToResults(results);
-  let myStats = null;
-  if (coloredResults && user_vote && user_prediction) {
-    myStats = analyzeVoteData(coloredResults, totalResults?.data);
+  if (isLoading || isQuestionLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!lastQuestion || !resultData) {
+    return (
+      <View className="flex justify-center items-center">
+        <Text>No results available yet</Text>
+      </View>
+    );
+  }
+
+  const { question, totalVotes, results, user_vote, user_prediction, stateResults } = resultData;
+  const coloredResults = addColorToResults(results) ?? [];
+  let myStats: ReturnType<typeof analyzeVoteData> | null = null;
+  if (
+    coloredResults.length > 0 && totalVotes > 0 && user_vote && user_prediction &&
+    coloredResults.some(option => option.optionId === user_vote) &&
+    coloredResults.some(option => option.optionId === user_prediction)
+  ) {
+    myStats = analyzeVoteData(coloredResults, { totalVotes, user_vote, user_prediction });
   }
 
   return (
@@ -84,7 +80,8 @@ export default function Results() {
             totalVotes={totalVotes}
           />
         )}
-        <StateMap stateResults={stateResults} />
+        <StateMap stateResults={stateResults} results={results} />
+        <ShareResultsButton question={question} />
       </View>
     </ScrollView>
   );

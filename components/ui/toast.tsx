@@ -22,7 +22,7 @@ const toastConfig = {
         borderLeftWidth: 1,
         marginHorizontal: 16,
         marginVertical: 8,
-        maxWidth: 'xl',
+        maxWidth: 576,
         padding: 8,
         shadowColor: '#000',
         shadowOffset: {
@@ -66,7 +66,7 @@ const toastConfig = {
         borderLeftWidth: 1,
         marginHorizontal: 24,
         marginTop: 24,
-        maxWidth: 'xl',
+        maxWidth: 576,
         padding: 8,
         shadowColor: '#000',
         shadowOffset: {
@@ -110,7 +110,7 @@ const toastConfig = {
         borderLeftWidth: 1,
         marginHorizontal: 24,
         marginTop: 24,
-        maxWidth: 'xl',
+        maxWidth: 576,
         padding: 8,
         shadowColor: '#000',
         shadowOffset: {
@@ -154,7 +154,7 @@ const toastConfig = {
         borderLeftWidth: 1,
         marginHorizontal: 24,
         marginTop: 24,
-        maxWidth: 'xl',
+        maxWidth: 576,
         padding: 8,
         shadowColor: '#000',
         shadowOffset: {

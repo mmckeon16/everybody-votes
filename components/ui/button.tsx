@@ -86,9 +86,9 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           onPress={(e) => {
             onPress?.(e);
           }}
-          style={({ pressed }) => [
-            style,
-            pressed && { opacity: 0.7 },
+          style={state => [
+            typeof style === 'function' ? style(state) : style,
+            state.pressed && { opacity: 0.7 },
           ]}
           className={cn(
             props.disabled && 'opacity-50',
@@ -105,15 +105,17 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           }}
           {...props}
         >
-          <View 
-            className={cn(
-              'flex items-center justify-center flex-row',
-              layoutClasses.join(' '),
-              Platform.OS === 'ios' ? 'py-0' : '' // Remove padding for iOS
-            )}
-          >
-            {children}
-          </View>
+          {state => (
+            <View
+              className={cn(
+                'flex items-center justify-center flex-row',
+                layoutClasses.join(' '),
+                Platform.OS === 'ios' ? 'py-0' : '' // Remove padding for iOS
+              )}
+            >
+              {typeof children === 'function' ? children(state) : children}
+            </View>
+          )}
         </Pressable>
       </TextClassContext.Provider>
     );

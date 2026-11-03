@@ -2,11 +2,17 @@ import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from '~/components/ui/text';
 
+interface GradientBadgeProps {
+  firstColor?: string;
+  secondColor?: string;
+  text: React.ReactNode;
+}
+
 function GradientBadge({
   firstColor = '#0879C4',
   secondColor = '#c208c9',
   text,
-}) {
+}: GradientBadgeProps) {
   return (
     <LinearGradient
       colors={[firstColor, secondColor]} // light blue to pink

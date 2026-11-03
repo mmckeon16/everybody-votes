@@ -13,7 +13,6 @@ const Occupation: React.FC<StepProps> = ({ setProfileData, profileData }) => {
         <Text>Occupation</Text>
       </Label>
       <OccupationSelect
-        id="occupation"
         profileData={profileData}
         setProfileData={setProfileData}
       />
