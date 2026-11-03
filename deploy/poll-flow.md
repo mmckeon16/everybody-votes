@@ -41,5 +41,23 @@ provider configuration was touched. The published deletion page was also checked
 at 390 px with real read-only Auth settings requests, native Apple instructions,
 and disabled Google hidden. Website source: `6d32037e472436bef5cc20489b92785a604bb60c`.
 
+The exported app also passed a browser UI flow against that real disposable
+backend: all seven onboarding steps, a Beach vote, leaving and resuming the
+prediction from home, a saved prediction, and the closed reveal (Beach 2/3,
+Mountains 1/3). New York filtering and map selection both show Beach 100% with
+actual choice labels. The final guarded export was retested with a fresh account:
+onboarding uses token refresh to read server-written metadata, reaches the
+celebration screen, and retains completed status after reload. That nonvoter sees
+aggregate results without inheriting personal vote/prediction data. No JavaScript
+errors, outbound production/provider requests, or horizontal overflow occurred.
+Task-owned headless browsers and the disposable stack were removed afterward.
+
+Fifty app tests across eleven suites pass, as do full type checking and iOS
+Metro/Hermes export. They cover notification opt-in/denial, prediction deadlines
+and recovery, account/cache boundaries, deletion, and the new native Share results
+button. Sharing uses the actual displayed question's canonical public result URL
+and opens the OS chooser; no message is sent automatically. The six share checks
+cover the payload, cancellation, duplicate presses, errors/retry, and web fallback.
+
 Real-provider login, physical-device push delivery, and the release checklist
 remain in [TODO.md](../TODO.md).

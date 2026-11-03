@@ -11,5 +11,20 @@
   },
   "branch": "codex/render-backend",
   "provisioning": "Render API; not currently managed by a Blueprint",
-  "databaseExpiresAt": "2026-12-01T17:54:25.876867Z"
+  "databaseExpiresAt": "2026-12-01T17:54:25.876867Z",
+  "appFlowDeployment": {
+    "verifiedAt": "2026-11-03T02:27:16.072261+00:00",
+    "apiCommit": "fa3f61d14f4aa6472eda86a1595e51228a4b6414",
+    "apiDeployId": "dep-dbkkadbncjis73einkvg",
+    "status": "live",
+    "applicationMigrations": 4,
+    "accountDeletionAnonymousStatus": 401,
+    "communityPollDraftId": "c7d112d0-3e20-4e44-8da6-5be82714899a",
+    "draftPublicResultsStatus": 404,
+    "historicalPolls": 13,
+    "googleEnabled": false,
+    "appleEnabled": true,
+    "signupsDisabled": true,
+    "databaseExternalAccess": "closed"
+  }
 }

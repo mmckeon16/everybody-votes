@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-02T00:52:01.880Z",
+  "verifiedAt": "2026-11-03T02:43:51.084105+00:00",
   "account": "collectsoftware",
   "project": "@collectsoftware/everybody-polls",
   "projectId": "3812e77d-32fd-47d2-98a0-5b3426e1d1d1",
@@ -66,7 +66,7 @@
     "url": "https://www.everybodypolls.com",
     "host": "Netlify",
     "siteId": "51a78d78-c076-4c81-a429-c8c31093436f",
-    "commit": "420c5ba789fc06c1ab5e2c50bdf3a023aa92f650",
+    "commit": "6d32037e472436bef5cc20489b92785a604bb60c",
     "renderBrowserVerificationPassed": true
   },
   "release": {
@@ -86,6 +86,86 @@
     "noActivePollRegressionTestsPassed": 8
   },
   "builds": {
+    "production": {
+      "id": "45f6aef3-39d9-4d70-b1d2-3ce0a0d85521",
+      "status": "FINISHED",
+      "appVersion": "1.0.0",
+      "appBuildVersion": "1.0.12",
+      "gitCommitHash": "fa3f61d14f4aa6472eda86a1595e51228a4b6414",
+      "runtimeVersion": "4552604ec675f0cd2cf12f262b242d01162e48ba",
+      "completedAt": "2026-11-03T02:28:23.135Z",
+      "dashboardUrl": "https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/45f6aef3-39d9-4d70-b1d2-3ce0a0d85521"
+    },
+    "ios-simulator": {
+      "id": "db2cd52e-c1a6-4e88-8542-342d27f45b1d",
+      "status": "FINISHED",
+      "appVersion": "1.0.0",
+      "appBuildVersion": "1.0.12",
+      "gitCommitHash": "fa3f61d14f4aa6472eda86a1595e51228a4b6414",
+      "runtimeVersion": "4552604ec675f0cd2cf12f262b242d01162e48ba",
+      "completedAt": "2026-11-03T02:36:48.993Z",
+      "dashboardUrl": "https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/db2cd52e-c1a6-4e88-8542-342d27f45b1d",
+      "nativeBundleVersion": "1.0.0"
+    }
+  },
+  "simulatorVerification": {
+    "verifiedAt": "2026-11-03T02:43:51.084105+00:00",
+    "buildId": "db2cd52e-c1a6-4e88-8542-342d27f45b1d",
+    "sourceCommit": "fa3f61d14f4aa6472eda86a1595e51228a4b6414",
+    "device": "dedicated iPhone 16 Pro simulator / iOS 18.4",
+    "updateInstallationPreservedAppData": true,
+    "coldLaunch": true,
+    "correctNoActivePollHome": true,
+    "historicalPollHomeCardLoaded": true,
+    "deniedNotificationPermissionRespected": true,
+    "noAutomaticPermissionOrSettingsPrompt": true,
+    "explicitSettingsButtonVisible": true,
+    "embeddedUpdateId": "02a29ab5-7592-488b-b864-53fc75314bb3",
+    "embeddedUpdateSuccessfulLaunches": 2,
+    "embeddedUpdateFailedLaunches": 0,
+    "compiledBundleChecks": {
+      "renderUrlPresent": true,
+      "renderPublicIdentifierPresent": true,
+      "nativeShareLabelPresent": true,
+      "explicitSettingsLabelPresent": true,
+      "accountDeletionEndpointPresent": true
+    },
+    "settingsActionTested": false,
+    "nativeShareChooserTested": false,
+    "inputAutomationLimitation": "Simulator did not accept synthetic mouse input; application activation returned false. Settings and share-chooser interaction remain device checks.",
+    "realDeviceSignInTested": false,
+    "realPushDeliveryTested": false,
+    "repeatLaunchWithoutAutomaticPrompt": true
+  },
+  "previewUpdate": {
+    "id": "01a19960-637e-7f2d-a633-5bb41a019fa9",
+    "group": "0ef955ea-1d3a-4c71-a118-6c697a530ae1",
+    "branch": "preview",
+    "runtimeVersion": "4552604ec675f0cd2cf12f262b242d01162e48ba",
+    "platform": "ios",
+    "gitCommitHash": "9876d683d098bd78ffa2ed7e54bb50836576f607",
+    "dashboardUrl": "https://expo.dev/accounts/collectsoftware/projects/everybody-polls/updates/0ef955ea-1d3a-4c71-a118-6c697a530ae1",
+    "hostManifestAndBundleDeliveryVerified": true,
+    "simulatorOtaApplied": false,
+    "simulatorOtaTransportTimedOut": true
+  },
+  "appFlowVerification": {
+    "sourceCommit": "fa3f61d14f4aa6472eda86a1595e51228a4b6414",
+    "typescript": true,
+    "appRegressionSuites": 11,
+    "appRegressionTests": 50,
+    "backendUnitTestsPassed": 10,
+    "privateFixtureTestsSkipped": 2,
+    "backendIntegrationTestsPassed": 11,
+    "realLocalAppBrowserFlow": true,
+    "realLocalWebsiteDeletionFlow": true,
+    "realProviderLoginTested": false,
+    "productionAccountsDeleted": 0,
+    "productionVotesSubmitted": 0,
+    "productionNotificationsSent": 0,
+    "disposableStackRemoved": true
+  },
+  "initialCutoverBuilds": {
     "production": {
       "id": "95d07cf6-436e-43d5-a790-0ac0bbe9ec82",
       "status": "FINISHED",
@@ -108,7 +188,7 @@
       "nativeBundleVersion": "1.0.0"
     }
   },
-  "simulatorVerification": {
+  "initialCutoverSimulatorVerification": {
     "device": "dedicated iPhone 16 Pro simulator / iOS 18.4",
     "cleanInstallation": true,
     "coldLaunch": true,
@@ -125,17 +205,5 @@
     },
     "realDeviceSignInTested": false,
     "realPushDeliveryTested": false
-  },
-  "previewUpdate": {
-    "id": "01a19960-637e-7f2d-a633-5bb41a019fa9",
-    "group": "0ef955ea-1d3a-4c71-a118-6c697a530ae1",
-    "branch": "preview",
-    "runtimeVersion": "4552604ec675f0cd2cf12f262b242d01162e48ba",
-    "platform": "ios",
-    "gitCommitHash": "9876d683d098bd78ffa2ed7e54bb50836576f607",
-    "dashboardUrl": "https://expo.dev/accounts/collectsoftware/projects/everybody-polls/updates/0ef955ea-1d3a-4c71-a118-6c697a530ae1",
-    "hostManifestAndBundleDeliveryVerified": true,
-    "simulatorOtaApplied": false,
-    "simulatorOtaTransportTimedOut": true
   }
 }

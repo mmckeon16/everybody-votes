@@ -39,11 +39,16 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   [deploy/mobile.env.example](deploy/mobile.env.example). Check build-profile
   inheritance and release configuration. Development, preview, and production
   now use Render; the legacy development flag no longer changes the API host.
-- [x] Complete the new signed iOS cloud archive. Production build `1.0.11`
-  succeeded on SDK 54/Xcode 26; details are in [deploy/ios-render.md](deploy/ios-render.md).
-- [x] Install the matching iOS simulator archive and verify a clean launch, the
-  no-active-poll state, native Explore navigation, and historical zero-vote
-  results/map fallback against Render. The final archive embeds the fix.
+- [x] Complete signed iOS build `1.0.12` and its matching simulator archive from
+  source `fa3f61d`, including the account/notification/poll-flow fixes. Both
+  succeeded on SDK 54/Xcode 26; [deploy/ios-render.md](deploy/ios-render.md).
+- [x] Install the matching updated simulator archive while preserving app data.
+  Verify the new embedded update launches, no-active-poll home/historical card,
+  and denied notifications without an automatic prompt. The initial cutover
+  archive also passed native Explore/results/map smoke; details retain both runs.
+- [ ] On a controlled iOS device, verify Open device Settings and native Share
+  results opening/cancellation. The new simulator launches correctly, but native
+  input automation could not deliver clicks; focused app regressions pass.
 - [ ] Verify real-device Apple login, each enabled OAuth provider, cold/warm
   callback handling, session refresh, sign-out, and profile completion against
   Render. Native configuration checks do not replace real-provider login.
@@ -75,10 +80,16 @@ recovery evidence is in [deploy/hook-recovery.md](deploy/hook-recovery.md) and
   login, database retention, and device/release checks are ready. The operator
   tool rejects conflicting open/future voting windows; publishing can notify
   the production push audience.
-- [ ] Run the complete app flow: login/signup, profile, vote, prediction, results,
-  demographic filters, sharing, and poll rotation. Backend integration tests
-  already pass; client-to-Render verification is still pending. Include account
-  switching and post-vote UI refresh to check session-scoped cached data.
+- [x] Run the controlled app/API/Auth flow in a disposable real PostgreSQL/GoTrue
+  stack: seven-step profile, vote, home/resume prediction, completion, close,
+  reveal, demographic filtering, and actual map labels. A fresh account verifies
+  server-backed profile refresh and viewing results without another account's
+  vote. Fifty app regressions cover cache/account boundaries and native share
+  payload/confirmation/error behavior; eleven real backend integration tests pass.
+  The local fixture containers, volumes, and session file were removed afterward.
+- [ ] Repeat authenticated voting/prediction on a controlled physical iOS device
+  against Render after provider, database, and release prerequisites are ready.
+  Use the draft's approved schedule and avoid test broadcasts to real users.
 - [ ] Add a verified iOS App Store/TestFlight link when a public release is ready.
   The refreshed website now uses honest sample links and an iOS preparation
   status. Apple's existing app record has no public TestFlight link.

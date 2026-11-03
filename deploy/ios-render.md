@@ -87,7 +87,39 @@ no users, votes, or provider messages. Production and simulator configurations
 also produce matching local/cloud-equivalent fingerprints; release backend
 guards reject loopback and other overrides.
 
-## Cloud archives and native smoke test
+## Current app flow archives
+
+The signed [iOS build 1.0.12](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/45f6aef3-39d9-4d70-b1d2-3ce0a0d85521)
+and matching [simulator archive](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/db2cd52e-c1a6-4e88-8542-342d27f45b1d)
+finished successfully on November 2, 2026 (local time), from source
+`fa3f61d14f4aa6472eda86a1595e51228a4b6414`. Both use runtime
+`4552604ec675f0cd2cf12f262b242d01162e48ba`, the existing SDK 54/Xcode 26 setup,
+and the Render backend. The simulator's native bundle version remains `1.0.0`;
+EAS reports the paired remote build as `1.0.12`. No App Store submission was made.
+
+These archives include authenticated account deletion, deliberate notification
+opt-in, protected/recoverable prediction states and deadlines, actual map labels,
+account-scoped cached results, prediction resumption, server-backed profile
+refresh, and native Share results. Full TypeScript, 50 app tests across eleven
+suites, and iOS Metro/Hermes export pass. The actual app/browser flow also passed
+against disposable real PostgreSQL/Auth; see [poll-flow.md](poll-flow.md).
+
+The new simulator archive was installed over the previous task-owned app,
+preserving its guest data and denied notification permission. Cold launch loaded
+the new embedded update, the no-current-poll home, and a recovered historical poll.
+Notification denial shows the explicit Open device Settings button without an
+automatic permission/Settings prompt. The compiled bundle contains Render's URL,
+the public identifier, and the new account/Settings/share code. Expo records a
+two successful embedded launches with zero failed launches. Evidence is in
+[expo-ios.json](expo-ios.json).
+
+Simulator input automation could not activate the window or deliver synthetic
+clicks. The Settings-link and native share-chooser open/cancel checks therefore
+remain on the controlled-device checklist; their focused app regressions pass.
+Real-provider login, physical-device push delivery, and OTA transport remain
+unverified. The following initial-cutover evidence is retained for reference.
+
+## Initial cutover archives and native smoke test
 
 The signed production [iOS build 1.0.11](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/95d07cf6-436e-43d5-a790-0ac0bbe9ec82)
 and matching [simulator archive](https://expo.dev/accounts/collectsoftware/projects/everybody-polls/builds/84180e77-1baf-4355-ba11-1ced7c818aaa)
@@ -127,4 +159,4 @@ group and no public link. The website therefore shows an iOS preparation status.
 Real-device Apple/OAuth login, update delivery, and push
 subscription/delivery must be verified before announcing a release. Signups remain
 disabled; other provider callbacks, Discord, email delivery, current poll content,
-and database upgrade are tracked in [TODO.md](../TODO.md).
+draft publication, and database upgrade are tracked in [TODO.md](../TODO.md).
